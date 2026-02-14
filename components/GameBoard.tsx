@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Grid from "./Grid";
-import LetterCircle from "./LetterCircle";
+import LetterCircle from "./LetterCircle"; // swipe-to-select circle
 import Toolbar from "./Toolbar";
 import LevelComplete from "./LevelComplete";
 import { useGameState, useGameActions } from "../lib/game/context";
@@ -109,7 +109,9 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         selectedIndices={state.selectedPath?.letterIndices || []}
         currentWord={state.selectedPath?.word || ""}
         onSelectLetter={actions.selectLetter}
+        onUndoSelection={actions.undoSelection}
         onClear={actions.clearSelection}
+        onCommit={actions.commitSelection}
       />
 
       {/* ── Toolbar (fixed bottom) ── */}

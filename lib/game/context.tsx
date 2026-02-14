@@ -24,7 +24,6 @@ import {
   resetLevel,
   isLevelComplete,
   getLevelProgress,
-  tryAutoSubmit,
 } from "./gameState";
 import { loadDictionary } from "./dictionaryLoader";
 import { loadProgress, saveProgress, getDefaultProgress } from "./persistence";
@@ -40,6 +39,7 @@ interface GameContextType {
     selectLetter: (index: number) => void;
     undoSelection: () => void;
     clearSelection: () => void;
+    commitSelection: () => void;
     submitWord: () => void;
     shuffleLetters: () => void;
     revealHint: () => void;
@@ -143,12 +143,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Action handlers — use setState callback to avoid stale closures
   const actions = {
     selectLetter: useCallback((index: number) => {
-      setState((prev) => {
-        if (!prev) return prev;
-        const afterSelect = selectLetter(prev, index);
-        // Auto-submit: check if current word matches a target or dictionary word
-        return tryAutoSubmit(afterSelect);
-      });
+      setState((prev) => (prev ? selectLetter(prev, index) : prev));
     }, []),
 
     undoSelection: useCallback(() => {
@@ -157,6 +152,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
     clearSelection: useCallback(() => {
       setState((prev) => (prev ? clearSelection(prev) : prev));
+    }, []),
+
+    commitSelection: useCallback(() => {
+      setState((prev) => (prev ? submitWord(prev) : prev));
     }, []),
 
     submitWord: useCallback(() => {
@@ -195,7 +194,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
           setState(newState);
         } catch (err) {
-          // Silently handle — user stays on current level
+          setError(
+            err instanceof Error
+              ? err.message
+              : `Failed to load level ${nextLevelId}`
+          );
         }
       }
     }, []),

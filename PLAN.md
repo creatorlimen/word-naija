@@ -76,3 +76,89 @@
 5. ✅ **GameBoard rewrite** — Grid(top) → LetterCircle(center, flex:1) → Toolbar(bottom)
 6. ✅ **HomeScreen verified** — Correct SafeAreaView, ScrollView, achievements, stats
 7. ✅ **TypeScript** — Zero errors across all files
+
+---
+
+## Phase 9 — Swipe Gesture, Crossword Grid Fix & Level Navigation ✅ COMPLETE
+
+### 9A — Swipe-to-select gesture (LetterCircle rewrite) ✅
+The reference game uses a **swipe** to build words: the player touches a letter, drags
+through subsequent letters without lifting their finger, then lifts to submit.
+
+Changes needed:
+1. Replace `Pressable` tap handlers with `PanResponder` in LetterCircle
+2. On touch start → detect which tile was pressed, begin selection
+3. On pan move → hit-test finger position against tile centers (within ~30px radius),
+   select new tiles as finger enters them. If finger backtracks to the second-to-last
+   selected tile, undo the last pick (natural "backspace by retracing").
+4. On pan release (finger lift) → call a new `commitSelection` action that submits the word
+5. Remove `tryAutoSubmit` from the per-letter `selectLetter` action in context — submission
+   now only happens on finger lift, preventing mid-swipe auto-submit of partial matches
+6. Add `commitSelection` and `undoSelection` to LetterCircle props; wire through GameBoard
+7. Update word preview placeholder text: "Swipe letters to form a word"
+8. Track selection locally via `useRef` during gesture to avoid stale-state issues
+
+### 9B — Fix level data (proper crossword arrangement) ✅
+**Root cause:** Every level (1–10) has fundamentally broken crossword structure:
+- Words are placed in parallel rows that never intersect (levels 2, 4–10)
+- Some levels have letter conflicts at shared coords (level 1: P vs I at (1,2);
+  level 3: T vs E at (2,3); level 4: S vs A at (1,2))
+- Level 3 EASE has non-contiguous coords and insufficient letter pool (needs 2× E, pool has 1)
+
+**Fix:** Redesign all 10 levels as proper crosswords:
+- Words placed strictly horizontally or vertically
+- Intersecting words share the SAME letter at the crossing cell
+- Mask matches exactly the union of all word coordinates
+- Letter pool validated: each word can individually be formed from the pool
+- Progressive difficulty: 2-word levels → 3-word → 4-word
+
+### 9C — Fix next-level button ✅
+**Root cause:** The `nextLevel` action's catch block silently swallows errors:
+```typescript
+} catch (err) {
+  // Silently handle — user stays on current level
+}
+```
+If level loading throws (e.g., validation error from broken level data), the user sees
+nothing happen. Also, the LevelComplete modal stays visible because state never changes.
+
+**Fix:**
+1. Surface the error: call `setError()` in the catch block so the error screen appears
+2. Close the LevelComplete modal on attempt (set a loading state or dismiss modal first)
+3. Verify all 10 levels load correctly after the data fix in 9B
+
+---
+
+## Phase 10 — Module Fix, Dictionary Gaps, Level Redesign & Grid Polish ✅ COMPLETE
+
+### 10A — Fix LetterCircle module resolution ✅
+1. ✅ Removed unused `syncRef` callback from LetterCircle.tsx
+2. ✅ Touched GameBoard import, restarted TS server → diagnostic resolved
+3. ✅ `npx tsc --noEmit` compiles cleanly
+
+### 10B — Expand dictionary with all missing words ✅
+1. ✅ Added ~100 common English words to dictionary.csv (156 → 237 entries)
+2. ✅ All 14 previously-missing target words now covered
+3. ✅ Broad 3-5 letter English word coverage for extra-word discovery
+
+### 10C — Redesign all 10 levels with dense crossword patterns ✅
+All 10 levels redesigned and validated (zero errors):
+| Level | Title          | Difficulty | Words | Intersections | Letters     |
+|-------|----------------|------------|-------|---------------|-------------|
+| 1     | First Chop     | easy       | 3     | 2             | C,H,O,P,A,T|
+| 2     | Sharp Style    | easy       | 3     | 2             | S,L,A,Y,T  |
+| 3     | Kitchen Talk   | easy       | 3     | 2             | S,T,E,W,A  |
+| 4     | Glass House    | medium     | 4     | 3             | S,L,A,P,G  |
+| 5     | Star Turn      | medium     | 4     | 3             | S,T,A,R    |
+| 6     | Road Trip      | medium     | 5     | 4             | W,A,R,D,P  |
+| 7     | Making Haste   | medium     | 5     | 4             | H,A,S,T,E  |
+| 8     | Mail Call      | hard       | 5     | 4             | R,A,I,L,N,M|
+| 9     | Flaming Words  | hard       | 6     | 5             | F,L,A,M,E  |
+| 10    | Grand Finale   | hard       | 6     | 7             | B,L,A,S,T,R|
+
+### 10D — Grid visual improvements ✅
+1. ✅ Absolute positioning — blocked cells skipped entirely (floating crossword look)
+2. ✅ MAX_CELL_SIZE increased 48→60px for larger, more prominent cells
+3. ✅ Subtle shadows/elevation on all cells (iOS shadows, Android elevation)
+4. ✅ Rounded corners (borderRadius.md) and thicker borders (1.5px)
+5. ✅ TypeScript compiles cleanly, Metro bundler starts successfully

@@ -1,12 +1,19 @@
 /**
- * Word Naija - LetterCircle Component
- * Displays available letters arranged in a circle for tapping.
- * Matches the reference game: letters scattered in a circular layout,
- * with a word preview bar above that shows the current selection.
+ * Word Naija — LetterCircle Component (swipe-to-select)
+ *
+ * Letters arranged in a circle. The player drags a finger through
+ * letters to build a word, then lifts to submit. Supports undo by
+ * retracing back to the previous letter.
  */
 
-import React, { useCallback, useMemo } from "react";
-import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
+import React, { useCallback, useMemo, useRef } from "react";
+import {
+  View,
+  Text,
+  PanResponder,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import * as Haptics from "expo-haptics";
 import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
@@ -14,13 +21,16 @@ import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 64, 300);
 const TILE_SIZE = 54;
+const HIT_RADIUS = TILE_SIZE / 2 + 8; // generous hit area
 
 interface LetterCircleProps {
   letters: Letter[];
   selectedIndices: number[];
   currentWord: string;
   onSelectLetter: (index: number) => void;
+  onUndoSelection: () => void;
   onClear: () => void;
+  onCommit: () => void;
 }
 
 export default function LetterCircle({
@@ -28,66 +38,143 @@ export default function LetterCircle({
   selectedIndices,
   currentWord,
   onSelectLetter,
+  onUndoSelection,
   onClear,
+  onCommit,
 }: LetterCircleProps) {
-  const handlePress = useCallback(
-    (index: number) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      onSelectLetter(index);
-    },
-    [onSelectLetter]
-  );
-
-  // Calculate position for each letter in a circle
+  // ── Tile positions (relative to circle container) ──
   const positions = useMemo(() => {
     const count = letters.length;
     const radius = (CIRCLE_SIZE - TILE_SIZE) / 2 - 4;
-    const centerX = CIRCLE_SIZE / 2 - TILE_SIZE / 2;
-    const centerY = CIRCLE_SIZE / 2 - TILE_SIZE / 2;
-    const angleOffset = -Math.PI / 2; // Start from top
+    const cx = CIRCLE_SIZE / 2;
+    const cy = CIRCLE_SIZE / 2;
+    const angleOffset = -Math.PI / 2; // start from top
 
     return letters.map((_, i) => {
       const angle = angleOffset + (2 * Math.PI * i) / count;
       return {
-        left: centerX + radius * Math.cos(angle),
-        top: centerY + radius * Math.sin(angle),
+        // center of each tile (for hit-testing)
+        centerX: cx + radius * Math.cos(angle),
+        centerY: cy + radius * Math.sin(angle),
+        // top-left for absolute layout
+        left: cx + radius * Math.cos(angle) - TILE_SIZE / 2,
+        top: cy + radius * Math.sin(angle) - TILE_SIZE / 2,
       };
     });
   }, [letters.length]);
 
+  // ── Local tracking ref (avoids stale closure issues in gesture) ──
+  const localSelected = useRef<number[]>([]);
+
+  // Eagerly sync every render
+  localSelected.current = [...selectedIndices];
+
+  // ── Hit-test: which tile index is the finger over? ──
+  const hitTest = useCallback(
+    (x: number, y: number): number => {
+      for (let i = 0; i < positions.length; i++) {
+        const dx = x - positions[i].centerX;
+        const dy = y - positions[i].centerY;
+        if (Math.sqrt(dx * dx + dy * dy) <= HIT_RADIUS) {
+          return i;
+        }
+      }
+      return -1;
+    },
+    [positions]
+  );
+
+  // ── Handle a touch/move point ──
+  const processTouch = useCallback(
+    (x: number, y: number) => {
+      const idx = hitTest(x, y);
+      if (idx === -1) return;
+
+      const sel = localSelected.current;
+
+      // Already the last selected tile → ignore
+      if (sel.length > 0 && sel[sel.length - 1] === idx) return;
+
+      // Backtrack: finger returned to second-to-last → undo last
+      if (sel.length >= 2 && sel[sel.length - 2] === idx) {
+        localSelected.current = sel.slice(0, -1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onUndoSelection();
+        return;
+      }
+
+      // Already selected elsewhere → ignore
+      if (sel.includes(idx)) return;
+
+      // New tile → select
+      localSelected.current = [...sel, idx];
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onSelectLetter(idx);
+    },
+    [hitTest, onSelectLetter, onUndoSelection]
+  );
+
+  // ── PanResponder ──
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (evt) => {
+          const { locationX, locationY } = evt.nativeEvent;
+          processTouch(locationX, locationY);
+        },
+        onPanResponderMove: (evt) => {
+          const { locationX, locationY } = evt.nativeEvent;
+          processTouch(locationX, locationY);
+        },
+        onPanResponderRelease: () => {
+          if (localSelected.current.length >= 2) {
+            onCommit();
+          } else {
+            onClear();
+          }
+        },
+        onPanResponderTerminate: () => {
+          onClear();
+        },
+      }),
+    [processTouch, onCommit, onClear]
+  );
+
   return (
     <View style={styles.container}>
-      {/* Word preview bar */}
+      {/* ── Word preview bar ── */}
       <View style={styles.wordPreviewBar}>
         {currentWord.length > 0 ? (
           <View style={styles.wordPreview}>
             <Text style={styles.wordPreviewText}>{currentWord}</Text>
-            <Pressable onPress={onClear} style={styles.clearButton}>
-              <Text style={styles.clearButtonText}>✕</Text>
-            </Pressable>
           </View>
         ) : (
-          <Text style={styles.wordPlaceholder}>Tap letters to form a word</Text>
+          <Text style={styles.wordPlaceholder}>
+            Swipe letters to form a word
+          </Text>
         )}
       </View>
 
-      {/* Circular letter arrangement */}
-      <View style={[styles.circle, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}>
+      {/* ── Circular letter arrangement ── */}
+      <View
+        style={[styles.circle, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
+        {...panResponder.panHandlers}
+      >
         {letters.map((letter, index) => {
           const isSelected = selectedIndices.includes(index);
           const pos = positions[index];
 
           return (
-            <Pressable
+            <View
               key={index}
-              onPress={() => handlePress(index)}
-              disabled={isSelected}
-              style={({ pressed }) => [
+              style={[
                 styles.tile,
                 { left: pos.left, top: pos.top },
                 isSelected && styles.tileSelected,
-                pressed && !isSelected && styles.tilePressed,
               ]}
+              pointerEvents="none"
             >
               <Text
                 style={[
@@ -97,7 +184,7 @@ export default function LetterCircle({
               >
                 {letter.char}
               </Text>
-            </Pressable>
+            </View>
           );
         })}
       </View>
@@ -138,20 +225,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontStyle: "italic",
   },
-  clearButton: {
-    marginLeft: spacing.md,
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.round,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clearButtonText: {
-    color: colors.foreground,
-    fontSize: fontSize.sm,
-    fontWeight: "700",
-  },
   circle: {
     position: "relative",
   },
@@ -173,10 +246,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.letterTileSelected,
     elevation: 1,
     shadowOpacity: 0.1,
-  },
-  tilePressed: {
-    backgroundColor: colors.secondary,
-    transform: [{ scale: 0.92 }],
   },
   tileText: {
     fontSize: fontSize.xl,
