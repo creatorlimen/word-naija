@@ -4,6 +4,7 @@
  */
 
 import type { GameStateData, GameStatistics } from "./types";
+import { TOTAL_LEVELS } from "./levelLoader";
 
 /**
  * Calculate game statistics from state
@@ -13,7 +14,9 @@ export function calculateGameStats(state: GameStateData): GameStatistics {
   const totalCoinsEarned = state.coins;
   const totalExtraWordsFound = state.extraWordsFound.size;
   const averageWordsPerLevel =
-    totalLevelsSolved > 0 ? totalLevelsSolved / totalLevelsSolved : 0;
+    totalLevelsSolved > 0
+      ? (state.solvedWords.size + totalExtraWordsFound) / totalLevelsSolved
+      : 0;
 
   return {
     totalLevelsSolved,
@@ -33,7 +36,7 @@ export function getFormattedStats(state: GameStateData): {
   progressPercent: string;
 } {
   const stats = calculateGameStats(state);
-  const progressPercent = Math.round((stats.totalLevelsSolved / 120) * 100);
+  const progressPercent = Math.round((stats.totalLevelsSolved / TOTAL_LEVELS) * 100);
 
   return {
     levelsSolved: stats.totalLevelsSolved.toString(),

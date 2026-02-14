@@ -105,24 +105,6 @@ export interface SavedProgress {
 }
 
 // ============================================================================
-// Game Actions / Dispatch Types
-// ============================================================================
-
-export type GameAction =
-  | { type: "INITIALIZE_LEVEL"; payload: { levelId: number } }
-  | { type: "SELECT_LETTER"; payload: { letterIndex: number } }
-  | { type: "UNDO_SELECTION" }
-  | { type: "CLEAR_SELECTION" }
-  | { type: "SUBMIT_WORD" }
-  | { type: "SHUFFLE_LETTERS" }
-  | { type: "REVEAL_HINT" }
-  | { type: "COMPLETE_LEVEL"; payload: { coinsEarned: number } }
-  | { type: "RESET_LEVEL" }
-  | { type: "NEXT_LEVEL" }
-  | { type: "SET_COINS"; payload: { coins: number } }
-  | { type: "TOGGLE_SOUND" };
-
-// ============================================================================
 // Utility Types
 // ============================================================================
 
@@ -131,12 +113,4 @@ export interface GameStatistics {
   totalCoinsEarned: number;
   averageWordsPerLevel: number;
   totalExtraWordsFound: number;
-}
-
-export interface LevelResult {
-  levelId: number;
-  solvedWords: string[];
-  extraWords: string[];
-  coinsEarned: number;
-  timeSpent?: number;
 }

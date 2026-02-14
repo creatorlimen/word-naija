@@ -1,6 +1,6 @@
 /**
  * Word Naija - Dictionary Loader
- * Parses CSV dictionary and provides word validation/lookup
+ * Parses bundled CSV dictionary and provides word validation/lookup
  */
 
 import type { DictionaryIndex, DictionaryEntry } from "./types";
@@ -20,7 +20,6 @@ function parseDictionaryCSV(csvContent: string): DictionaryIndex {
     const line = lines[i].trim();
     if (!line) continue;
 
-    // Simple CSV parsing (handles quoted fields)
     const parts = parseCSVLine(line);
     if (parts.length < 5) continue;
 
@@ -33,7 +32,6 @@ function parseDictionaryCSV(csvContent: string): DictionaryIndex {
           .filter(Boolean)
       : [];
 
-    // Always include canonical in variants
     if (!variants.includes(canonical)) {
       variants.unshift(canonical);
     }
@@ -43,10 +41,9 @@ function parseDictionaryCSV(csvContent: string): DictionaryIndex {
       variants,
       meaning: meaning.trim(),
       languageTag: languageTag.trim(),
-      difficulty: (difficulty.trim() as any) || "medium",
+      difficulty: (difficulty.trim() as "easy" | "medium" | "hard") || "medium",
     };
 
-    // Index by canonical and all variants
     index.set(canonical, entry);
     variants.forEach((v) => {
       if (!index.has(v)) {
@@ -85,6 +82,7 @@ function parseCSVLine(line: string): string[] {
 
 /**
  * Load dictionary from bundled CSV asset
+ * Uses require() to bundle the CSV with Metro
  */
 export async function loadDictionary(): Promise<DictionaryIndex> {
   if (dictionaryIndex) {
@@ -92,20 +90,22 @@ export async function loadDictionary(): Promise<DictionaryIndex> {
   }
 
   try {
-    // Fetch the dictionary CSV from public/data/dictionary.csv
-    const response = await fetch("/data/dictionary.csv");
-    if (!response.ok) {
-      throw new Error(`Failed to load dictionary: ${response.statusText}`);
-    }
+    // Import the raw CSV content bundled as an asset
+    // We use expo-asset + expo-file-system to read the CSV at runtime
+    const Asset = require("expo-asset").Asset;
+    const FileSystem = require("expo-file-system");
 
-    const csvContent = await response.text();
+    const [asset] = await Asset.loadAsync(
+      require("../../assets/data/dictionary.csv")
+    );
+
+    const csvContent = await FileSystem.readAsStringAsync(asset.localUri);
     dictionaryIndex = parseDictionaryCSV(csvContent);
 
-    console.log(`[Word Naija] Loaded ${dictionaryIndex.size} dictionary entries`);
+    console.log(`📖 Loaded ${dictionaryIndex.size} dictionary entries`);
     return dictionaryIndex;
   } catch (error) {
-    console.error("[Word Naija] Dictionary load failed:", error);
-    // Return empty dictionary on failure
+    console.error("❌ Dictionary load failed:", error);
     dictionaryIndex = new Map();
     return dictionaryIndex;
   }
@@ -116,9 +116,7 @@ export async function loadDictionary(): Promise<DictionaryIndex> {
  */
 export function getDictionaryIndex(): DictionaryIndex {
   if (!dictionaryIndex) {
-    throw new Error(
-      "Dictionary not loaded. Call loadDictionary() first."
-    );
+    throw new Error("Dictionary not loaded. Call loadDictionary() first.");
   }
   return dictionaryIndex;
 }
@@ -130,12 +128,7 @@ export function getDictionaryIndex(): DictionaryIndex {
 export function validateWord(word: string): string | null {
   const normalized = word.toUpperCase().trim();
   const entry = dictionaryIndex?.get(normalized);
-
-  if (entry) {
-    return entry.canonical;
-  }
-
-  return null;
+  return entry ? entry.canonical : null;
 }
 
 /**
@@ -155,43 +148,10 @@ export function getMeaning(word: string): string | null {
 }
 
 /**
- * Get all variants of a word (including canonical)
- */
-export function getVariants(word: string): string[] {
-  const entry = getDictionaryEntry(word);
-  return entry?.variants || [];
-}
-
-/**
  * Check if dictionary is loaded
  */
 export function isDictionaryLoaded(): boolean {
   return dictionaryIndex !== null;
-}
-
-/**
- * Get dictionary statistics
- */
-export function getDictionaryStats(): {
-  totalEntries: number;
-  totalVariants: number;
-} {
-  if (!dictionaryIndex) {
-    return { totalEntries: 0, totalVariants: 0 };
-  }
-
-  const uniqueCanonicals = new Set<string>();
-  let totalVariants = 0;
-
-  dictionaryIndex.forEach((entry) => {
-    uniqueCanonicals.add(entry.canonical);
-    totalVariants += entry.variants.length;
-  });
-
-  return {
-    totalEntries: uniqueCanonicals.size,
-    totalVariants,
-  };
 }
 
 /**

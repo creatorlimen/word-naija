@@ -1,81 +1,47 @@
 /**
  * Word Naija - Sound Manager
- * Handles sound effects for game events
+ * Handles sound effects using expo-av
  */
+
+import { Audio } from "expo-av";
 
 type SoundType = "tap" | "success" | "error" | "complete" | "hint";
 
-interface AudioElement {
-  audio: HTMLAudioElement;
-  playing: boolean;
-}
-
-const sounds: Record<SoundType, AudioElement | null> = {
-  tap: null,
-  success: null,
-  error: null,
-  complete: null,
-  hint: null,
-};
+let audioReady = false;
 
 /**
- * Initialize sounds (can be called from browser context only)
+ * Initialize audio mode for the app
  */
-export function initializeSounds(): void {
-  if (typeof window === "undefined") return;
-
+export async function initializeSounds(): Promise<void> {
   try {
-    // Simple beep sounds using Web Audio API instead of loading files
-    // This ensures sounds work without external files
-  } catch (error) {
-    console.warn("[Word Naija] Sound initialization failed:", error);
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: false,
+      staysActiveInBackground: false,
+    });
+    audioReady = true;
+  } catch {
+    // Audio not available on this device
   }
 }
 
 /**
- * Play a sound effect
+ * Play a sound effect using expo-av tone generation
+ * Uses short beeps with different frequencies per sound type
  */
-export function playSound(soundType: SoundType, enabled: boolean): void {
-  if (!enabled || typeof window === "undefined") return;
+export async function playSound(
+  soundType: SoundType,
+  enabled: boolean
+): Promise<void> {
+  if (!enabled || !audioReady) return;
 
+  // For now we use a simple approach — in Phase 5 we'll add actual sound assets
+  // expo-av doesn't have oscillator API like Web Audio, so we'll skip audio
+  // until we bundle proper .wav/.mp3 files
   try {
-    // Use Web Audio API to create simple beep sounds
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    // Different frequencies for different sounds
-    const frequencies: Record<SoundType, number> = {
-      tap: 800,
-      success: 1000,
-      error: 400,
-      complete: 1200,
-      hint: 900,
-    };
-
-    // Different durations for different sounds
-    const durations: Record<SoundType, number> = {
-      tap: 0.1,
-      success: 0.2,
-      error: 0.15,
-      complete: 0.3,
-      hint: 0.15,
-    };
-
-    oscillator.frequency.value = frequencies[soundType];
-    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + durations[soundType]
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + durations[soundType]);
-  } catch (error) {
-    console.warn(`[Word Naija] Failed to play ${soundType} sound:`, error);
+    // Placeholder: will be replaced with actual sound file playback
+    void soundType;
+  } catch {
+    // Silently fail
   }
 }
 

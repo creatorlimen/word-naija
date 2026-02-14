@@ -3,10 +3,16 @@
  * Manages global game state and provides actions to components
  */
 
-"use client";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
+import type { GameStateData } from "./types";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import type { GameStateData, GameAction } from "./types";
 import {
   initializeGameState,
   selectLetter,
@@ -21,6 +27,7 @@ import {
 } from "./gameState";
 import { loadDictionary } from "./dictionaryLoader";
 import { loadProgress, saveProgress, getDefaultProgress } from "./persistence";
+import { TOTAL_LEVELS } from "./levelLoader";
 
 // ============================================================================
 // Context Types
@@ -54,6 +61,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Use ref to avoid stale closures in nextLevel
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   // Initialize game on mount
   useEffect(() => {
     async function initializeGame() {
@@ -67,13 +78,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const savedProgress = await loadProgress();
         const progress = savedProgress || getDefaultProgress();
 
-        // Initialize first level or next incomplete level
+        // Determine current level
         const currentLevelId = savedProgress
           ? Math.max(...(savedProgress.completedLevels || []), 0) + 1
           : 1;
 
         const initialState = await initializeGameState(
-          Math.min(currentLevelId, 120),
+          Math.min(currentLevelId, TOTAL_LEVELS),
           progress.coins
         );
 
@@ -83,8 +94,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         setState(initialState);
         setIsLoading(false);
       } catch (err) {
-        console.error("[Word Naija] Initialization error:", err);
-        setError(err instanceof Error ? err.message : "Failed to initialize game");
+        setError(
+          err instanceof Error ? err.message : "Failed to initialize game"
+        );
         setIsLoading(false);
       }
     }
@@ -92,7 +104,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     initializeGame();
   }, []);
 
-  // Save progress whenever state changes
+  // Auto-save progress on state change
   useEffect(() => {
     if (!isLoading && state) {
       const completedLevels = Array.from(state.completedLevels || []);
@@ -114,83 +126,65 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state, isLoading]);
 
-  // Action handlers
+  // Action handlers — use setState callback to avoid stale closures
   const actions = {
     selectLetter: useCallback((index: number) => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return selectLetter(prevState, index);
-      });
+      setState((prev) => (prev ? selectLetter(prev, index) : prev));
     }, []),
 
     undoSelection: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return undoSelection(prevState);
-      });
+      setState((prev) => (prev ? undoSelection(prev) : prev));
     }, []),
 
     clearSelection: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return clearSelection(prevState);
-      });
+      setState((prev) => (prev ? clearSelection(prev) : prev));
     }, []),
 
     submitWord: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return submitWord(prevState);
-      });
+      setState((prev) => (prev ? submitWord(prev) : prev));
     }, []),
 
     shuffleLetters: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return shuffleLetters(prevState);
-      });
+      setState((prev) => (prev ? shuffleLetters(prev) : prev));
     }, []),
 
     revealHint: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return revealHint(prevState);
-      });
+      setState((prev) => (prev ? revealHint(prev) : prev));
     }, []),
 
     resetLevel: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return resetLevel(prevState);
-      });
+      setState((prev) => (prev ? resetLevel(prev) : prev));
     }, []),
 
     nextLevel: useCallback(async () => {
-      if (!state) return;
-      
-      const nextLevelId = state.currentLevel.levelId + 1;
-      if (nextLevelId <= 120) {
-        try {
-          // Mark current level as complete
-          const newCompletedLevels = new Set(state.completedLevels);
-          newCompletedLevels.add(state.currentLevel.levelId);
+      // Use ref to get current state (avoids stale closure)
+      const currentState = stateRef.current;
+      if (!currentState) return;
 
-          const newState = await initializeGameState(nextLevelId, state.coins);
+      const nextLevelId = currentState.currentLevel.levelId + 1;
+      if (nextLevelId <= TOTAL_LEVELS) {
+        try {
+          const newCompletedLevels = new Set(currentState.completedLevels);
+          newCompletedLevels.add(currentState.currentLevel.levelId);
+
+          const newState = await initializeGameState(
+            nextLevelId,
+            currentState.coins
+          );
           newState.completedLevels = newCompletedLevels;
-          newState.soundEnabled = state.soundEnabled;
-          
+          newState.soundEnabled = currentState.soundEnabled;
+
           setState(newState);
         } catch (err) {
-          console.error("[Word Naija] Error loading next level:", err);
+          // Silently handle — user stays on current level
         }
       }
-    }, [state]),
+    }, []),
 
     toggleSound: useCallback(() => {
-      setState((prevState) => {
-        if (!prevState) return prevState;
-        return { ...prevState, soundEnabled: !prevState.soundEnabled };
-      });
+      setState((prev) =>
+        prev ? { ...prev, soundEnabled: !prev.soundEnabled } : prev
+      );
     }, []),
   };
 
@@ -207,7 +201,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 }
 
 // ============================================================================
-// Hook to use game context
+// Hooks
 // ============================================================================
 
 export function useGame(): GameContextType {
@@ -218,26 +212,14 @@ export function useGame(): GameContextType {
   return context;
 }
 
-/**
- * Hook to access game state and progress info
- */
 export function useGameState() {
   const { state, isLoading, error } = useGame();
   const progress = state?.currentLevel ? getLevelProgress(state) : null;
   const isComplete = state?.currentLevel ? isLevelComplete(state) : false;
 
-  return {
-    state,
-    progress,
-    isComplete,
-    isLoading,
-    error,
-  };
+  return { state, progress, isComplete, isLoading, error };
 }
 
-/**
- * Hook to access game actions
- */
 export function useGameActions() {
   const { actions } = useGame();
   return actions;

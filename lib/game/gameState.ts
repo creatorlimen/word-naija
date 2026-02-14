@@ -109,11 +109,8 @@ export function selectLetter(
   const currentWord = state.selectedPath?.word || "";
   const currentIndices = state.selectedPath?.letterIndices || [];
 
-  // Prevent duplicate consecutive selections
-  if (
-    currentIndices.length > 0 &&
-    currentIndices[currentIndices.length - 1] === letterIndex
-  ) {
+  // Prevent selecting any already-selected index
+  if (currentIndices.includes(letterIndex)) {
     return state;
   }
 
@@ -221,13 +218,8 @@ export function submitWord(state: GameStateData): GameStateData {
     newExtraWords.add(canonical);
   }
 
-  // Mark letters as used
-  const newLetterWheel = state.letterWheel.map((letter, index) => {
-    if (state.selectedPath?.letterIndices.includes(index)) {
-      return { ...letter, used: true };
-    }
-    return letter;
-  });
+  // Letters remain available for other words (crossword reuse)
+  const newLetterWheel = state.letterWheel;
 
   // Update grid - place letters in found target word
   let newGridState = { ...state.gridState };
@@ -284,8 +276,12 @@ export function shuffleLetters(state: GameStateData): GameStateData {
   const available = state.letterWheel.filter((l) => !l.used);
   const used = state.letterWheel.filter((l) => l.used);
 
-  // Shuffle available letters
-  const shuffled = [...available].sort(() => Math.random() - 0.5);
+  // Fisher-Yates shuffle
+  const shuffled = [...available];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
 
   // Reassign indices
   let newIndex = 0;
@@ -339,7 +335,11 @@ export function revealHint(state: GameStateData): GameStateData {
   // Reveal the cell
   const newCells = state.gridState.cells.map((row) => [...row]);
   const [row, col] = emptyCell;
-  const letterFromWord = targetWord.word[targetWord.coords.indexOf(emptyCell)];
+  // Deep compare coordinate tuples (indexOf uses reference equality)
+  const coordIndex = targetWord.coords.findIndex(
+    (c) => c[0] === emptyCell[0] && c[1] === emptyCell[1]
+  );
+  const letterFromWord = targetWord.word[coordIndex];
 
   newCells[row][col] = {
     ...newCells[row][col],
@@ -361,13 +361,14 @@ export function revealHint(state: GameStateData): GameStateData {
  * Reset level (clear progress but keep coins)
  */
 export function resetLevel(state: GameStateData): GameStateData {
-  const newState = { ...state };
-  newState.gridState = createGridState(state.currentLevel);
-  newState.letterWheel = createLetterWheel(state.currentLevel.letters);
-  newState.selectedPath = null;
-  newState.solvedWords.clear();
-  newState.extraWordsFound.clear();
-  return newState;
+  return {
+    ...state,
+    gridState: createGridState(state.currentLevel),
+    letterWheel: createLetterWheel(state.currentLevel.letters),
+    selectedPath: null,
+    solvedWords: new Set(),
+    extraWordsFound: new Set(),
+  };
 }
 
 /**

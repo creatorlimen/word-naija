@@ -1,53 +1,42 @@
 /**
  * Word Naija - Level Loader
- * Loads and validates level definitions from JSON
+ * Loads level definitions from bundled JSON assets
  */
 
 import type { Level, TargetWord } from "./types";
-import { getDictionaryIndex } from "./dictionaryLoader";
 
-const LEVELS_BASE_PATH = "/data/levels";
+/**
+ * Registry of all bundled level files.
+ * require() calls must be static for Metro bundler.
+ * Add new levels here as they're created.
+ */
+const LEVEL_REGISTRY: Record<number, any> = {
+  1: require("../../assets/data/levels/level-001.json"),
+  2: require("../../assets/data/levels/level-002.json"),
+  3: require("../../assets/data/levels/level-003.json"),
+  4: require("../../assets/data/levels/level-004.json"),
+  5: require("../../assets/data/levels/level-005.json"),
+  6: require("../../assets/data/levels/level-006.json"),
+  7: require("../../assets/data/levels/level-007.json"),
+  8: require("../../assets/data/levels/level-008.json"),
+  9: require("../../assets/data/levels/level-009.json"),
+  10: require("../../assets/data/levels/level-010.json"),
+};
+
+export const TOTAL_LEVELS = Object.keys(LEVEL_REGISTRY).length;
 
 /**
  * Load a single level by ID
  */
 export async function loadLevel(levelId: number): Promise<Level> {
-  try {
-    const fileName = `level-${String(levelId).padStart(3, "0")}.json`;
-    const response = await fetch(`${LEVELS_BASE_PATH}/${fileName}`);
+  const levelData = LEVEL_REGISTRY[levelId];
 
-    if (!response.ok) {
-      throw new Error(`Level ${levelId} not found`);
-    }
-
-    const levelData: Level = await response.json();
-
-    // Validate the level structure
-    validateLevel(levelData);
-
-    return levelData;
-  } catch (error) {
-    console.error(`[Word Naija] Failed to load level ${levelId}:`, error);
-    throw error;
+  if (!levelData) {
+    throw new Error(`Level ${levelId} not found`);
   }
-}
 
-/**
- * Get list of all available level IDs
- */
-export async function getLevelList(): Promise<number[]> {
-  try {
-    // This is a simplified version - in production, you'd have a manifest file
-    // For now, we'll assume levels 1-120 are available
-    const levelIds: number[] = [];
-    for (let i = 1; i <= 120; i++) {
-      levelIds.push(i);
-    }
-    return levelIds;
-  } catch (error) {
-    console.error("[Word Naija] Failed to get level list:", error);
-    return [];
-  }
+  validateLevel(levelData);
+  return levelData as Level;
 }
 
 /**
@@ -84,7 +73,6 @@ function validateLevel(level: Level): void {
     throw new Error("No target words defined");
   }
 
-  // Validate each target word
   for (const targetWord of level.targetWords) {
     validateTargetWord(targetWord, level);
   }
@@ -102,14 +90,12 @@ function validateTargetWord(targetWord: TargetWord, level: Level): void {
     throw new Error(`Invalid coordinates for word ${targetWord.word}`);
   }
 
-  // Check that word length matches coords length
   if (targetWord.word.length !== targetWord.coords.length) {
     throw new Error(
       `Word length mismatch for ${targetWord.word}: ${targetWord.word.length} vs ${targetWord.coords.length}`
     );
   }
 
-  // Check that all coords are within grid bounds and are playable
   for (const [row, col] of targetWord.coords) {
     if (row < 0 || row >= level.rows || col < 0 || col >= level.cols) {
       throw new Error(
@@ -124,46 +110,18 @@ function validateTargetWord(targetWord: TargetWord, level: Level): void {
     }
   }
 
-  // Check that all letters of the word are in the letter pool
-  const letterPool = level.letters.map((l) => l.toUpperCase());
+  // Validate letter pool has all needed letters (fixed: use array spread, not object spread)
+  const letterPool = [...level.letters.map((l) => l.toUpperCase())];
   const wordLetters = targetWord.word.toUpperCase().split("");
-  const usedLetters = { ...letterPool };
 
   for (const letter of wordLetters) {
-    const index = usedLetters.indexOf(letter);
+    const index = letterPool.indexOf(letter);
     if (index === -1) {
       throw new Error(
         `Letter '${letter}' from word '${targetWord.word}' not in letter pool`
       );
     }
-    usedLetters.splice(index, 1);
-  }
-}
-
-/**
- * Check if a level is solvable with the current dictionary
- */
-export async function validateLevelSolvability(
-  level: Level
-): Promise<{ solvable: boolean; missingWords: string[] }> {
-  try {
-    const dictionary = getDictionaryIndex();
-    const missingWords: string[] = [];
-
-    for (const targetWord of level.targetWords) {
-      const normalized = targetWord.word.toUpperCase().trim();
-      if (!dictionary.has(normalized)) {
-        missingWords.push(targetWord.word);
-      }
-    }
-
-    return {
-      solvable: missingWords.length === 0,
-      missingWords,
-    };
-  } catch (error) {
-    console.error("[Word Naija] Solvability check failed:", error);
-    return { solvable: false, missingWords: [] };
+    letterPool.splice(index, 1);
   }
 }
 
@@ -171,23 +129,5 @@ export async function validateLevelSolvability(
  * Get the next level ID after the current one
  */
 export function getNextLevelId(currentLevelId: number): number | null {
-  // Assuming 120 levels max
-  return currentLevelId < 120 ? currentLevelId + 1 : null;
-}
-
-/**
- * Get level metadata without loading full level
- */
-export async function getLevelMetadata(
-  levelId: number
-): Promise<{ title: string; difficulty: string } | null> {
-  try {
-    const level = await loadLevel(levelId);
-    return {
-      title: level.title,
-      difficulty: level.difficulty,
-    };
-  } catch {
-    return null;
-  }
+  return currentLevelId < TOTAL_LEVELS ? currentLevelId + 1 : null;
 }
