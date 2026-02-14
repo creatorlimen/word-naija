@@ -9,9 +9,9 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";

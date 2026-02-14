@@ -1,6 +1,7 @@
 /**
  * Word Naija - GameBoard Component
- * Main game screen orchestrating Grid, LetterWheel, Controls, and LevelComplete
+ * Main game screen: Grid (top) → LetterCircle (center) → Toolbar (bottom).
+ * Words auto-submit when they match a target — no explicit Submit button.
  */
 
 import React, { useCallback, useMemo } from "react";
@@ -9,17 +10,16 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  SafeAreaView,
   ActivityIndicator,
 } from "react-native";
-import * as Haptics from "expo-haptics";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Grid from "./Grid";
-import LetterWheel from "./LetterWheel";
-import Controls from "./Controls";
+import LetterCircle from "./LetterCircle";
+import Toolbar from "./Toolbar";
 import LevelComplete from "./LevelComplete";
 import { useGameState, useGameActions } from "../lib/game/context";
-import { getCoinsEarned, isLevelComplete } from "../lib/game/gameState";
+import { getCoinsEarned } from "../lib/game/gameState";
 import { colors, fontSize, spacing, borderRadius } from "../constants/theme";
 
 interface GameBoardProps {
@@ -29,11 +29,6 @@ interface GameBoardProps {
 export default function GameBoard({ onGoHome }: GameBoardProps) {
   const { state, progress, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
-
-  const handleSubmit = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    actions.submitWord();
-  }, [actions]);
 
   const handleNextLevel = useCallback(async () => {
     await actions.nextLevel();
@@ -48,10 +43,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     return getCoinsEarned(state);
   }, [state]);
 
-  const canSubmit =
-    state?.selectedPath && state.selectedPath.word.length >= 2;
-
-  // Loading state
+  // Loading
   if (isLoading) {
     return (
       <SafeAreaView style={styles.centered}>
@@ -62,7 +54,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     );
   }
 
-  // Error state
+  // Error
   if (error) {
     return (
       <SafeAreaView style={styles.centered}>
@@ -79,19 +71,19 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   if (!state?.currentLevel) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar style="light" />
 
-      {/* Header */}
+      {/* ── Header ── */}
       <View style={styles.header}>
         <Pressable onPress={onGoHome} style={styles.backButton}>
-          <Text style={styles.backText}>← Home</Text>
+          <Text style={styles.backText}>←</Text>
         </Pressable>
-        <Text style={styles.titleText}>{state.currentLevel.title}</Text>
+        <Text style={styles.titleText}>Level {state.currentLevel.levelId}</Text>
         <View style={styles.headerRight} />
       </View>
 
-      {/* Progress bar */}
+      {/* ── Progress bar ── */}
       {progress && (
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
@@ -108,14 +100,11 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         </View>
       )}
 
-      {/* Grid */}
-      <Grid
-        gridState={state.gridState}
-        selectedPath={state.selectedPath}
-      />
+      {/* ── Grid (top section) ── */}
+      <Grid gridState={state.gridState} selectedPath={state.selectedPath} />
 
-      {/* Letter Wheel */}
-      <LetterWheel
+      {/* ── Letter Circle (fills remaining space) ── */}
+      <LetterCircle
         letters={state.letterWheel}
         selectedIndices={state.selectedPath?.letterIndices || []}
         currentWord={state.selectedPath?.word || ""}
@@ -123,45 +112,15 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         onClear={actions.clearSelection}
       />
 
-      {/* Submit Button */}
-      <View style={styles.submitContainer}>
-        <Pressable
-          onPress={handleSubmit}
-          disabled={!canSubmit}
-          style={({ pressed }) => [
-            styles.submitButton,
-            !canSubmit && styles.submitButtonDisabled,
-            pressed && canSubmit && styles.submitButtonPressed,
-          ]}
-        >
-          <Text
-            style={[
-              styles.submitText,
-              !canSubmit && styles.submitTextDisabled,
-            ]}
-          >
-            Submit
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Controls */}
-      <Controls
-        levelNumber={state.currentLevel.levelId}
+      {/* ── Toolbar (fixed bottom) ── */}
+      <Toolbar
         coins={state.coins}
-        soundEnabled={state.soundEnabled}
+        hintCost={15}
         onShuffle={actions.shuffleLetters}
         onHint={actions.revealHint}
-        onToggleSound={actions.toggleSound}
-        onReset={actions.resetLevel}
       />
 
-      {/* Flavor text */}
-      {state.currentLevel.flavorText && (
-        <Text style={styles.flavorText}>{state.currentLevel.flavorText}</Text>
-      )}
-
-      {/* Level Complete Modal */}
+      {/* ── Level Complete Modal ── */}
       <LevelComplete
         visible={isComplete}
         level={state.currentLevel}
@@ -218,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   backButton: {
     paddingVertical: spacing.xs,
@@ -226,8 +185,8 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: colors.secondary,
-    fontSize: fontSize.sm,
-    fontWeight: "600",
+    fontSize: fontSize.xl,
+    fontWeight: "700",
   },
   titleText: {
     color: colors.foreground,
@@ -235,14 +194,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   headerRight: {
-    width: 60,
+    width: 40,
   },
   progressContainer: {
     paddingHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   progressBar: {
-    height: 6,
+    height: 5,
     backgroundColor: "rgba(255,255,255,0.2)",
     borderRadius: borderRadius.round,
     overflow: "hidden",
@@ -256,43 +215,7 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: fontSize.xs,
     textAlign: "center",
-    marginTop: 4,
-    opacity: 0.8,
-  },
-  submitContainer: {
-    alignItems: "center",
-    paddingVertical: spacing.sm,
-  },
-  submitButton: {
-    backgroundColor: colors.accent,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xxl,
-    borderRadius: borderRadius.lg,
-    minWidth: 160,
-    alignItems: "center",
-  },
-  submitButtonDisabled: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-  },
-  submitButtonPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.97 }],
-  },
-  submitText: {
-    color: colors.foreground,
-    fontSize: fontSize.lg,
-    fontWeight: "700",
-  },
-  submitTextDisabled: {
-    opacity: 0.4,
-  },
-  flavorText: {
-    color: colors.foreground,
-    fontSize: fontSize.xs,
-    textAlign: "center",
-    fontStyle: "italic",
-    opacity: 0.6,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.sm,
+    marginTop: 3,
+    opacity: 0.7,
   },
 });

@@ -91,9 +91,9 @@ export async function loadDictionary(): Promise<DictionaryIndex> {
 
   try {
     // Import the raw CSV content bundled as an asset
-    // We use expo-asset + expo-file-system to read the CSV at runtime
+    // expo-file-system v19+ deprecated readAsStringAsync — use legacy import
     const Asset = require("expo-asset").Asset;
-    const FileSystem = require("expo-file-system");
+    const FileSystem = require("expo-file-system/legacy");
 
     const [asset] = await Asset.loadAsync(
       require("../../assets/data/dictionary.csv")
@@ -102,10 +102,8 @@ export async function loadDictionary(): Promise<DictionaryIndex> {
     const csvContent = await FileSystem.readAsStringAsync(asset.localUri);
     dictionaryIndex = parseDictionaryCSV(csvContent);
 
-    console.log(`📖 Loaded ${dictionaryIndex.size} dictionary entries`);
     return dictionaryIndex;
   } catch (error) {
-    console.error("❌ Dictionary load failed:", error);
     dictionaryIndex = new Map();
     return dictionaryIndex;
   }

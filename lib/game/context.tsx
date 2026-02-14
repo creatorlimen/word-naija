@@ -24,6 +24,7 @@ import {
   resetLevel,
   isLevelComplete,
   getLevelProgress,
+  tryAutoSubmit,
 } from "./gameState";
 import { loadDictionary } from "./dictionaryLoader";
 import { loadProgress, saveProgress, getDefaultProgress } from "./persistence";
@@ -104,32 +105,50 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     initializeGame();
   }, []);
 
-  // Auto-save progress on state change
+  // Auto-save progress on meaningful state changes (debounced)
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!isLoading && state) {
-      const completedLevels = Array.from(state.completedLevels || []);
-      const extraWordsFoundByLevel: Record<number, string[]> = {};
-
-      if (state.currentLevel) {
-        extraWordsFoundByLevel[state.currentLevel.levelId] = Array.from(
-          state.extraWordsFound || []
-        );
+      // Debounce saves — wait 1s after last state change
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
       }
+      saveTimerRef.current = setTimeout(() => {
+        const completedLevels = Array.from(state.completedLevels || []);
+        const extraWordsFoundByLevel: Record<number, string[]> = {};
 
-      saveProgress({
-        coins: state.coins,
-        completedLevels,
-        soundEnabled: state.soundEnabled,
-        lastPlayed: Date.now(),
-        extraWordsFoundByLevel,
-      });
+        if (state.currentLevel) {
+          extraWordsFoundByLevel[state.currentLevel.levelId] = Array.from(
+            state.extraWordsFound || []
+          );
+        }
+
+        saveProgress({
+          coins: state.coins,
+          completedLevels,
+          soundEnabled: state.soundEnabled,
+          lastPlayed: Date.now(),
+          extraWordsFoundByLevel,
+        });
+      }, 1000);
     }
+
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
   }, [state, isLoading]);
 
   // Action handlers — use setState callback to avoid stale closures
   const actions = {
     selectLetter: useCallback((index: number) => {
-      setState((prev) => (prev ? selectLetter(prev, index) : prev));
+      setState((prev) => {
+        if (!prev) return prev;
+        const afterSelect = selectLetter(prev, index);
+        // Auto-submit: check if current word matches a target or dictionary word
+        return tryAutoSubmit(afterSelect);
+      });
     }, []),
 
     undoSelection: useCallback(() => {

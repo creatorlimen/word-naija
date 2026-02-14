@@ -17,6 +17,7 @@ import HomeScreen from "./components/HomeScreen";
 import GameBoard from "./components/GameBoard";
 import FTUE from "./components/FTUE";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors, fontSize, spacing } from "./constants/theme";
 
 type Screen = "home" | "game";
@@ -85,11 +86,13 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <ErrorBoundary>
-      <GameProvider>
-        <AppNavigator />
-      </GameProvider>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <GameProvider>
+          <AppNavigator />
+        </GameProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 }
 

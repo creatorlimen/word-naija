@@ -164,6 +164,56 @@ export function clearSelection(state: GameStateData): GameStateData {
 }
 
 /**
+ * Auto-submit: called after each letter selection.
+ * If the current word matches a target word, submit it automatically.
+ * If it's a valid extra dictionary word, submit as extra.
+ * Otherwise, leave the selection in place for more tapping.
+ */
+export function tryAutoSubmit(state: GameStateData): GameStateData {
+  if (!state.selectedPath || state.selectedPath.word.length < 2) {
+    return state;
+  }
+
+  const word = state.selectedPath.word;
+
+  // Check if it matches a target word (case-insensitive)
+  const matchesTarget = state.currentLevel.targetWords.find(
+    (tw) =>
+      tw.word.toUpperCase() === word.toUpperCase() &&
+      !state.solvedWords.has(tw.word.toUpperCase())
+  );
+
+  if (matchesTarget) {
+    // Auto-submit as target word
+    return submitWord(state);
+  }
+
+  // Check if it's a valid dictionary word we haven't found yet
+  const canonical = validateWord(word);
+  if (
+    canonical &&
+    !state.solvedWords.has(canonical) &&
+    !state.extraWordsFound.has(canonical) &&
+    state.currentLevel.extraWordsAllowed
+  ) {
+    // Only auto-submit extra words when they can't extend into a target
+    // (i.e., if we also have a target that starts with this prefix, keep going)
+    const couldExtendToTarget = state.currentLevel.targetWords.some(
+      (tw) =>
+        tw.word.toUpperCase().startsWith(word.toUpperCase()) &&
+        tw.word.length > word.length &&
+        !state.solvedWords.has(tw.word.toUpperCase())
+    );
+
+    if (!couldExtendToTarget) {
+      return submitWord(state);
+    }
+  }
+
+  return state;
+}
+
+/**
  * Submit current selection as a word
  */
 export function submitWord(state: GameStateData): GameStateData {
@@ -177,13 +227,11 @@ export function submitWord(state: GameStateData): GameStateData {
   const canonical = validateWord(word);
   if (!canonical) {
     // Invalid word - clear selection and return
-    console.log(`[Word Naija] Invalid word: ${word}`);
     return clearSelection(state);
   }
 
   // Check if already solved this level
   if (state.solvedWords.has(canonical)) {
-    console.log(`[Word Naija] Word already solved: ${canonical}`);
     return clearSelection(state);
   }
 
@@ -199,11 +247,9 @@ export function submitWord(state: GameStateData): GameStateData {
     // This is a target word
     isTargetWord = true;
     coinsEarned = 10; // Base reward for target word
-    console.log(`[Word Naija] Target word found: ${canonical}`);
   } else if (state.currentLevel.extraWordsAllowed) {
     // This is an extra word
     coinsEarned = 5; // Smaller reward for extra word
-    console.log(`[Word Naija] Extra word found: ${canonical}`);
   } else {
     // Extra words not allowed - treat as invalid
     return clearSelection(state);
@@ -307,7 +353,6 @@ export function shuffleLetters(state: GameStateData): GameStateData {
 export function revealHint(state: GameStateData): GameStateData {
   // Cost: 15 coins
   if (state.coins < 15) {
-    console.log("[Word Naija] Not enough coins for hint");
     return state;
   }
 
@@ -317,7 +362,6 @@ export function revealHint(state: GameStateData): GameStateData {
   );
 
   if (unsolvedWords.length === 0) {
-    console.log("[Word Naija] No unsolved words to hint");
     return state;
   }
 
@@ -328,7 +372,6 @@ export function revealHint(state: GameStateData): GameStateData {
   });
 
   if (!emptyCell) {
-    console.log("[Word Naija] No empty cells to reveal");
     return state;
   }
 

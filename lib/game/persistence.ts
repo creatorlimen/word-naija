@@ -15,9 +15,8 @@ export async function saveProgress(progress: SavedProgress): Promise<void> {
   try {
     const json = JSON.stringify(progress);
     await AsyncStorage.setItem(STORAGE_KEY, json);
-    console.log("📦 Progress saved");
-  } catch (error) {
-    console.error("❌ Save progress error:", error);
+  } catch {
+    // Silently fail
   }
 }
 
@@ -28,12 +27,10 @@ export async function loadProgress(): Promise<SavedProgress | null> {
   try {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
     if (json) {
-      console.log("📦 Progress loaded");
       return JSON.parse(json) as SavedProgress;
     }
     return null;
-  } catch (error) {
-    console.error("❌ Load progress error:", error);
+  } catch {
     return null;
   }
 }
@@ -44,9 +41,8 @@ export async function loadProgress(): Promise<SavedProgress | null> {
 export async function clearProgress(): Promise<void> {
   try {
     await AsyncStorage.removeItem(STORAGE_KEY);
-    console.log("🧹 Progress cleared");
-  } catch (error) {
-    console.error("❌ Clear progress error:", error);
+  } catch {
+    // Silently fail
   }
 }
 

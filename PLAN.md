@@ -56,3 +56,23 @@
 3. Dependencies updated to Expo SDK 54 compatible versions
 4. Verified `npx expo start` launches Metro bundler successfully
 5. TypeScript compiles with zero errors across all files
+
+---
+
+## Phase 8 — Runtime Fixes & Gameplay Redesign ✅ COMPLETE
+
+### 8A — Critical runtime bugs ✅
+1. ✅ **Dictionary loader** — Changed `require("expo-file-system")` → `require("expo-file-system/legacy")`
+2. ✅ **SafeAreaView deprecated** — Installed `react-native-safe-area-context`, replaced all imports,
+   added `SafeAreaProvider` in App.tsx
+3. ✅ **Excessive "Progress saved" logging** — Debounced saves (1s timer), removed all console.log
+4. ✅ **Remaining console.log noise** — Stripped from persistence.ts, gameState.ts, dictionaryLoader.ts
+
+### 8B — Gameplay redesign (match reference screenshots) ✅
+1. ✅ **LetterCircle** — New component with circular absolute-positioned tiles (trig layout)
+2. ✅ **Auto-submit** — `tryAutoSubmit()` in gameState.ts, wired into context `selectLetter` action
+3. ✅ **Submit button removed** — GameBoard no longer has a Submit button
+4. ✅ **Toolbar** — New fixed-bottom bar with SHUFFLE, coin display, HINT
+5. ✅ **GameBoard rewrite** — Grid(top) → LetterCircle(center, flex:1) → Toolbar(bottom)
+6. ✅ **HomeScreen verified** — Correct SafeAreaView, ScrollView, achievements, stats
+7. ✅ **TypeScript** — Zero errors across all files
