@@ -162,3 +162,23 @@ All 10 levels redesigned and validated (zero errors):
 3. ✅ Subtle shadows/elevation on all cells (iOS shadows, Android elevation)
 4. ✅ Rounded corners (borderRadius.md) and thicker borders (1.5px)
 5. ✅ TypeScript compiles cleanly, Metro bundler starts successfully
+
+---
+
+## Phase 11 — Layout Tuning, Hint Auto-Complete & UX Cleanup ✅ COMPLETE
+
+### 11A — Shrink LetterCircle & reclaim grid space ✅
+1. ✅ Reduced `CIRCLE_SIZE` 300→220, `TILE_SIZE` 54→46
+2. ✅ `HIT_RADIUS` adjusted proportionally
+3. ✅ ~80px reclaimed for grid area
+
+### 11B — Remove placeholder text ✅
+1. ✅ Removed "Swipe letters to form a word" from LetterCircle
+2. ✅ Preview bar only renders when actively swiping (conditional render)
+3. ✅ No wasted vertical space when idle
+
+### 11C — Auto-complete words on hint & trigger level completion ✅
+1. ✅ After filling a cell in `revealHint()`, scans all unsolved target words
+2. ✅ If all cells of a word are filled, auto-adds to `solvedWords`
+3. ✅ `isLevelComplete()` naturally triggers level completion modal
+4. ✅ TypeScript compiles cleanly

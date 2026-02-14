@@ -19,8 +19,8 @@ import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 64, 300);
-const TILE_SIZE = 54;
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 80, 220);
+const TILE_SIZE = 46;
 const HIT_RADIUS = TILE_SIZE / 2 + 8; // generous hit area
 
 interface LetterCircleProps {
@@ -144,18 +144,14 @@ export default function LetterCircle({
 
   return (
     <View style={styles.container}>
-      {/* ── Word preview bar ── */}
-      <View style={styles.wordPreviewBar}>
-        {currentWord.length > 0 ? (
+      {/* ── Word preview bar (only visible when swiping) ── */}
+      {currentWord.length > 0 && (
+        <View style={styles.wordPreviewBar}>
           <View style={styles.wordPreview}>
             <Text style={styles.wordPreviewText}>{currentWord}</Text>
           </View>
-        ) : (
-          <Text style={styles.wordPlaceholder}>
-            Swipe letters to form a word
-          </Text>
-        )}
-      </View>
+        </View>
+      )}
 
       {/* ── Circular letter arrangement ── */}
       <View
@@ -199,10 +195,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   wordPreviewBar: {
-    minHeight: 48,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   wordPreview: {
     flexDirection: "row",
@@ -220,11 +215,7 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     letterSpacing: 4,
   },
-  wordPlaceholder: {
-    fontSize: fontSize.sm,
-    color: colors.muted,
-    fontStyle: "italic",
-  },
+
   circle: {
     position: "relative",
   },

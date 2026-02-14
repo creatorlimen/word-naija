@@ -390,12 +390,25 @@ export function revealHint(state: GameStateData): GameStateData {
     filled: true,
   };
 
+  // Auto-solve: if all cells of any unsolved word are now filled, mark it solved
+  const newSolvedWords = new Set(state.solvedWords);
+  const unsolvedAll = state.currentLevel.targetWords.filter(
+    (tw) => !newSolvedWords.has(tw.word.toUpperCase())
+  );
+  for (const tw of unsolvedAll) {
+    const allFilled = tw.coords.every(([r, c]) => newCells[r][c].filled);
+    if (allFilled) {
+      newSolvedWords.add(tw.word.toUpperCase());
+    }
+  }
+
   return {
     ...state,
     gridState: {
       ...state.gridState,
       cells: newCells,
     },
+    solvedWords: newSolvedWords,
     coins: state.coins - 15,
   };
 }
