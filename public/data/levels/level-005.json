@@ -1,0 +1,35 @@
+{
+  "levelId": 5,
+  "title": "Starlight",
+  "difficulty": "hard",
+  "rows": 6,
+  "cols": 4,
+  "mask": [
+    [true, true, true, false],
+    [false, true, true, true],
+    [false, true, true, false],
+    [true, true, true, false],
+    [false, true, true, true],
+    [false, false, true, false]
+  ],
+  "letters": ["S", "T", "A", "R", "C", "A", "S", "S", "A"],
+  "targetWords": [
+    {
+      "word": "STAR",
+      "coords": [[0, 0], [0, 1], [0, 2], [1, 2]],
+      "meaning": "Celestial body in space"
+    },
+    {
+      "word": "SCAR",
+      "coords": [[3, 0], [3, 1], [3, 2], [4, 2]],
+      "meaning": "A mark left by a wound"
+    },
+    {
+      "word": "CAST",
+      "coords": [[0, 1], [1, 1], [3, 1], [4, 2]],
+      "meaning": "To throw or mold"
+    }
+  ],
+  "extraWordsAllowed": true,
+  "flavorText": "Cast your gaze upon the stars!"
+}
