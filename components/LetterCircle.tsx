@@ -18,9 +18,9 @@ import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 260); // Larger wheel
-const TILE_SIZE = 54; // Larger tiles
-const HIT_RADIUS = 40; 
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 80, 200); // Reduced wheel size
+const TILE_SIZE = 48; // Reduced tile size
+const HIT_RADIUS = 35; 
 
 interface LetterCircleProps {
   letters: Letter[];
@@ -201,18 +201,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   previewContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     backgroundColor: "rgba(0,0,0,0.6)",
     borderRadius: borderRadius.lg,
-    marginBottom: 20,
-    minHeight: 50,
-    minWidth: 100,
+    marginBottom: 12,
+    minHeight: 40,
+    minWidth: 80,
     alignItems: "center",
   },
   previewText: {
     color: "#FFF",
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     fontWeight: "bold",
     letterSpacing: 2,
     textTransform: "uppercase",
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: TILE_SIZE,
     height: TILE_SIZE,
-    borderRadius: 12, // Match Grid squaricle
+    borderRadius: 10, // Match Grid squaricle
     backgroundColor: colors.tile.background,
     alignItems: "center",
     justifyContent: "center",
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   tileText: {
-    fontSize: 28, // Bigger text
+    fontSize: 24, // Reduced text size
     fontWeight: "900",
     color: colors.tile.text,
     marginTop: -4, 

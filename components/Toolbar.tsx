@@ -50,23 +50,17 @@ function CircleButton({
 export default function Toolbar({ coins, hintCost, onShuffle, onHint }: ToolbarProps) {
   return (
     <View style={styles.container}>
-      {/* 5 Icons Row */}
+      {/* 3 Icons Row - Friends and Themes removed */}
       
-      {/* 1. Extra (Mock) */}
-      <CircleButton label="??" onPress={() => {}} />
+      {/* 1. Extra */}
+      <CircleButton label="📦" onPress={() => {}} />
 
-      {/* 2. Friends (Mock) */}
-      <CircleButton label="??" onPress={() => {}} />
+      {/* 2. Shuffle */}
+      <CircleButton label="🔀" onPress={onShuffle} />
 
-      {/* 3. Themes (Mock) */}
-      <CircleButton label="??" onPress={() => {}} />
-
-      {/* 4. Shuffle */}
-      <CircleButton label="??" onPress={onShuffle} />
-
-      {/* 5. Hint */}
+      {/* 3. Hint */}
       <CircleButton 
-        label="??" 
+        label="💡" 
         onPress={onHint} 
         badge={hintCost}
       />

@@ -84,11 +84,11 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           {/* Left: Back & Settings */}
           <View style={styles.headerLeft}>
             <Pressable onPress={onGoHome} style={styles.iconButton}>
-              <Text style={styles.iconText}>?</Text>
+              <Text style={styles.iconText}>←</Text>
             </Pressable>
-            {/* Settings placeholder */}
+            {/* Settings */}
             <Pressable style={styles.iconButton}>
-               <Text style={styles.iconText}>??</Text>
+               <Text style={styles.iconText}>⚙️</Text>
             </Pressable>
           </View>
 
@@ -109,26 +109,9 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           </View>
         </View>
 
-        {/* -- Progress bar -- */}
-        {progress && (
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${progress.percentage}%` },
-                ]}
-              />
-            </View>
-            <Text style={styles.progressText}>
-              {progress.solvedWords}/{progress.totalWords} words
-            </Text>
-          </View>
-        )}
-
         {/* -- Game Area -- */}
         {/* Grid takes available upper space */}
-        <View style={{ flex: 1, zIndex: 1 }}>
+        <View style={{ flex: 1, zIndex: 1, paddingTop: spacing.md }}>
             <Grid 
                 gridState={state.gridState} 
                 selectedPath={state.selectedPath} 
@@ -139,7 +122,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         {/* We want the wheel centered, and footer below it */}
         <View style={{ flexGrow: 0, paddingBottom: 20 }}>
             {/* Letter Wheel Input */}
-            <View style={{ height: 320, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ height: 240, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
                     selectedIndices={state.selectedPath?.letterIndices || []}
