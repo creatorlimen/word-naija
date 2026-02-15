@@ -31,3 +31,27 @@ yarn-error.*
 
 # TypeScript
 *.tsbuildinfo
+
+# Project Specific - Temporary scripts
+parse_dictionary.js
+parse_scraped.js
+analyze_english_dict.js
+add_english_words.js
+dict_summary.js
+english_words_preview.txt
+english_words_to_add.json
+test_*.ts
+
+# Project Specific - Source dictionaries (too large)
+dictionary.csv
+Pidgin_Dictionary.md
+\instructions.md
+Word_Naija_PRD.md
+PLAN.md
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
