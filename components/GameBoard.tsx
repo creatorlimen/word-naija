@@ -134,13 +134,18 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 />
             </View>
 
+            {/* Separator */}
+            <View style={styles.separator} />
+
             {/* Bottom Toolbar */}
-            <Toolbar
-                coins={state.coins}
-                hintCost={40} // Example cost
-                onShuffle={() => actions.shuffleLetters()}
-                onHint={() => actions.revealHint()}
-            />
+            <View style={styles.toolbarContainer}>
+                <Toolbar
+                    coins={state.coins}
+                    hintCost={40} // Example cost
+                    onShuffle={() => actions.shuffleLetters()}
+                    onHint={() => actions.revealHint()}
+                />
+            </View>
         </View>
 
         {/* -- Level Complete Modal -- */}
@@ -326,6 +331,17 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: {width: 0, height: 1},
     textShadowRadius: 2
+  },
+  
+  separator: {
+    height: 8,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    marginHorizontal: spacing.xl,
+    marginVertical: spacing.lg,
+  },
+  
+  toolbarContainer: {
+    marginBottom: spacing.xs,
   },
 });
 
