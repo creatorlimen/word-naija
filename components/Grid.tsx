@@ -17,7 +17,7 @@ import { colors, borderRadius, shadows } from "../constants/theme";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const GRID_PADDING = 20; // Internal padding of the board
 const CELL_GAP = 4; // gap between cells
-const MAX_CELL_SIZE = 50; // Smaller max size to fit board frame
+const MAX_CELL_SIZE = 60; // Increased to occupy more space
 
 interface GridProps {
   gridState: GridState;
