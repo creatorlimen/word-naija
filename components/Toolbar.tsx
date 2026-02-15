@@ -11,8 +11,11 @@ import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/t
 interface ToolbarProps {
   coins: number;
   hintCost: number;
+  extraWordsCollected: number;
+  extraWordsTarget: number;
   onShuffle: () => void;
   onHint: () => void;
+  onExtra: () => void;
 }
 
 function CircleButton({ 
@@ -50,13 +53,13 @@ function CircleButton({
   );
 }
 
-export default function Toolbar({ coins, hintCost, onShuffle, onHint }: ToolbarProps) {
+export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWordsTarget, onShuffle, onHint, onExtra }: ToolbarProps) {
   return (
     <View style={styles.container}>
       {/* 3 Icons Row - Friends and Themes removed */}
       
       {/* 1. Extra */}
-      <CircleButton label="📦" sublabel="EXTRA" onPress={() => {}} />
+      <CircleButton label="📦" sublabel="EXTRA" onPress={onExtra} badge={`${extraWordsCollected}/${extraWordsTarget}`} />
 
       {/* 2. Shuffle */}
       <CircleButton label="🔀" sublabel="SHUFFLE" onPress={onShuffle} />

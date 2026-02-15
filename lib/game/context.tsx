@@ -91,6 +91,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
         initialState.soundEnabled = progress.soundEnabled;
         initialState.completedLevels = new Set(progress.completedLevels || []);
+        initialState.extraWordsCollected = progress.extraWordsCollected ?? 0;
 
         setState(initialState);
         setIsLoading(false);
@@ -129,6 +130,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           soundEnabled: state.soundEnabled,
           lastPlayed: Date.now(),
           extraWordsFoundByLevel,
+          extraWordsCollected: state.extraWordsCollected ?? 0,
         });
       }, 1000);
     }
@@ -191,6 +193,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           );
           newState.completedLevels = newCompletedLevels;
           newState.soundEnabled = currentState.soundEnabled;
+          newState.extraWordsCollected = currentState.extraWordsCollected;
 
           setState(newState);
         } catch (err) {

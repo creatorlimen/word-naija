@@ -3,7 +3,7 @@
  * Main game screen: Wood theme, pill headers, nature background.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -18,8 +18,9 @@ import Grid from "./Grid";
 import LetterCircle from "./LetterCircle"; 
 import Toolbar from "./Toolbar";
 import LevelComplete from "./LevelComplete";
+import ExtraWordsModal from "./ExtraWordsModal";
 import { useGameState, useGameActions } from "../lib/game/context";
-import { getCoinsEarned, HINT_COST } from "../lib/game/gameState";
+import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { colors, fontSize, spacing, borderRadius, shadows } from "../constants/theme";
 
 interface GameBoardProps {
@@ -29,6 +30,7 @@ interface GameBoardProps {
 export default function GameBoard({ onGoHome }: GameBoardProps) {
   const { state, progress, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
+  const [showExtraModal, setShowExtraModal] = useState(false);
 
   const handleNextLevel = useCallback(async () => {
     await actions.nextLevel();
@@ -142,11 +144,22 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 <Toolbar
                     coins={state.coins}
                     hintCost={HINT_COST}
+                    extraWordsCollected={state.extraWordsCollected ?? 0}
+                    extraWordsTarget={EXTRA_WORDS_TARGET}
                     onShuffle={() => actions.shuffleLetters()}
                     onHint={() => actions.revealHint()}
+                    onExtra={() => setShowExtraModal(true)}
                 />
             </View>
         </View>
+
+        {/* -- Extra Words Modal -- */}
+        <ExtraWordsModal
+          visible={showExtraModal}
+          extraWordsCollected={state.extraWordsCollected ?? 0}
+          extraWordsThisLevel={state.extraWordsFound?.size ?? 0}
+          onClose={() => setShowExtraModal(false)}
+        />
 
         {/* -- Level Complete Modal -- */}
         <LevelComplete

@@ -16,6 +16,8 @@ import { validateWord } from "./dictionaryLoader";
 
 // Game constants
 export const HINT_COST = 40;
+export const EXTRA_WORDS_TARGET = 10;
+export const EXTRA_WORDS_REWARD = 15;
 
 /**
  * Create initial game state for a level
@@ -44,6 +46,7 @@ export async function initializeGameState(
     completedLevels: new Set(),
     solvedWords: new Set(),
     extraWordsFound: new Set(),
+    extraWordsCollected: 0,
     soundEnabled: true,
   };
 }
@@ -256,8 +259,8 @@ export function submitWord(state: GameStateData): GameStateData {
     // This is a target word
     coinsEarned = 10; // Base reward for target word
   } else if (state.currentLevel.extraWordsAllowed) {
-    // This is an extra word
-    coinsEarned = 5; // Smaller reward for extra word
+    // Extra words don't give coins directly — they fill the box
+    coinsEarned = 0;
   } else {
     // Extra words not allowed - treat as invalid
     return clearSelection(state);
@@ -268,8 +271,16 @@ export function submitWord(state: GameStateData): GameStateData {
   newSolvedWords.add(canonical);
 
   const newExtraWords = new Set(state.extraWordsFound);
+  let newExtraWordsCollected = state.extraWordsCollected;
   if (!isTargetWord) {
     newExtraWords.add(canonical);
+    newExtraWordsCollected += 1;
+
+    // Auto-claim reward when box is full
+    if (newExtraWordsCollected >= EXTRA_WORDS_TARGET) {
+      coinsEarned += EXTRA_WORDS_REWARD;
+      newExtraWordsCollected = 0; // Reset the box
+    }
   }
 
   // Letters remain available for other words (crossword reuse) - reset used flags
@@ -295,6 +306,7 @@ export function submitWord(state: GameStateData): GameStateData {
     selectedPath: null,
     solvedWords: newSolvedWords,
     extraWordsFound: newExtraWords,
+    extraWordsCollected: newExtraWordsCollected,
     letterWheel: newLetterWheel,
     gridState: newGridState,
     coins: newCoins,

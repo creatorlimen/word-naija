@@ -56,5 +56,6 @@ export function getDefaultProgress(): SavedProgress {
     soundEnabled: true,
     lastPlayed: Date.now(),
     extraWordsFoundByLevel: {},
+    extraWordsCollected: 0,
   };
 }

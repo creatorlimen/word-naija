@@ -89,6 +89,7 @@ export interface GameStateData {
   completedLevels: Set<number>;
   solvedWords: Set<string>; // Canonical words solved THIS level
   extraWordsFound: Set<string>; // Extra words solved THIS level
+  extraWordsCollected: number; // Running count toward next 10-word reward box
   soundEnabled: boolean;
 }
 
@@ -102,6 +103,7 @@ export interface SavedProgress {
   soundEnabled: boolean;
   lastPlayed: number; // Timestamp
   extraWordsFoundByLevel: Record<number, string[]>; // levelId -> words
+  extraWordsCollected: number; // Running count toward next 10-word reward box
 }
 
 // ============================================================================
