@@ -1,16 +1,21 @@
 /**
- * Word Naija � LetterCircle Component (v2 - Visual Overhaul)
+ * Word Naija — LetterCircle Component (v3 - Fixed gestures)
  * Swipe-to-select input wheel with wooden tile styling.
+ *
+ * Key fixes in v3:
+ *  - Use refs for all props/state accessed inside PanResponder to avoid stale closures
+ *  - Use pageX/pageY instead of locationX/locationY to avoid Android coordinate-origin shifts
+ *  - Slightly increased circle size for more forgiving hit areas
  */
 
-import React, { useRef, useMemo, useState, useEffect } from "react";
+import React, { useRef, useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
   PanResponder,
   StyleSheet,
   Dimensions,
-  Animated,
+  LayoutChangeEvent,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import Svg, { Line, Circle } from "react-native-svg";
@@ -18,10 +23,10 @@ import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 80, 200); // Reduced wheel size
-const TILE_SIZE = 48; // Reduced tile size
-const HIT_RADIUS = 35;
-const DEBUG_MODE = __DEV__ && false; // Set to true to see hit areas 
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 220); // Slightly larger for better spacing
+const TILE_SIZE = 48;
+const HIT_RADIUS = 32; // Slightly reduced so adjacent areas don't overlap with bigger circle
+const DEBUG_MODE = __DEV__ && false; // Set to true to see hit areas
 
 interface LetterCircleProps {
   letters: Letter[];
@@ -46,7 +51,7 @@ export default function LetterCircle({
   const radius = (CIRCLE_SIZE - TILE_SIZE) / 2;
   const cx = CIRCLE_SIZE / 2;
   const cy = CIRCLE_SIZE / 2;
-  
+
   const positions = useMemo(() => {
     return letters.map((_, i) => {
       const angle = -Math.PI / 2 + (2 * Math.PI * i) / letters.length;
@@ -54,103 +59,155 @@ export default function LetterCircle({
         x: cx + radius * Math.cos(angle), // Center X
         y: cy + radius * Math.sin(angle), // Center Y
         left: cx + radius * Math.cos(angle) - TILE_SIZE / 2, // Top-Left X
-        top: cy + radius * Math.sin(angle) - TILE_SIZE / 2,  // Top-Left Y
+        top: cy + radius * Math.sin(angle) - TILE_SIZE / 2, // Top-Left Y
       };
     });
   }, [letters.length]);
 
+  // -----------------------------------------------------------------------
+  // FIX 1: Keep refs that always point to the latest props/values so the
+  //         PanResponder closure (created once) never reads stale data.
+  // -----------------------------------------------------------------------
+  const selectedIndicesRef = useRef(selectedIndices);
+  selectedIndicesRef.current = selectedIndices;
+
+  const onSelectLetterRef = useRef(onSelectLetter);
+  onSelectLetterRef.current = onSelectLetter;
+
+  const onUndoSelectionRef = useRef(onUndoSelection);
+  onUndoSelectionRef.current = onUndoSelection;
+
+  const onClearRef = useRef(onClear);
+  onClearRef.current = onClear;
+
+  const onCommitRef = useRef(onCommit);
+  onCommitRef.current = onCommit;
+
+  const positionsRef = useRef(positions);
+  positionsRef.current = positions;
+
+  // -----------------------------------------------------------------------
+  // FIX 2: Track the wheel container's page-level position so we can convert
+  //         pageX/pageY → local coords. This avoids the Android bug where
+  //         locationX/locationY shift when the finger crosses child Views.
+  // -----------------------------------------------------------------------
+  const wheelLayoutRef = useRef({ pageX: 0, pageY: 0 });
+  const wheelViewRef = useRef<View>(null);
+
+  const measureWheel = useCallback(() => {
+    wheelViewRef.current?.measureInWindow((x, y) => {
+      if (x != null && y != null) {
+        wheelLayoutRef.current = { pageX: x, pageY: y };
+      }
+    });
+  }, []);
+
+  const onWheelLayout = useCallback(
+    (_e: LayoutChangeEvent) => {
+      // measureInWindow gives absolute screen coordinates
+      measureWheel();
+    },
+    [measureWheel]
+  );
+
   // Gesture State
-  const pan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const [isGestureActive, setIsGestureActive] = useState(false);
   const currentFingerPos = useRef<{ x: number; y: number } | null>(null);
 
-  // Pan Responder
+  // Hit-test helper (uses latest positions via ref)
+  const hitTest = useCallback((x: number, y: number) => {
+    const pos = positionsRef.current;
+    for (let i = 0; i < pos.length; i++) {
+      const p = pos[i];
+      const dx = x - p.x;
+      const dy = y - p.y;
+      if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) return i;
+    }
+    return -1;
+  }, []);
+
+  /** Convert a page-level touch into wheel-local coords */
+  const toLocal = useCallback(
+    (pageX: number, pageY: number) => ({
+      x: pageX - wheelLayoutRef.current.pageX,
+      y: pageY - wheelLayoutRef.current.pageY,
+    }),
+    []
+  );
+
+  // Pan Responder — created once, reads ONLY from refs (never stale)
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      
-      onPanResponderGrant: (evt, gestureState) => {
+
+      onPanResponderGrant: (evt) => {
+        // Re-measure in case layout shifted (e.g. keyboard, scroll)
+        wheelViewRef.current?.measureInWindow((wx, wy) => {
+          if (wx != null && wy != null) {
+            wheelLayoutRef.current = { pageX: wx, pageY: wy };
+          }
+        });
+
         setIsGestureActive(true);
-        const x = evt.nativeEvent.locationX;
-        const y = evt.nativeEvent.locationY;
-        currentFingerPos.current = { x, y };
-        
-        // Debug: Log touch vs letter positions
-        if (__DEV__) {
-          console.log('Touch at:', { x: x.toFixed(1), y: y.toFixed(1) });
-          console.log('Center:', { cx, cy });
-          const closestIdx = positions.reduce((minIdx, pos, idx) => {
-            const d2 = (x - pos.x) ** 2 + (y - pos.y) ** 2;
-            const minD2 = (x - positions[minIdx].x) ** 2 + (y - positions[minIdx].y) ** 2;
-            return d2 < minD2 ? idx : minIdx;
-          }, 0);
-          console.log(`Closest letter: ${closestIdx}, pos:`, positions[closestIdx]);
-        }
-        
-        // Check initial touch
-        const idx = hitTest(x, y);
+
+        // Use pageX/pageY converted to local coords (FIX 2)
+        const { pageX, pageY } = evt.nativeEvent;
+        const local = {
+          x: pageX - wheelLayoutRef.current.pageX,
+          y: pageY - wheelLayoutRef.current.pageY,
+        };
+        currentFingerPos.current = local;
+
+        const idx = hitTest(local.x, local.y);
         if (idx !== -1) {
-          onSelectLetter(idx);
+          onSelectLetterRef.current(idx);
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
       },
 
-      onPanResponderMove: (evt, gestureState) => {
-        const x = evt.nativeEvent.locationX;
-        const y = evt.nativeEvent.locationY;
-        currentFingerPos.current = { x, y };
-        
-        // Force re-render for line drawing by updating a state or ref that triggers render? 
-        // We use setNativeProps or Animated.event usually, but for SVG line to finger we need state.
-        // Actually, let/s just rely on the parent re-rendering from onSelect/onUndo.
-        // But the "line to finger" needs frequent updates.
-        // For MVP v2, let's just draw lines between selected tiles, not to the finger. 
-        // (Finger line is nice but complex to optimize in React Native without Reanimated).
-        
-        const idx = hitTest(x, y);
+      onPanResponderMove: (evt) => {
+        // Use pageX/pageY → local (FIX 2)
+        const { pageX, pageY } = evt.nativeEvent;
+        const local = {
+          x: pageX - wheelLayoutRef.current.pageX,
+          y: pageY - wheelLayoutRef.current.pageY,
+        };
+        currentFingerPos.current = local;
+
+        const idx = hitTest(local.x, local.y);
         if (idx !== -1) {
-           // We are over a tile
-           const lastIdx = selectedIndices[selectedIndices.length - 1];
-           
-           if (idx !== lastIdx) {
-               // New tile?
-               if (!selectedIndices.includes(idx)) {
-                   onSelectLetter(idx);
-                   // No haptic during swipe - reduces distraction
-               } 
-               // Backtracking?
-               else if (selectedIndices.length > 1 && idx === selectedIndices[selectedIndices.length - 2]) {
-                   onUndoSelection();
-                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-               }
-           }
+          // Read latest selectedIndices via ref (FIX 1)
+          const sel = selectedIndicesRef.current;
+          const lastIdx = sel[sel.length - 1];
+
+          if (idx !== lastIdx) {
+            // New tile?
+            if (!sel.includes(idx)) {
+              onSelectLetterRef.current(idx);
+            }
+            // Backtracking?
+            else if (sel.length > 1 && idx === sel[sel.length - 2]) {
+              onUndoSelectionRef.current();
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }
         }
       },
 
       onPanResponderRelease: () => {
         setIsGestureActive(false);
         currentFingerPos.current = null;
-        onCommit();
+        onCommitRef.current();
       },
-      
+
       onPanResponderTerminate: () => {
         setIsGestureActive(false);
         currentFingerPos.current = null;
-        onClear();
+        onClearRef.current();
       },
     })
   ).current;
-
-  const hitTest = (x: number, y: number) => {
-    for (let i = 0; i < positions.length; i++) {
-      const p = positions[i];
-      const dx = x - p.x;
-      const dy = y - p.y;
-      if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) return i;
-    }
-    return -1;
-  };
 
   return (
     <View style={styles.container}>
@@ -159,7 +216,9 @@ export default function LetterCircle({
         <Text style={styles.previewText}>{currentWord}</Text>
       </View>
 
-      <View 
+      <View
+        ref={wheelViewRef}
+        onLayout={onWheelLayout}
         style={styles.wheelContainer}
         {...panResponder.panHandlers}
       >
@@ -198,7 +257,7 @@ export default function LetterCircle({
             })}
         </Svg>
 
-        {/* Tiles */}
+        {/* Tiles — pointerEvents="none" so they never steal touches from the wheel */}
         {letters.map((l, i) => {
           const selected = selectedIndices.includes(i);
           const pos = positions[i];
@@ -206,6 +265,7 @@ export default function LetterCircle({
           return (
             <View
               key={i}
+              pointerEvents="none"
               style={[
                 styles.tile,
                 { left: pos.left, top: pos.top },
