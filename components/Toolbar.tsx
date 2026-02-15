@@ -17,11 +17,13 @@ interface ToolbarProps {
 
 function CircleButton({ 
   label, 
+  sublabel,
   onPress, 
   color = colors.button.function,
   badge 
 }: { 
   label: string; 
+  sublabel: string;
   onPress: () => void; 
   color?: string;
   badge?: string | number;
@@ -37,6 +39,7 @@ function CircleButton({
             ]}
         >
             <Text style={styles.btnIcon}>{label}</Text>
+            <Text style={styles.btnSublabel}>{sublabel}</Text>
         </Pressable>
         {badge && (
             <View style={styles.badge}>
@@ -53,14 +56,15 @@ export default function Toolbar({ coins, hintCost, onShuffle, onHint }: ToolbarP
       {/* 3 Icons Row - Friends and Themes removed */}
       
       {/* 1. Extra */}
-      <CircleButton label="📦" onPress={() => {}} />
+      <CircleButton label="📦" sublabel="EXTRA" onPress={() => {}} />
 
       {/* 2. Shuffle */}
-      <CircleButton label="🔀" onPress={onShuffle} />
+      <CircleButton label="🔀" sublabel="SHUFFLE" onPress={onShuffle} />
 
       {/* 3. Hint */}
       <CircleButton 
         label="💡" 
+        sublabel="HINT"
         onPress={onHint} 
         badge={hintCost}
       />
@@ -98,8 +102,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   btnIcon: {
-    fontSize: 24,
+    fontSize: 18,
     color: "#FFF",
+    marginTop: -2,
+  },
+  btnSublabel: {
+    fontSize: 8,
+    fontWeight: "800",
+    color: "#FFF",
+    letterSpacing: 0.5,
+    marginTop: 1,
   },
   badge: {
     position: "absolute",
