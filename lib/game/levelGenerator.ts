@@ -101,10 +101,10 @@ export function generateLevelFromWords(
   }
 
   // 5. Generate the letters pool
-  // Collect all unique letters from the words we successfully placed.
-  const allChars = new Set<string>();
-  placements.forEach(p => p.word.split("").forEach(c => allChars.add(c)));
-  const letters = Array.from(allChars);
+  // Use the longest word (which we sorted to be first) as the source of the letter wheel.
+  // This ensures we have duplicate letters (e.g. "EAGLE" -> E, A, G, L, E)
+  // instead of just unique ones.
+  const letters = sortedWords[0].split("");
 
   return {
     levelId,
