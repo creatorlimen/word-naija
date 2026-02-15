@@ -23,9 +23,9 @@ import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 220); // Slightly larger for better spacing
-const TILE_SIZE = 48;
-const HIT_RADIUS = 36; // Generous radius to cover tile corners (~34px diagonal)
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 280); // Spacious wheel for up to 8 tiles
+const TILE_SIZE = 56;
+const HIT_RADIUS = 40; // Covers 56dp tile corners (~40px diagonal)
 const DEBUG_MODE = __DEV__ && false; // Set to true to see hit areas
 
 interface LetterCircleProps {
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   tileText: {
-    fontSize: 24, // Reduced text size
+    fontSize: 28,
     fontWeight: "900",
     color: colors.tile.text,
     marginTop: -4, 

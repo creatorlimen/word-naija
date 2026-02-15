@@ -120,9 +120,9 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
         {/* Tools & Wheel at bottom */}
         {/* We want the wheel centered, and footer below it */}
-        <View style={{ flexGrow: 0, paddingBottom: 20 }}>
+        <View style={{ flexGrow: 0, paddingBottom: 8 }}>
             {/* Letter Wheel Input */}
-            <View style={{ height: 280, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ height: 340, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
                     selectedIndices={state.selectedPath?.letterIndices || []}
@@ -337,11 +337,11 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: "rgba(255,255,255,0.15)",
     marginHorizontal: spacing.xl,
-    marginVertical: spacing.lg,
+    marginVertical: spacing.sm,
   },
   
   toolbarContainer: {
-    marginBottom: spacing.xs,
+    marginBottom: 0,
   },
 });
 
