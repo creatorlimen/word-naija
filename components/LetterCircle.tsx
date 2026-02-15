@@ -1,32 +1,31 @@
 /**
- * Word Naija — LetterCircle Component (swipe-to-select)
- *
- * Letters arranged in a circle. The player drags a finger through
- * letters to build a word, then lifts to submit. Supports undo by
- * retracing back to the previous letter.
+ * Word Naija � LetterCircle Component (v2 - Visual Overhaul)
+ * Swipe-to-select input wheel with wooden tile styling.
  */
 
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import {
   View,
   Text,
   PanResponder,
   StyleSheet,
   Dimensions,
+  Animated,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import Svg, { Line } from "react-native-svg";
 import type { Letter } from "../lib/game/types";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 80, 220);
-const TILE_SIZE = 46;
-const HIT_RADIUS = TILE_SIZE / 2 + 8; // generous hit area
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 260); // Larger wheel
+const TILE_SIZE = 54; // Larger tiles
+const HIT_RADIUS = 40; 
 
 interface LetterCircleProps {
   letters: Letter[];
   selectedIndices: number[];
-  currentWord: string;
+  currentWord: string; // The word being formed (preview)
   onSelectLetter: (index: number) => void;
   onUndoSelection: () => void;
   onClear: () => void;
@@ -42,143 +41,150 @@ export default function LetterCircle({
   onClear,
   onCommit,
 }: LetterCircleProps) {
-  // ── Tile positions (relative to circle container) ──
+  // Tile positions
+  const radius = (CIRCLE_SIZE - TILE_SIZE) / 2;
+  const cx = CIRCLE_SIZE / 2;
+  const cy = CIRCLE_SIZE / 2;
+  
   const positions = useMemo(() => {
-    const count = letters.length;
-    const radius = (CIRCLE_SIZE - TILE_SIZE) / 2 - 4;
-    const cx = CIRCLE_SIZE / 2;
-    const cy = CIRCLE_SIZE / 2;
-    const angleOffset = -Math.PI / 2; // start from top
-
     return letters.map((_, i) => {
-      const angle = angleOffset + (2 * Math.PI * i) / count;
+      const angle = -Math.PI / 2 + (2 * Math.PI * i) / letters.length;
       return {
-        // center of each tile (for hit-testing)
-        centerX: cx + radius * Math.cos(angle),
-        centerY: cy + radius * Math.sin(angle),
-        // top-left for absolute layout
-        left: cx + radius * Math.cos(angle) - TILE_SIZE / 2,
-        top: cy + radius * Math.sin(angle) - TILE_SIZE / 2,
+        x: cx + radius * Math.cos(angle), // Center X
+        y: cy + radius * Math.sin(angle), // Center Y
+        left: cx + radius * Math.cos(angle) - TILE_SIZE / 2, // Top-Left X
+        top: cy + radius * Math.sin(angle) - TILE_SIZE / 2,  // Top-Left Y
       };
     });
   }, [letters.length]);
 
-  // ── Local tracking ref (avoids stale closure issues in gesture) ──
-  const localSelected = useRef<number[]>([]);
+  // Gesture State
+  const pan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const [isGestureActive, setIsGestureActive] = useState(false);
+  const currentFingerPos = useRef<{ x: number; y: number } | null>(null);
 
-  // Eagerly sync every render
-  localSelected.current = [...selectedIndices];
-
-  // ── Hit-test: which tile index is the finger over? ──
-  const hitTest = useCallback(
-    (x: number, y: number): number => {
-      for (let i = 0; i < positions.length; i++) {
-        const dx = x - positions[i].centerX;
-        const dy = y - positions[i].centerY;
-        if (Math.sqrt(dx * dx + dy * dy) <= HIT_RADIUS) {
-          return i;
+  // Pan Responder
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      
+      onPanResponderGrant: (evt, gestureState) => {
+        setIsGestureActive(true);
+        currentFingerPos.current = { x: evt.nativeEvent.locationX, y: evt.nativeEvent.locationY };
+        
+        // Check initial touch
+        const idx = hitTest(evt.nativeEvent.locationX, evt.nativeEvent.locationY);
+        if (idx !== -1) {
+          onSelectLetter(idx);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
-      }
-      return -1;
-    },
-    [positions]
-  );
+      },
 
-  // ── Handle a touch/move point ──
-  const processTouch = useCallback(
-    (x: number, y: number) => {
-      const idx = hitTest(x, y);
-      if (idx === -1) return;
+      onPanResponderMove: (evt, gestureState) => {
+        const x = evt.nativeEvent.locationX;
+        const y = evt.nativeEvent.locationY;
+        currentFingerPos.current = { x, y };
+        
+        // Force re-render for line drawing by updating a state or ref that triggers render? 
+        // We use setNativeProps or Animated.event usually, but for SVG line to finger we need state.
+        // Actually, let/s just rely on the parent re-rendering from onSelect/onUndo.
+        // But the "line to finger" needs frequent updates.
+        // For MVP v2, let's just draw lines between selected tiles, not to the finger. 
+        // (Finger line is nice but complex to optimize in React Native without Reanimated).
+        
+        const idx = hitTest(x, y);
+        if (idx !== -1) {
+           // We are over a tile
+           const lastIdx = selectedIndices[selectedIndices.length - 1];
+           
+           if (idx !== lastIdx) {
+               // New tile?
+               if (!selectedIndices.includes(idx)) {
+                   onSelectLetter(idx);
+                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+               } 
+               // Backtracking?
+               else if (selectedIndices.length > 1 && idx === selectedIndices[selectedIndices.length - 2]) {
+                   onUndoSelection();
+                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+               }
+           }
+        }
+      },
 
-      const sel = localSelected.current;
+      onPanResponderRelease: () => {
+        setIsGestureActive(false);
+        currentFingerPos.current = null;
+        onCommit();
+      },
+      
+      onPanResponderTerminate: () => {
+        setIsGestureActive(false);
+        currentFingerPos.current = null;
+        onClear();
+      },
+    })
+  ).current;
 
-      // Already the last selected tile → ignore
-      if (sel.length > 0 && sel[sel.length - 1] === idx) return;
-
-      // Backtrack: finger returned to second-to-last → undo last
-      if (sel.length >= 2 && sel[sel.length - 2] === idx) {
-        localSelected.current = sel.slice(0, -1);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onUndoSelection();
-        return;
-      }
-
-      // Already selected elsewhere → ignore
-      if (sel.includes(idx)) return;
-
-      // New tile → select
-      localSelected.current = [...sel, idx];
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      onSelectLetter(idx);
-    },
-    [hitTest, onSelectLetter, onUndoSelection]
-  );
-
-  // ── PanResponder ──
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: (evt) => {
-          const { locationX, locationY } = evt.nativeEvent;
-          processTouch(locationX, locationY);
-        },
-        onPanResponderMove: (evt) => {
-          const { locationX, locationY } = evt.nativeEvent;
-          processTouch(locationX, locationY);
-        },
-        onPanResponderRelease: () => {
-          if (localSelected.current.length >= 2) {
-            onCommit();
-          } else {
-            onClear();
-          }
-        },
-        onPanResponderTerminate: () => {
-          onClear();
-        },
-      }),
-    [processTouch, onCommit, onClear]
-  );
+  const hitTest = (x: number, y: number) => {
+    for (let i = 0; i < positions.length; i++) {
+      const p = positions[i];
+      const dx = x - p.x;
+      const dy = y - p.y;
+      if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) return i;
+    }
+    return -1;
+  };
 
   return (
     <View style={styles.container}>
-      {/* ── Word preview bar (only visible when swiping) ── */}
-      {currentWord.length > 0 && (
-        <View style={styles.wordPreviewBar}>
-          <View style={styles.wordPreview}>
-            <Text style={styles.wordPreviewText}>{currentWord}</Text>
-          </View>
-        </View>
-      )}
+      {/* Current Word Preview (Floating above wheel) */}
+      <View style={[styles.previewContainer, { opacity: currentWord ? 1 : 0 }]}>
+        <Text style={styles.previewText}>{currentWord}</Text>
+      </View>
 
-      {/* ── Circular letter arrangement ── */}
-      <View
-        style={[styles.circle, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
+      <View 
+        style={styles.wheelContainer}
         {...panResponder.panHandlers}
       >
-        {letters.map((letter, index) => {
-          const isSelected = selectedIndices.includes(index);
-          const pos = positions[index];
+        {/* Connector Lines */}
+        <Svg style={StyleSheet.absoluteFill}>
+            {selectedIndices.map((idx, i) => {
+                if (i === 0) return null;
+                const prev = positions[selectedIndices[i-1]];
+                const curr = positions[idx];
+                return (
+                    <Line
+                        key={i}
+                        x1={prev.x}
+                        y1={prev.y}
+                        x2={curr.x}
+                        y2={curr.y}
+                        stroke={colors.warning} 
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                    />
+                );
+            })}
+        </Svg>
 
+        {/* Tiles */}
+        {letters.map((l, i) => {
+          const selected = selectedIndices.includes(i);
+          const pos = positions[i];
+          
           return (
             <View
-              key={index}
+              key={i}
               style={[
                 styles.tile,
                 { left: pos.left, top: pos.top },
-                isSelected && styles.tileSelected,
+                selected && styles.tileSelected
               ]}
-              pointerEvents="none"
             >
-              <Text
-                style={[
-                  styles.tileText,
-                  isSelected && styles.tileTextSelected,
-                ]}
-              >
-                {letter.char}
+              <Text style={[styles.tileText, selected && styles.tileTextSelected]}>
+                {l.char}
               </Text>
             </View>
           );
@@ -190,60 +196,63 @@ export default function LetterCircle({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     flex: 1,
+    alignItems: "center",
     justifyContent: "center",
   },
-  wordPreviewBar: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  wordPreview: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.accent,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+  previewContainer: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: "rgba(0,0,0,0.6)",
     borderRadius: borderRadius.lg,
-    minWidth: 120,
-    justifyContent: "center",
+    marginBottom: 20,
+    minHeight: 50,
+    minWidth: 100,
+    alignItems: "center",
   },
-  wordPreviewText: {
+  previewText: {
+    color: "#FFF",
     fontSize: fontSize.xl,
-    fontWeight: "700",
-    color: colors.foreground,
-    letterSpacing: 4,
+    fontWeight: "bold",
+    letterSpacing: 2,
+    textTransform: "uppercase",
   },
-
-  circle: {
+  wheelContainer: {
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    // borderRadius: CIRCLE_SIZE / 2,
+    // backgroundColor: "rgba(0,0,0,0.1)", // Debug circle
     position: "relative",
   },
   tile: {
     position: "absolute",
     width: TILE_SIZE,
     height: TILE_SIZE,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.letterTile,
+    borderRadius: 12, // Match Grid squaricle
+    backgroundColor: colors.tile.background,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.tile.border,
+    borderBottomWidth: 4,
+    borderBottomColor: colors.tile.borderBottom, // Use theme logic
+    ...shadows.tile3D,
   },
   tileSelected: {
-    backgroundColor: colors.letterTileSelected,
-    elevation: 1,
-    shadowOpacity: 0.1,
+    backgroundColor: colors.tile.backgroundSelected,
+    borderColor: "#FF8F00",
+    borderBottomColor: colors.tile.borderBottomSelected,
+    transform: [{ scale: 1.15 }], 
+    zIndex: 10,
   },
   tileText: {
-    fontSize: fontSize.xl,
-    fontWeight: "800",
-    color: colors.letterText,
+    fontSize: 28, // Bigger text
+    fontWeight: "900",
+    color: colors.tile.text,
+    marginTop: -4, 
   },
   tileTextSelected: {
-    color: colors.letterTextSelected,
+    color: colors.tile.textSelected,
   },
 });
+

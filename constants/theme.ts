@@ -1,53 +1,72 @@
 /**
- * Word Naija - Theme Constants
- * Color palette and spacing values for the game UI
+ * Word Naija - Theme Constants (v2.1 - Polished Wood & Gold)
+ * Closely matching Wordscapes visual style.
  */
 
 export const colors = {
-  // Game Background — warm burgundy
-  background: "#8B2D2D",
-  backgroundDark: "#5C1E1E",
+  // Main Screen Background (Deep Forest Green)
+  background: "#1E5128", 
+  backgroundDark: "#0B2B12",
 
-  // Text
-  foreground: "#FAFAFA",
-  foregroundDark: "#333333",
+  // Game Board Frame
+  boardBackground: "#6D2323", // The reddish-brown mat
+  boardBorder: "#8B4513",     // Saddle brown outer frame
+  boardShadow: "#3E1414",
 
-  // Card/Tile — warm amber
-  card: "#D4A843",
-  cardDark: "#B8922E",
+  // 3D Tiles (The Letters)
+  tile: {
+    background: "#FDF5E6",    // OldLace / Cream
+    backgroundSelected: "#FFB300", // Vivid Orange/Gold for selection
+    borderBottom: "#C0A080",  // Tan/darker cream for 3D effect of unselected
+    borderBottomSelected: "#E65100", // Dark orange for 3D effect of selected
+    text: "#5D4037",          // Dark brown wood text
+    textSelected: "#FFFFFF",  // White text when selected
+    empty: "#4E342E",         // Dark slot on board
+    emptyShadow: "#3E2723",   // Inner shadow for empty slot
+    // Legacy support
+    border: "#D7CCC8",
+    shadow: "#C0A080",
+  },
 
-  // Primary — deep burgundy
-  primary: "#8B2D2D",
-  primaryLight: "#A63D3D",
+  // Header & UI Pills
+  pill: {
+    background: "#2E7D32",    // Forest Green (like reference buttons)
+    border: "#FFD54F",        // Gold rim
+    text: "#FFFFFF",
+    icon: "#FFD54F",          // Gold icon
+    shadow: "#1B5E20",        // Dark green shadow
+  },
+  
+  // Footer Circular Buttons
+  button: {
+    primary: "#4CAF50",       // Standard Green
+    secondary: "#0277BD",     // Blue
+    function: "#66BB6A",      // Lighter green for footer buttons
+    functionShadow: "#388E3C",// Darker green 3D edge
+    gold: "#FFC107",          // Gold/Yellow
+    text: "#FFFFFF"
+  },
 
-  // Secondary — gold accent
-  secondary: "#D4A843",
-  secondaryLight: "#E6C155",
+  // Text Colors
+  foreground: "#FFFFFF",
+  foregroundDark: "#3E2723",
+  muted: "#BCAAA4",
+  mutedDark: "#5D4037", 
+  
+  // State colors
+  overlay: "rgba(0,0,0,0.6)",
+  error: "#D32F2F",
+  success: "#4CAF50",
+  warning: "#FFA000",
+  
+  // Base for standard borders
+  border: "#8B4513",
 
-  // Accent — green for success
-  accent: "#3D9944",
-  accentLight: "#4DBB56",
-
-  // Destructive — red for errors
-  destructive: "#E53E3E",
-
-  // Neutral grays
-  muted: "#D9D9D9",
-  mutedDark: "#666666",
-  border: "#994D4D",
-
-  // Grid
-  cellEmpty: "#FFFFFF",
-  cellFilled: "#D4A843",
-  cellBlocked: "transparent",
-  cellHint: "#4DBB56",
-
-  // Letter wheel
-  letterTile: "#FAFAFA",
-  letterTileSelected: "#3D9944",
-  letterTileUsed: "#999999",
-  letterText: "#333333",
-  letterTextSelected: "#FAFAFA",
+  // Legacy mappings for existing components not yet migrated
+  primary: "#6D2323",
+  secondary: "#FFD54F",
+  accent: "#388E3C",
+  card: "#FEF9E7",
 };
 
 export const spacing = {
@@ -66,6 +85,7 @@ export const fontSize = {
   lg: 20,
   xl: 24,
   xxl: 32,
+  xxxl: 40,
   title: 40,
 };
 
@@ -73,6 +93,25 @@ export const borderRadius = {
   sm: 4,
   md: 8,
   lg: 12,
-  xl: 16,
-  round: 999,
+  xl: 10, // Reduced radius for "Squaricle" tile look
+  full: 9999,
+  round: 9999,
+};
+
+export const shadows = {
+  small: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  tile3D: {
+    // We will handle 3D via borderBottomWidth, but add subtle drop shadow too
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+  }
 };

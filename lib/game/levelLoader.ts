@@ -1,42 +1,35 @@
 /**
  * Word Naija - Level Loader
- * Loads level definitions from bundled JSON assets
+ * Dynamically generates levels from configuration templates.
  */
 
 import type { Level, TargetWord } from "./types";
+import { generateLevelFromWords } from "./levelGenerator";
+import { LEVEL_CONFIGS, TOTAL_LEVELS } from "./levelDefinitions";
 
-/**
- * Registry of all bundled level files.
- * require() calls must be static for Metro bundler.
- * Add new levels here as they're created.
- */
-const LEVEL_REGISTRY: Record<number, any> = {
-  1: require("../../assets/data/levels/level-001.json"),
-  2: require("../../assets/data/levels/level-002.json"),
-  3: require("../../assets/data/levels/level-003.json"),
-  4: require("../../assets/data/levels/level-004.json"),
-  5: require("../../assets/data/levels/level-005.json"),
-  6: require("../../assets/data/levels/level-006.json"),
-  7: require("../../assets/data/levels/level-007.json"),
-  8: require("../../assets/data/levels/level-008.json"),
-  9: require("../../assets/data/levels/level-009.json"),
-  10: require("../../assets/data/levels/level-010.json"),
-};
-
-export const TOTAL_LEVELS = Object.keys(LEVEL_REGISTRY).length;
+// Re-export total levels to be used by other modules
+export { TOTAL_LEVELS };
 
 /**
  * Load a single level by ID
  */
 export async function loadLevel(levelId: number): Promise<Level> {
-  const levelData = LEVEL_REGISTRY[levelId];
+  const config = LEVEL_CONFIGS[levelId];
 
-  if (!levelData) {
-    throw new Error(`Level ${levelId} not found`);
+  if (!config) {
+    throw new Error(`Level ${levelId} not found in configuration`);
   }
 
-  validateLevel(levelData);
-  return levelData as Level;
+  // Generate the level structure procedurally
+  const level = generateLevelFromWords(
+    levelId,
+    config.words,
+    config.difficulty,
+    config.title
+  );
+
+  validateLevel(level);
+  return level;
 }
 
 /**

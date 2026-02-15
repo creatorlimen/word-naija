@@ -1,12 +1,12 @@
 /**
- * Word Naija - Toolbar Component
- * Fixed bottom bar: Shuffle, Hint, coin display
- * Matches reference game design
+ * Word Naija - Toolbar Component (v2.1)
+ * Bottom footer actions: Extra, Friends, Themes, Shuffle, Hint.
+ * 5 Green Circular Buttons.
  */
 
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
 
 interface ToolbarProps {
   coins: number;
@@ -15,51 +15,61 @@ interface ToolbarProps {
   onHint: () => void;
 }
 
-export default function Toolbar({
-  coins,
-  hintCost,
-  onShuffle,
-  onHint,
-}: ToolbarProps) {
-  const canHint = coins >= hintCost;
+function CircleButton({ 
+  label, 
+  onPress, 
+  color = colors.button.function,
+  badge 
+}: { 
+  label: string; 
+  onPress: () => void; 
+  color?: string;
+  badge?: string | number;
+}) {
+  return (
+    <View style={styles.btnWrapper}>
+        <Pressable 
+            onPress={onPress}
+            style={({ pressed }) => [
+                styles.circleBtn,
+                { backgroundColor: color },
+                pressed && styles.pressed
+            ]}
+        >
+            <Text style={styles.btnIcon}>{label}</Text>
+        </Pressable>
+        {badge && (
+            <View style={styles.badge}>
+                <Text style={styles.badgeText}>{badge}</Text>
+            </View>
+        )}
+    </View>
+  );
+}
 
+export default function Toolbar({ coins, hintCost, onShuffle, onHint }: ToolbarProps) {
   return (
     <View style={styles.container}>
-      {/* Shuffle */}
-      <Pressable
-        onPress={onShuffle}
-        style={({ pressed }) => [
-          styles.button,
-          pressed && styles.buttonPressed,
-        ]}
-      >
-        <Text style={styles.buttonIcon}>🔀</Text>
-        <Text style={styles.buttonLabel}>SHUFFLE</Text>
-      </Pressable>
+      {/* 5 Icons Row */}
+      
+      {/* 1. Extra (Mock) */}
+      <CircleButton label="??" onPress={() => {}} />
 
-      {/* Coins display */}
-      <View style={styles.coinDisplay}>
-        <Text style={styles.coinText}>🪙 {coins}</Text>
-      </View>
+      {/* 2. Friends (Mock) */}
+      <CircleButton label="??" onPress={() => {}} />
 
-      {/* Hint */}
-      <Pressable
-        onPress={onHint}
-        disabled={!canHint}
-        style={({ pressed }) => [
-          styles.button,
-          !canHint && styles.buttonDisabled,
-          pressed && canHint && styles.buttonPressed,
-        ]}
-      >
-        <Text style={styles.buttonIcon}>💡</Text>
-        <Text style={[styles.buttonLabel, !canHint && styles.labelDisabled]}>
-          HINT
-        </Text>
-        <Text style={[styles.costText, !canHint && styles.labelDisabled]}>
-          {hintCost}
-        </Text>
-      </Pressable>
+      {/* 3. Themes (Mock) */}
+      <CircleButton label="??" onPress={() => {}} />
+
+      {/* 4. Shuffle */}
+      <CircleButton label="??" onPress={onShuffle} />
+
+      {/* 5. Hint */}
+      <CircleButton 
+        label="??" 
+        onPress={onHint} 
+        badge={hintCost}
+      />
     </View>
   );
 }
@@ -67,55 +77,50 @@ export default function Toolbar({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-evenly",
     alignItems: "center",
-    paddingVertical: spacing.sm,
+    width: "100%",
     paddingHorizontal: spacing.md,
-    backgroundColor: "rgba(0,0,0,0.15)",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.08)",
+    paddingBottom: spacing.sm,
   },
-  button: {
+  btnWrapper: {
+    position: "relative",
     alignItems: "center",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
-    minWidth: 80,
   },
-  buttonPressed: {
-    backgroundColor: "rgba(255,255,255,0.12)",
-    transform: [{ scale: 0.95 }],
+  circleBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.full,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    borderBottomWidth: 4,
+    borderBottomColor: colors.button.functionShadow,
+    ...shadows.small,
   },
-  buttonDisabled: {
-    opacity: 0.4,
+  pressed: {
+    transform: [{ translateY: 2 }],
+    borderBottomWidth: 2,
   },
-  buttonIcon: {
-    fontSize: 22,
-    marginBottom: 2,
+  btnIcon: {
+    fontSize: 24,
+    color: "#FFF",
   },
-  buttonLabel: {
-    fontSize: fontSize.xs,
-    fontWeight: "700",
-    color: colors.foreground,
-    letterSpacing: 1,
+  badge: {
+    position: "absolute",
+    bottom: -8,
+    right: -4,
+    backgroundColor: colors.pill.background, // Green pill style
+    borderRadius: borderRadius.full,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: colors.pill.border,
   },
-  labelDisabled: {
-    color: colors.muted,
-  },
-  costText: {
+  badgeText: {
+    color: colors.pill.text,
     fontSize: 10,
-    color: colors.secondary,
-    marginTop: 1,
-  },
-  coinDisplay: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.round,
-  },
-  coinText: {
-    fontSize: fontSize.md,
-    fontWeight: "700",
-    color: colors.secondary,
-  },
+    fontWeight: "bold",
+  }
 });

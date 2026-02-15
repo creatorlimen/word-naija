@@ -223,10 +223,21 @@ export function submitWord(state: GameStateData): GameStateData {
 
   const word = state.selectedPath.word;
 
-  // Check if word exists in dictionary
-  const canonical = validateWord(word);
+  // 1. Check if word is a Target Word for this level (Validation Bypass)
+  // We trust level design over the global dictionary
+  const targetWord = state.currentLevel.targetWords.find(
+    (tw) => tw.word.toUpperCase() === word.toUpperCase()
+  );
+
+  let canonical = targetWord ? targetWord.word.toUpperCase() : null;
+
+  // 2. If not a target word, check the dictionary
   if (!canonical) {
-    // Invalid word - clear selection and return
+    canonical = validateWord(word);
+  }
+
+  if (!canonical) {
+    // Invalid word/Not in dictionary - clear selection and return
     return clearSelection(state);
   }
 
@@ -235,17 +246,11 @@ export function submitWord(state: GameStateData): GameStateData {
     return clearSelection(state);
   }
 
-  // Find matching target word
-  const targetWord = state.currentLevel.targetWords.find(
-    (tw) => tw.word.toUpperCase() === canonical
-  );
-
-  let isTargetWord = false;
+  let isTargetWord = !!targetWord;
   let coinsEarned = 0;
 
-  if (targetWord) {
+  if (isTargetWord) {
     // This is a target word
-    isTargetWord = true;
     coinsEarned = 10; // Base reward for target word
   } else if (state.currentLevel.extraWordsAllowed) {
     // This is an extra word

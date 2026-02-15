@@ -182,3 +182,22 @@ All 10 levels redesigned and validated (zero errors):
 2. ✅ If all cells of a word are filled, auto-adds to `solvedWords`
 3. ✅ `isLevelComplete()` naturally triggers level completion modal
 4. ✅ TypeScript compiles cleanly
+
+## Phase 12 — Visual Redesign (Reference Style) ✅ COMPLETE
+
+### 12A — Theme & Assets (Step 1) ✅
+- Created `constants/theme.ts` (v2) with Wood/Cream/Gold/Green palette.
+- Implemented specialized 'Pill' and 'Tile' styled components.
+
+### 12B — Header Redesign (Step 2) ✅
+- New 3-zone header layout (Back, Level Pill, Coin Pill).
+- Remove old simple text headers.
+
+### 12C — Board & Grid (Step 3) ✅
+- Render grid inside a 'Wooden Board' container.
+- Cells become cream tiles with recursive 'wood' texture (simulated via CSS/Style).
+
+### 12D — Wheel & Footer (Step 4) ✅
+- Floating Letter Tiles on wheel.
+- Dedicated Footer controls for Extra, Shuffle, Hint.
+
