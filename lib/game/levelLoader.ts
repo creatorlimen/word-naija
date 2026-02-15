@@ -103,18 +103,16 @@ function validateTargetWord(targetWord: TargetWord, level: Level): void {
     }
   }
 
-  // Validate letter pool has all needed letters (fixed: use array spread, not object spread)
-  const letterPool = [...level.letters.map((l) => l.toUpperCase())];
+  // Validate letter pool contains all needed letters (allow reuse across words)
+  const letterSet = new Set(level.letters.map((l) => l.toUpperCase()));
   const wordLetters = targetWord.word.toUpperCase().split("");
 
   for (const letter of wordLetters) {
-    const index = letterPool.indexOf(letter);
-    if (index === -1) {
+    if (!letterSet.has(letter)) {
       throw new Error(
         `Letter '${letter}' from word '${targetWord.word}' not in letter pool`
       );
     }
-    letterPool.splice(index, 1);
   }
 }
 

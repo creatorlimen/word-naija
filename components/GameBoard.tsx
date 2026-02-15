@@ -122,7 +122,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         {/* We want the wheel centered, and footer below it */}
         <View style={{ flexGrow: 0, paddingBottom: 20 }}>
             {/* Letter Wheel Input */}
-            <View style={{ height: 240, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ height: 280, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
                     selectedIndices={state.selectedPath?.letterIndices || []}

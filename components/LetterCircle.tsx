@@ -25,7 +25,7 @@ import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 220); // Slightly larger for better spacing
 const TILE_SIZE = 48;
-const HIT_RADIUS = 32; // Slightly reduced so adjacent areas don't overlap with bigger circle
+const HIT_RADIUS = 36; // Generous radius to cover tile corners (~34px diagonal)
 const DEBUG_MODE = __DEV__ && false; // Set to true to see hit areas
 
 interface LetterCircleProps {
@@ -142,28 +142,30 @@ export default function LetterCircle({
       onMoveShouldSetPanResponder: () => true,
 
       onPanResponderGrant: (evt) => {
-        // Re-measure in case layout shifted (e.g. keyboard, scroll)
+        setIsGestureActive(true);
+
+        // Capture touch coords immediately
+        const { pageX, pageY } = evt.nativeEvent;
+
+        // Re-measure synchronously-ish then do hit-test inside callback
+        // so we always use fresh layout coords for the CURRENT gesture.
         wheelViewRef.current?.measureInWindow((wx, wy) => {
           if (wx != null && wy != null) {
             wheelLayoutRef.current = { pageX: wx, pageY: wy };
           }
+
+          const local = {
+            x: pageX - wheelLayoutRef.current.pageX,
+            y: pageY - wheelLayoutRef.current.pageY,
+          };
+          currentFingerPos.current = local;
+
+          const idx = hitTest(local.x, local.y);
+          if (idx !== -1) {
+            onSelectLetterRef.current(idx);
+            // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
         });
-
-        setIsGestureActive(true);
-
-        // Use pageX/pageY converted to local coords (FIX 2)
-        const { pageX, pageY } = evt.nativeEvent;
-        const local = {
-          x: pageX - wheelLayoutRef.current.pageX,
-          y: pageY - wheelLayoutRef.current.pageY,
-        };
-        currentFingerPos.current = local;
-
-        const idx = hitTest(local.x, local.y);
-        if (idx !== -1) {
-          onSelectLetterRef.current(idx);
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
       },
 
       onPanResponderMove: (evt) => {
@@ -189,7 +191,7 @@ export default function LetterCircle({
             // Backtracking?
             else if (sel.length > 1 && idx === sel[sel.length - 2]) {
               onUndoSelectionRef.current();
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             }
           }
         }
@@ -223,7 +225,7 @@ export default function LetterCircle({
         {...panResponder.panHandlers}
       >
         {/* Connector Lines */}
-        <Svg style={StyleSheet.absoluteFill}>
+        <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
             {/* Debug: Show hit test circles */}
             {DEBUG_MODE && positions.map((pos, i) => (
                 <Circle

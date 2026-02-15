@@ -272,8 +272,11 @@ export function submitWord(state: GameStateData): GameStateData {
     newExtraWords.add(canonical);
   }
 
-  // Letters remain available for other words (crossword reuse)
-  const newLetterWheel = state.letterWheel;
+  // Letters remain available for other words (crossword reuse) - reset used flags
+  const newLetterWheel = state.letterWheel.map((letter) => ({
+    ...letter,
+    used: false,
+  }));
 
   // Update grid - place letters in found target word
   let newGridState = { ...state.gridState };
