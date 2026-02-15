@@ -117,14 +117,26 @@ export function generateLevelFromWords(
   }
 
   // 5. Generate the letters pool
-  // Collect all unique letters needed across all target words.
-  const letterSet = new Set<string>();
+  // For each letter, we need enough copies on the wheel to spell
+  // whichever single target word uses that letter the most times.
+  // e.g. "MAMA" needs 2×M + 2×A, "MAP" needs 1×M + 1×A + 1×P
+  //   → wheel gets M, M, A, A, P  (max across all words per letter)
+  const maxLetterCounts = new Map<string, number>();
   for (const wd of wordDefs) {
+    const counts = new Map<string, number>();
     for (const ch of wd.word) {
-      letterSet.add(ch);
+      counts.set(ch, (counts.get(ch) || 0) + 1);
+    }
+    for (const [ch, count] of counts) {
+      maxLetterCounts.set(ch, Math.max(maxLetterCounts.get(ch) || 0, count));
     }
   }
-  const letters = Array.from(letterSet);
+  const letters: string[] = [];
+  for (const [ch, count] of maxLetterCounts) {
+    for (let i = 0; i < count; i++) {
+      letters.push(ch);
+    }
+  }
 
   return {
     levelId,
