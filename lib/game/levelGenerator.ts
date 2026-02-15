@@ -2,8 +2,14 @@ import type { Level, TargetWord } from "./types";
 
 type Direction = "horizontal" | "vertical";
 
+interface WordDef {
+  word: string;
+  meaning: string;
+}
+
 interface PlacedWord {
   word: string;
+  meaning: string;
   row: number;
   col: number;
   direction: Direction;
@@ -15,12 +21,18 @@ interface PlacedWord {
  */
 export function generateLevelFromWords(
   levelId: number,
-  words: string[],
+  wordDefs: WordDef[],
   difficulty: "easy" | "medium" | "hard" = "medium",
   title?: string
 ): Level {
+  // Build a meaning lookup
+  const meaningMap = new Map<string, string>();
+  for (const wd of wordDefs) {
+    meaningMap.set(wd.word, wd.meaning);
+  }
+
   // Sort words by length (longest first usually creates better spines)
-  const sortedWords = [...words].sort((a, b) => b.length - a.length);
+  const sortedWords = [...wordDefs].sort((a, b) => b.word.length - a.word.length);
 
   // Grid state tracks letter at each coordinate: "row,col" -> "char"
   const grid = new Map<string, string>();
@@ -28,9 +40,9 @@ export function generateLevelFromWords(
 
   // 1. Place the first word (the seed) horizontally at (0,0)
   const seed = sortedWords[0];
-  placeWordOnGrid(seed, 0, 0, "horizontal", placements, grid);
+  placeWordOnGrid(seed.word, seed.meaning, 0, 0, "horizontal", placements, grid);
 
-  const placedWordsSet = new Set<string>([seed]);
+  const placedWordsSet = new Set<string>([seed.word]);
   const unplacedWords = sortedWords.slice(1);
   let retryCount = 0;
 
@@ -41,26 +53,26 @@ export function generateLevelFromWords(
     // Try to fit each unplaced word
     for (let i = 0; i < unplacedWords.length; i++) {
       const candidate = unplacedWords[i];
-      const bestMove = findBestPlacement(candidate, placements, grid);
+      const bestMove = findBestPlacement(candidate.word, placements, grid);
 
       if (bestMove) {
         placeWordOnGrid(
-          candidate,
+          candidate.word,
+          candidate.meaning,
           bestMove.row,
           bestMove.col,
           bestMove.direction,
           placements,
           grid
         );
-        placedWordsSet.add(candidate);
+        placedWordsSet.add(candidate.word);
         unplacedWords.splice(i, 1);
         placedSomething = true;
-        break; // Restart loop to fit remaining words onto the new structure
+        break;
       }
     }
 
     if (!placedSomething) {
-      // If we stuck, move the problematic word to the end or just retry
       const skipped = unplacedWords.shift();
       if (skipped) unplacedWords.push(skipped);
       retryCount++;
@@ -71,6 +83,10 @@ export function generateLevelFromWords(
   const bounds = getBounds(placements);
   const rows = bounds.maxRow - bounds.minRow + 1;
   const cols = bounds.maxCol - bounds.minCol + 1;
+
+  if (rows <= 0 || cols <= 0 || !isFinite(rows) || !isFinite(cols)) {
+    throw new Error(`Level ${levelId}: failed to generate valid grid (rows=${rows}, cols=${cols})`);
+  }
 
   // 4. Construct final Level object
   const mask: boolean[][] = Array.from({ length: rows }, () =>
@@ -96,7 +112,7 @@ export function generateLevelFromWords(
     targetWords.push({
         word: p.word,
         coords: wordCoords,
-        meaning: "" // Meaning would usually come from dictionary lookup
+        meaning: p.meaning
     });
   }
 
@@ -104,7 +120,7 @@ export function generateLevelFromWords(
   // Use the longest word (which we sorted to be first) as the source of the letter wheel.
   // This ensures we have duplicate letters (e.g. "EAGLE" -> E, A, G, L, E)
   // instead of just unique ones.
-  const letters = sortedWords[0].split("");
+  const letters = sortedWords[0].word.split("");
 
   return {
     levelId,
@@ -123,13 +139,14 @@ export function generateLevelFromWords(
 
 function placeWordOnGrid(
   word: string, 
+  meaning: string,
   row: number, 
   col: number, 
   direction: Direction, 
   placements: PlacedWord[],
   grid: Map<string, string>
 ) {
-    placements.push({ word, row, col, direction });
+    placements.push({ word, meaning, row, col, direction });
     for (let i = 0; i < word.length; i++) {
         const r = direction === "horizontal" ? row : row + i;
         const c = direction === "horizontal" ? col + i : col;

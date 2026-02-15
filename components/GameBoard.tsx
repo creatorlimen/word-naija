@@ -19,7 +19,7 @@ import LetterCircle from "./LetterCircle";
 import Toolbar from "./Toolbar";
 import LevelComplete from "./LevelComplete";
 import { useGameState, useGameActions } from "../lib/game/context";
-import { getCoinsEarned } from "../lib/game/gameState";
+import { getCoinsEarned, HINT_COST } from "../lib/game/gameState";
 import { colors, fontSize, spacing, borderRadius, shadows } from "../constants/theme";
 
 interface GameBoardProps {
@@ -141,7 +141,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
             <View style={styles.toolbarContainer}>
                 <Toolbar
                     coins={state.coins}
-                    hintCost={40} // Example cost
+                    hintCost={HINT_COST}
                     onShuffle={() => actions.shuffleLetters()}
                     onHint={() => actions.revealHint()}
                 />

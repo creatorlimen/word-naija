@@ -39,9 +39,9 @@ export default function Controls({
         <ControlButton label="🔀" sublabel="Shuffle" onPress={onShuffle} />
         <ControlButton
           label="💡"
-          sublabel="Hint (15)"
+          sublabel="Hint (40)"
           onPress={onHint}
-          disabled={coins < 15}
+          disabled={coins < 40}
         />
         <ControlButton
           label={soundEnabled ? "🔊" : "🔇"}

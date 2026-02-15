@@ -3,22 +3,22 @@
  * Displays the crossword puzzle grid as a wooden board with cream tiles.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Animated,
   Dimensions,
+  LayoutChangeEvent,
 } from "react-native";
 import type { GridState, SelectionPath } from "../lib/game/types";
 import { colors, borderRadius, shadows } from "../constants/theme";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-const GRID_PADDING = 20; // Internal padding of the board
-const CELL_GAP = 4; // gap between cells
-const MAX_CELL_SIZE = 100; // Increased to occupy more space
-const RESERVED_HEIGHT = 400; // Reserved for header, wheel, toolbar (approx)
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const GRID_PADDING = 20;
+const CELL_GAP = 4;
+const MAX_CELL_SIZE = 80;
 
 interface GridProps {
   gridState: GridState;
@@ -106,18 +106,29 @@ function AnimatedGridCell({
 
 export default function Grid({ gridState, selectedPath }: GridProps) {
   const { rows, cols, cells } = gridState;
-  
-  // Calculate optimal cell size based on both width AND height
-  const availableWidth = SCREEN_WIDTH - 10 - (GRID_PADDING * 2);
-  const availableHeight = SCREEN_HEIGHT - RESERVED_HEIGHT - (GRID_PADDING * 2);
-  
+  const [measuredHeight, setMeasuredHeight] = useState(0);
+
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const { height } = e.nativeEvent.layout;
+    if (height > 0 && height !== measuredHeight) {
+      setMeasuredHeight(height);
+    }
+  };
+
+  // Width-based cell size
+  const availableWidth = SCREEN_WIDTH - 20 - (GRID_PADDING * 2);
   const maxCellWidth = availableWidth / cols;
+
+  // Height-based cell size — uses actual measured space
+  const availableHeight = measuredHeight > 0
+    ? measuredHeight - (GRID_PADDING * 2) - 24 // subtract board border + wrapper padding
+    : 300; // fallback before first measure
   const maxCellHeight = availableHeight / rows;
-  
-  // Use the smaller of the two to ensure it fits in both dimensions
+
+  // Pick the smallest so tiles are square and fit both dimensions
   const cellSize = Math.min(maxCellWidth, maxCellHeight, MAX_CELL_SIZE) - CELL_GAP;
   const textSize = cellSize * 0.65;
-  
+
   const gridContentWidth = cols * (cellSize + CELL_GAP) - CELL_GAP;
   const gridContentHeight = rows * (cellSize + CELL_GAP) - CELL_GAP;
 
@@ -125,15 +136,9 @@ export default function Grid({ gridState, selectedPath }: GridProps) {
   const boardHeight = gridContentHeight + (GRID_PADDING * 2);
 
   return (
-    <View style={styles.wrapper}>
-        <View 
-            style={[
-                styles.boardContainer, 
-                { 
-                    width: boardWidth, // Let the board size naturally without min constraint
-                    height: boardHeight
-                }
-            ]}
+    <View style={styles.wrapper} onLayout={handleLayout}>
+        <View
+            style={styles.boardContainer}
         >
             <View style={{ width: gridContentWidth, height: gridContentHeight, position: "relative" }}>
                 {cells.map((rowCells, r) =>
@@ -170,25 +175,28 @@ function mathMax(a: number, b: number) {
 
 const styles = StyleSheet.create({
   wrapper: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
-    marginTop: 10,
+    paddingHorizontal: 10,
     zIndex: 1,
   },
   boardContainer: {
+    flex: 1,
+    alignSelf: "stretch",
     backgroundColor: colors.boardBackground,
     borderRadius: 16, 
     borderWidth: 6,
     borderColor: colors.boardBorder,
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 8,
-    borderBottomWidth: 10, // Thicker bottom for board perspective
+    borderBottomWidth: 10,
     borderBottomColor: colors.boardShadow,
   },
   cellEmpty: {

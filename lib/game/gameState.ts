@@ -14,6 +14,9 @@ import type {
 import { loadLevel } from "./levelLoader";
 import { validateWord } from "./dictionaryLoader";
 
+// Game constants
+export const HINT_COST = 40;
+
 /**
  * Create initial game state for a level
  */
@@ -356,8 +359,8 @@ export function shuffleLetters(state: GameStateData): GameStateData {
  * Reveal a hint - show one empty cell from unsolved target words
  */
 export function revealHint(state: GameStateData): GameStateData {
-  // Cost: 15 coins
-  if (state.coins < 15) {
+  // Cost: HINT_COST coins
+  if (state.coins < HINT_COST) {
     return state;
   }
 
@@ -414,7 +417,7 @@ export function revealHint(state: GameStateData): GameStateData {
       cells: newCells,
     },
     solvedWords: newSolvedWords,
-    coins: state.coins - 15,
+    coins: state.coins - HINT_COST,
   };
 }
 
