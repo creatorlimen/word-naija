@@ -14,10 +14,11 @@ import {
 import type { GridState, SelectionPath } from "../lib/game/types";
 import { colors, borderRadius, shadows } from "../constants/theme";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const GRID_PADDING = 20; // Internal padding of the board
 const CELL_GAP = 4; // gap between cells
-const MAX_CELL_SIZE = 60; // Increased to occupy more space
+const MAX_CELL_SIZE = 100; // Increased to occupy more space
+const RESERVED_HEIGHT = 400; // Reserved for header, wheel, toolbar (approx)
 
 interface GridProps {
   gridState: GridState;
@@ -106,11 +107,15 @@ function AnimatedGridCell({
 export default function Grid({ gridState, selectedPath }: GridProps) {
   const { rows, cols, cells } = gridState;
   
-  // Calculate optimal cell size
-  const availableWidth = SCREEN_WIDTH - 32 - (GRID_PADDING * 2);
-  const maxCellWidth = availableWidth / cols;
+  // Calculate optimal cell size based on both width AND height
+  const availableWidth = SCREEN_WIDTH - 10 - (GRID_PADDING * 2);
+  const availableHeight = SCREEN_HEIGHT - RESERVED_HEIGHT - (GRID_PADDING * 2);
   
-  const cellSize = Math.min(maxCellWidth, MAX_CELL_SIZE) - CELL_GAP;
+  const maxCellWidth = availableWidth / cols;
+  const maxCellHeight = availableHeight / rows;
+  
+  // Use the smaller of the two to ensure it fits in both dimensions
+  const cellSize = Math.min(maxCellWidth, maxCellHeight, MAX_CELL_SIZE) - CELL_GAP;
   const textSize = cellSize * 0.65;
   
   const gridContentWidth = cols * (cellSize + CELL_GAP) - CELL_GAP;
@@ -125,7 +130,7 @@ export default function Grid({ gridState, selectedPath }: GridProps) {
             style={[
                 styles.boardContainer, 
                 { 
-                    width: mathMax(boardWidth, SCREEN_WIDTH - 40), // ensure minimal width
+                    width: boardWidth, // Let the board size naturally without min constraint
                     height: boardHeight
                 }
             ]}
