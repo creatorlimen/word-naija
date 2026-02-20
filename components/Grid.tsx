@@ -23,12 +23,14 @@ const MAX_CELL_SIZE = 80;
 interface GridProps {
   gridState: GridState;
   selectedPath: SelectionPath | null;
+  flashCoords?: Set<string>;
 }
 
 function AnimatedGridCell({
   letter,
   filled,
   isHighlighted,
+  isFlashing,
   cellSize,
   textSize,
   top,
@@ -37,12 +39,14 @@ function AnimatedGridCell({
   letter?: string;
   filled: boolean;
   isHighlighted: boolean;
+  isFlashing: boolean;
   cellSize: number;
   textSize: number;
   top: number;
   left: number;
 }) {
   const scaleAnim = useRef(new Animated.Value(filled ? 1 : 0)).current;
+  const flashAnim = useRef(new Animated.Value(0)).current;
   const prevFilled = useRef(filled);
 
   useEffect(() => {
@@ -61,6 +65,18 @@ function AnimatedGridCell({
     }
     prevFilled.current = filled;
   }, [filled]);
+
+  // Flash animation — fires when isFlashing flips to true (even if already filled)
+  useEffect(() => {
+    if (!isFlashing) return;
+    flashAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(flashAnim, { toValue: 1, duration: 140, useNativeDriver: true }),
+      Animated.timing(flashAnim, { toValue: 0.6, duration: 120, useNativeDriver: true }),
+      Animated.timing(flashAnim, { toValue: 1, duration: 120, useNativeDriver: true }),
+      Animated.timing(flashAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+    ]).start();
+  }, [isFlashing]);
 
   const animatedStyle = filled
     ? { transform: [{ scale: scaleAnim }] }
@@ -100,11 +116,21 @@ function AnimatedGridCell({
           </Text>
         </Animated.View>
       )}
+
+      {/* Flash overlay — shown on newly-solved word, even if cell was pre-filled */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          StyleSheet.absoluteFill,
+          styles.flashOverlay,
+          { opacity: flashAnim },
+        ]}
+      />
     </View>
   );
 }
 
-export default function Grid({ gridState, selectedPath }: GridProps) {
+export default function Grid({ gridState, selectedPath, flashCoords }: GridProps) {
   const { rows, cols, cells } = gridState;
   const [measuredHeight, setMeasuredHeight] = useState(0);
 
@@ -143,11 +169,12 @@ export default function Grid({ gridState, selectedPath }: GridProps) {
             <View style={{ width: gridContentWidth, height: gridContentHeight, position: "relative" }}>
                 {cells.map((rowCells, r) =>
                     rowCells.map((cell, c) => {
-                    if (cell.letter === undefined) return null; // blocked cell
+                    if (cell.letter === " ") return null; // blocked cell
 
                     const top = r * (cellSize + CELL_GAP);
                     const left = c * (cellSize + CELL_GAP);
                     const isHighlighted = !!(cell.isPartOfTargetWord && selectedPath === null);
+                    const isFlashing = flashCoords?.has(`${r},${c}`) ?? false;
 
                     return (
                         <AnimatedGridCell
@@ -155,6 +182,7 @@ export default function Grid({ gridState, selectedPath }: GridProps) {
                         letter={cell.letter}
                         filled={cell.filled}
                         isHighlighted={isHighlighted}
+                        isFlashing={isFlashing}
                         cellSize={cellSize}
                         textSize={textSize}
                         top={top}
@@ -223,5 +251,9 @@ const styles = StyleSheet.create({
   },
   cellTextHighlighted: {
     color: colors.accent,
+  },
+  flashOverlay: {
+    borderRadius: 12,
+    backgroundColor: colors.accent,
   },
 });

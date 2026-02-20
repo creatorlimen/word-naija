@@ -3,7 +3,7 @@
  * Main game screen: Wood theme, pill headers, nature background.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -35,6 +35,40 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+
+  // Flash animation: track which cells belong to a newly solved word
+  const [flashCoords, setFlashCoords] = useState<Set<string>>(new Set());
+  const prevSolvedRef = useRef<Set<string>>(new Set());
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!state?.solvedWords || !state?.currentLevel) return;
+    const prev = prevSolvedRef.current;
+    const curr = state.solvedWords;
+
+    if (curr.size > prev.size) {
+      const coords = new Set<string>();
+      for (const word of curr) {
+        if (!prev.has(word)) {
+          const target = state.currentLevel.targetWords.find(
+            (tw) => tw.word.toUpperCase() === word
+          );
+          if (target) {
+            for (const [r, c] of target.coords) {
+              coords.add(`${r},${c}`);
+            }
+          }
+        }
+      }
+      if (coords.size > 0) {
+        if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+        setFlashCoords(coords);
+        flashTimeoutRef.current = setTimeout(() => setFlashCoords(new Set()), 1200);
+      }
+    }
+
+    prevSolvedRef.current = new Set(curr);
+  }, [state?.solvedWords]);
 
   const handleNextLevel = useCallback(async () => {
     await actions.nextLevel();
@@ -119,7 +153,8 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         <View style={{ flex: 1, zIndex: 1, paddingTop: spacing.md }}>
             <Grid 
                 gridState={state.gridState} 
-                selectedPath={state.selectedPath} 
+                selectedPath={state.selectedPath}
+                flashCoords={flashCoords}
             />
         </View>
 

@@ -234,10 +234,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "hard",
         words: [
             { word: "FREEDOM", meaning: "The state of being free" },
+            { word: "NORM", meaning: "A standard or pattern of behaviour" },
             { word: "MODE", meaning: "A way or manner of doing" },
             { word: "DOME", meaning: "A rounded vault forming a roof" },
             { word: "FREE", meaning: "Not imprisoned or enslaved" },
-            { word: "FORM", meaning: "The shape or structure of something" },
             { word: "RED", meaning: "A colour at the end of the spectrum" },
         ]
     }

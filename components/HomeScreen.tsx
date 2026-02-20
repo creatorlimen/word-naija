@@ -3,7 +3,7 @@
  * Welcome screen with stats and start button
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -39,6 +39,7 @@ export default function HomeScreen({
   onStart,
 }: HomeScreenProps) {
   const progressPercent = Math.round((levelsCompleted / TOTAL_LEVELS) * 100);
+  const [showAchievements, setShowAchievements] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,6 +66,17 @@ export default function HomeScreen({
                 <Text style={styles.subtitle}>Afro-minimal word puzzle</Text>
               </View>
             </View>
+            {achievements.length > 0 && (
+              <Pressable
+                style={styles.badgeChip}
+                onPress={() => setShowAchievements((v) => !v)}
+              >
+                <Text style={styles.badgeChipText}>🏅 {achievements.length}</Text>
+                <Text style={styles.badgeChipCaret}>
+                  {showAchievements ? "▲" : "▼"}
+                </Text>
+              </Pressable>
+            )}
           </View>
 
           <View style={styles.statsRow}>
@@ -81,18 +93,22 @@ export default function HomeScreen({
               {levelsCompleted} of {TOTAL_LEVELS} levels completed
             </Text>
           </View>
+
+          {/* Achievements — inline, revealed by chip tap */}
+          {showAchievements && achievements.length > 0 && (
+            <Achievements achievements={achievements} />
+          )}
         </View>
 
-        {/* Feature grid */}
-        <View style={styles.featureGrid}>
-          <FeatureCard emoji="📖" title="Bilingual" text="Learn Nigerian & English words" />
-          <FeatureCard emoji="🧩" title="Crosswords" text="Intersecting puzzles that feel handcrafted" />
-          <FeatureCard emoji="🪙" title="Earn coins" text="Collect extras, spend on smarter hints" />
-          <FeatureCard emoji="🎯" title="Daily run" text="Short sessions with bonus rewards" />
-        </View>
-
-        {/* Achievements */}
-        <Achievements achievements={achievements} />
+        {/* Feature grid — first-timers only */}
+        {levelsCompleted === 0 && (
+          <View style={styles.featureGrid}>
+            <FeatureCard emoji="📖" title="Bilingual" text="Learn Nigerian & English words" />
+            <FeatureCard emoji="🧩" title="Crosswords" text="Intersecting puzzles that feel handcrafted" />
+            <FeatureCard emoji="🪙" title="Earn coins" text="Collect extras, spend on smarter hints" />
+            <FeatureCard emoji="🎯" title="Daily run" text="Short sessions with bonus rewards" />
+          </View>
+        )}
 
         {/* Start button */}
         <Pressable
@@ -189,6 +205,26 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     color: colors.textMuted,
     marginTop: 2,
+  },
+  badgeChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.full,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.outline,
+  },
+  badgeChipText: {
+    color: colors.textPrimary,
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+  },
+  badgeChipCaret: {
+    color: colors.textMuted,
+    fontSize: 10,
   },
   statsRow: {
     flexDirection: "row",
