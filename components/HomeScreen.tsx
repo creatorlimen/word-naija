@@ -39,8 +39,6 @@ export default function HomeScreen({
   onStart,
 }: HomeScreenProps) {
   const progressPercent = Math.round((levelsCompleted / TOTAL_LEVELS) * 100);
-  const streakDays = Math.max(1, Math.min(7, Math.floor(levelsCompleted / 2)));
-  const dailyBonusCoins = 30;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,10 +64,6 @@ export default function HomeScreen({
                 <Text style={styles.title}>Word Naija</Text>
                 <Text style={styles.subtitle}>Afro-minimal word puzzle</Text>
               </View>
-            </View>
-            <View style={styles.streakChip}>
-              <Text style={styles.chipEmoji}>🔥</Text>
-              <Text style={styles.chipText}>{streakDays} day streak</Text>
             </View>
           </View>
 
@@ -97,17 +91,6 @@ export default function HomeScreen({
           <FeatureCard emoji="🎯" title="Daily run" text="Short sessions with bonus rewards" />
         </View>
 
-        {/* Daily challenge */}
-        <View style={styles.dailyCard}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.dailyTitle}>Daily Challenge</Text>
-            <Text style={styles.dailyText}>Finish one level today to claim +{dailyBonusCoins} coins.</Text>
-          </View>
-          <View style={styles.dailyBadge}>
-            <Text style={styles.dailyBadgeText}>+{dailyBonusCoins}</Text>
-          </View>
-        </View>
-
         {/* Achievements */}
         <Achievements achievements={achievements} />
 
@@ -128,7 +111,6 @@ export default function HomeScreen({
           <Text style={styles.startButtonText}>
             {levelsCompleted > 0 ? "Continue Playing" : "Start Playing"}
           </Text>
-          <Text style={styles.startButtonSub}>3x coins on your next level</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -208,23 +190,6 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
   },
-  streakChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-  chipEmoji: { fontSize: 16, marginRight: 6 },
-  chipText: {
-    color: colors.textPrimary,
-    fontSize: fontSize.sm,
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -298,40 +263,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textMuted,
   },
-  dailyCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    gap: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    ...shadows.subtle,
-  },
-  dailyTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: "800",
-    color: colors.textPrimary,
-  },
-  dailyText: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
-  dailyBadge: {
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.outlineStrong,
-  },
-  dailyBadgeText: {
-    color: colors.foreground,
-    fontSize: fontSize.md,
-    fontWeight: "800",
-  },
   startButton: {
     position: "relative",
     overflow: "hidden",
@@ -352,11 +283,5 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: colors.foreground,
     letterSpacing: 0.4,
-  },
-  startButtonSub: {
-    fontSize: fontSize.sm,
-    color: colors.foreground,
-    marginTop: 4,
-    opacity: 0.85,
   },
 });

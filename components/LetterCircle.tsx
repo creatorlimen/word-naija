@@ -13,7 +13,6 @@ import {
   LayoutChangeEvent,
 } from "react-native";
 import Svg, { Line, Circle } from "react-native-svg";
-import { LinearGradient } from "expo-linear-gradient";
 import type { Letter } from "../lib/game/types";
 import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
 
@@ -170,13 +169,6 @@ export default function LetterCircle({
       </View>
 
       <View style={styles.wheelBackplate}>
-        <LinearGradient
-          colors={["rgba(255,255,255,0.06)", "rgba(255,255,255,0.02)"]}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0.2, y: 0 }}
-          end={{ x: 0.8, y: 1 }}
-        />
-
         <View
           ref={wheelViewRef}
           onLayout={onWheelLayout}
@@ -276,12 +268,8 @@ const styles = StyleSheet.create({
     width: CIRCLE_SIZE + 36,
     height: CIRCLE_SIZE + 36,
     borderRadius: (CIRCLE_SIZE + 36) / 2,
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderWidth: 1,
-    borderColor: colors.outline,
     alignItems: "center",
     justifyContent: "center",
-    ...shadows.subtle,
   },
   tile: {
     position: "absolute",

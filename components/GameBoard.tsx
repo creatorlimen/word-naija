@@ -49,10 +49,6 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     return getCoinsEarned(state);
   }, [state]);
 
-  const totalWords = state?.currentLevel?.targetWords.length ?? 0;
-  const solvedWordsCount = state?.solvedWords?.size ?? 0;
-  const sessionProgress = totalWords > 0 ? Math.min(1, solvedWordsCount / totalWords) : 0;
-
   // Loading
   if (isLoading) {
     return (
@@ -68,7 +64,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorEmoji}>??</Text>
+        <Text style={styles.errorEmoji}>😕</Text>
         <Text style={styles.errorText}>{error}</Text>
         <Pressable onPress={onGoHome} style={styles.errorButton}>
           <Text style={styles.errorButtonText}>Go Home</Text>
@@ -116,14 +112,6 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
             </View>
             <Text style={styles.coinText}>{state.coins}</Text>
           </View>
-        </View>
-
-        {/* Session progress */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${sessionProgress * 100}%` }]} />
-          </View>
-          <Text style={styles.progressText}>{solvedWordsCount}/{totalWords} words solved</Text>
         </View>
 
         {/* -- Game Area -- */}
@@ -333,32 +321,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 
-  progressContainer: {
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.full,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.full,
-  },
-  progressText: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-    textAlign: "left",
-    marginTop: 4,
-    fontWeight: "700",
-  },
-  
   separator: {
     height: 8,
     backgroundColor: "rgba(255,255,255,0.15)",
