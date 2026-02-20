@@ -19,6 +19,8 @@ import LetterCircle from "./LetterCircle";
 import Toolbar from "./Toolbar";
 import LevelComplete from "./LevelComplete";
 import ExtraWordsModal from "./ExtraWordsModal";
+import SettingsModal from "./SettingsModal";
+import FTUE from "./FTUE";
 import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { colors, fontSize, spacing, borderRadius, shadows } from "../constants/theme";
@@ -31,6 +33,8 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   const { state, progress, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
   const [showExtraModal, setShowExtraModal] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const handleNextLevel = useCallback(async () => {
     await actions.nextLevel();
@@ -89,7 +93,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
               <Text style={styles.iconText}>←</Text>
             </Pressable>
             {/* Settings */}
-            <Pressable style={styles.iconButton}>
+            <Pressable style={styles.iconButton} onPress={() => setShowSettings(true)}>
                <Text style={styles.iconText}>⚙️</Text>
             </Pressable>
           </View>
@@ -152,6 +156,19 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 />
             </View>
         </View>
+
+        {/* -- Settings Modal -- */}
+        <SettingsModal
+          visible={showSettings}
+          soundEnabled={state.soundEnabled ?? true}
+          onToggleSound={() => actions.toggleSound()}
+          onClose={() => setShowSettings(false)}
+          onHowToPlay={() => { setShowSettings(false); setShowHowToPlay(true); }}
+          onQuit={() => { setShowSettings(false); onGoHome(); }}
+        />
+
+        {/* -- How to Play (relaunched FTUE) -- */}
+        <FTUE forceShow={showHowToPlay} onComplete={() => setShowHowToPlay(false)} />
 
         {/* -- Extra Words Modal -- */}
         <ExtraWordsModal

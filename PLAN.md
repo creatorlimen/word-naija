@@ -201,3 +201,120 @@ All 10 levels redesigned and validated (zero errors):
 - Floating Letter Tiles on wheel.
 - Dedicated Footer controls for Extra, Shuffle, Hint.
 
+---
+
+## Letter Wheel — Architecture Reference
+
+### 1. Initialization
+When a level loads, `initializeGameState()` creates `letterWheel: Letter[]` — an array of
+`{ char, used }` objects from the level's letters. These are passed as a `letters` prop into
+`LetterCircle`.
+
+### 2. Tile Positioning
+`useMemo` computes each tile's `(x, y)` center and `(left, top)` absolute position using
+polar coordinate math:
+```
+angle = -π/2 + (2π × i) / totalLetters
+x = centerX + radius × cos(angle)
+y = centerY + radius × sin(angle)
+```
+Starting at `-π/2` (12 o'clock), distributing evenly clockwise. All positions are relative
+to the `CIRCLE_SIZE × CIRCLE_SIZE` wheelContainer View.
+
+**Key constants (LetterCircle.tsx):**
+- `CIRCLE_SIZE = min(SCREEN_WIDTH - 60, 280)`
+- `TILE_SIZE = 56`
+- `HIT_RADIUS = 40` — circular touch-detection radius per tile
+
+### 3. Coordinate System (Critical)
+Uses `pageX/pageY` (screen-absolute) instead of `locationX/locationY` (relative to touched
+view). On Android, `locationX/Y` shifts when the touch crosses a child View — `pageX/Y`
+never does.
+
+On every touch event:
+```
+localX = pageX - wheelContainer.pageX
+localY = pageY - wheelContainer.pageY
+```
+`wheelContainer.pageX/Y` is captured via `measureInWindow()` on layout and re-measured
+fresh at the start of every gesture.
+
+**Why this matters:** Before this fix, the container had `flex: 1` which stretched it to
+fill the 240px parent in GameBoard, centering the wheel visually inside extra space. Touch
+coordinates were offset upward because they measured from the container top, not the wheel.
+Fix: removed `flex: 1` so the container shrinks to fit its content.
+
+### 4. Gesture Lifecycle (PanResponder)
+```
+Finger Down (onPanResponderGrant)
+  → measureInWindow (get fresh container offset)
+  → convert pageX/Y → local coords
+  → hitTest() → find which tile was touched
+  → onSelectLetter(idx)
+  → Light haptic
+
+Finger Moves (onPanResponderMove)
+  → convert pageX/Y → local coords (cached offset)
+  → hitTest()
+  → New tile    → onSelectLetter(idx)   [no haptic during swipe]
+  → Backtracked → onUndoSelection()     [Medium haptic]
+  → Same tile   → no-op
+
+Finger Up (onPanResponderRelease)
+  → onCommit() → attempt word submission
+
+Gesture Cancelled (onPanResponderTerminate)
+  → onClear() → discard selection
+```
+
+**Haptic policy (current):** Light on initial touch, Medium on backtrack, none during swipe.
+
+### 5. Hit Testing
+```typescript
+dx = touchX - tileCenter.x
+dy = touchY - tileCenter.y
+hit if: dx² + dy² < HIT_RADIUS²   // 40px radius
+```
+Returns the first matching tile index, or `-1` for a miss.
+
+### 6. Stale Closure Fix (Refs)
+`PanResponder` is created once (`useRef`), so its callbacks would normally close over stale
+props. Every prop used inside the gesture is mirrored into a ref, updated every render:
+```typescript
+selectedIndicesRef.current = selectedIndices
+onSelectLetterRef.current  = onSelectLetter
+positionsRef.current       = positions
+// etc.
+```
+PanResponder always reads `.current`, never the original captured variable.
+
+### 7. State Updates (gameState.ts)
+| Action              | Function           | What It Does                                                     |
+|---------------------|--------------------|------------------------------------------------------------------|
+| `onSelectLetter(i)` | `selectLetter()`   | Appends char + index to `selectedPath`; no-ops if already selected or `used` |
+| `onUndoSelection()` | `undoSelection()`  | Pops last index from `selectedPath`                              |
+| `onClear()`         | `clearSelection()` | Nulls out `selectedPath`                                         |
+| `onCommit()`        | `submitWord()`     | Validates against target words then dictionary; fills grid or clears |
+
+### 8. Visual Feedback
+- **Tiles** — `tileSelected` style scales up 15%, changes colour
+- **Connector lines** — SVG `<Line>` drawn between consecutive `selectedIndices` centers
+- **Word preview** — `currentWord` string displayed in floating badge above wheel
+- **Debug overlay** — Set `DEBUG_MODE = __DEV__ && true` in LetterCircle.tsx to draw red
+  circles showing actual hit-test areas on screen
+
+### 9. Full Data Flow
+```
+Level loads → letterWheel[] created
+      ↓
+LetterCircle renders tiles at polar positions
+      ↓
+User swipes → PanResponder → hitTest → onSelectLetter
+      ↓
+gameState.selectLetter() → updates selectedPath (word + indices)
+      ↓
+Props flow back into LetterCircle (selectedIndices, currentWord)
+      ↓
+User lifts finger → onCommit → submitWord → grid fills / selection clears
+```
+

@@ -42,14 +42,22 @@ const slides = [
 
 interface FTUEProps {
   onComplete: () => void;
+  forceShow?: boolean;
 }
 
-export default function FTUE({ onComplete }: FTUEProps) {
+export default function FTUE({ onComplete, forceShow }: FTUEProps) {
   const [visible, setVisible] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    checkFTUE();
+    if (forceShow) {
+      setCurrentSlide(0);
+      setVisible(true);
+    }
+  }, [forceShow]);
+
+  useEffect(() => {
+    if (!forceShow) checkFTUE();
   }, []);
 
   async function checkFTUE() {
