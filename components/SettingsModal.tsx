@@ -161,8 +161,8 @@ export default function SettingsModal({
   );
 }
 
-const PANEL_BG = "#0E5F72";      // Deep teal
-const PANEL_BORDER = "#C9A227";  // Gold border
+const PANEL_BG = "rgba(10, 24, 22, 0.9)";
+const PANEL_BORDER = "rgba(255,255,255,0.2)";
 const ROW_DIVIDER = "rgba(255,255,255,0.12)";
 
 const styles = StyleSheet.create({
@@ -176,12 +176,12 @@ const styles = StyleSheet.create({
     width: "82%",
     backgroundColor: PANEL_BG,
     borderRadius: borderRadius.xl,
-    borderWidth: 2.5,
+    borderWidth: 1.5,
     borderColor: PANEL_BORDER,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
-    ...shadows.small,
+    ...shadows.soft,
   },
   closeButton: {
     position: "absolute",
@@ -193,24 +193,23 @@ const styles = StyleSheet.create({
     backgroundColor: PANEL_BORDER,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#FFF",
+    borderWidth: 1,
+    borderColor: colors.outline,
     zIndex: 10,
   },
   closeText: {
-    color: "#FFF",
+    color: colors.foreground,
     fontSize: 15,
     fontWeight: "700",
     lineHeight: 18,
   },
   title: {
-    color: "#FFFFFF",
+    color: colors.foreground,
     fontSize: fontSize.xl,
     fontWeight: "700",
     textAlign: "center",
     letterSpacing: 1,
     marginBottom: spacing.md,
-    fontFamily: "monospace",
   },
   divider: {
     height: 1.5,
@@ -225,9 +224,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   rowLabel: {
-    color: "#FFFFFF",
+    color: colors.foreground,
     fontSize: fontSize.md,
-    fontFamily: "monospace",
     letterSpacing: 0.5,
   },
   rowDivider: {
@@ -235,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: ROW_DIVIDER,
   },
   chevron: {
-    color: "#FFFFFF",
+    color: colors.foreground,
     fontSize: 26,
     lineHeight: 28,
     fontWeight: "300",
@@ -251,11 +249,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#1565C0",
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#42A5F5",
+    borderWidth: 1.5,
+    borderColor: colors.outline,
   },
   powerIconWrap: {
     width: 22,
@@ -288,19 +286,18 @@ const styles = StyleSheet.create({
   contactButton: {
     flex: 1,
     height: 44,
-    backgroundColor: "#1565C0",
+    backgroundColor: colors.surface,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#42A5F5",
+    borderWidth: 1,
+    borderColor: colors.outline,
     paddingHorizontal: spacing.xs,
   },
   contactText: {
-    color: "#FFFFFF",
+    color: colors.foreground,
     fontSize: 11,
     fontWeight: "700",
-    fontFamily: "monospace",
     textAlign: "center",
     includeFontPadding: false,
   } as any,
@@ -311,14 +308,13 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#81C784",
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
   shareText: {
     color: "#FFFFFF",
     fontSize: fontSize.sm,
     fontWeight: "700",
-    fontFamily: "monospace",
     letterSpacing: 0.5,
   },
 });

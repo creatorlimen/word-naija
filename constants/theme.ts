@@ -1,81 +1,37 @@
 /**
- * Word Naija - Theme Constants (v2.1 - Polished Wood & Gold)
- * Closely matching Wordscapes visual style.
+ * Word Naija - Theme Constants (v3 — Afro-minimal)
+ * Dual palettes (Savanna Light / Midnight Market) + semantic tokens.
  */
 
-export const colors = {
-  // Main Screen Background (Deep Forest Green)
-  background: "#1E5128", 
-  backgroundDark: "#0B2B12",
-
-  // Game Board Frame
-  boardBackground: "#6D2323", // The reddish-brown mat
-  boardBorder: "#8B4513",     // Saddle brown outer frame
-  boardShadow: "#3E1414",
-
-  // 3D Tiles (The Letters)
-  tile: {
-    background: "#FDF5E6",    // OldLace / Cream
-    backgroundSelected: "#FFB300", // Vivid Orange/Gold for selection
-    borderBottom: "#C0A080",  // Tan/darker cream for 3D effect of unselected
-    borderBottomSelected: "#E65100", // Dark orange for 3D effect of selected
-    text: "#5D4037",          // Dark brown wood text
-    textSelected: "#FFFFFF",  // White text when selected
-    empty: "#4E342E",         // Dark slot on board
-    emptyShadow: "#3E2723",   // Inner shadow for empty slot
-    // Legacy support
-    border: "#D7CCC8",
-    shadow: "#C0A080",
-  },
-
-  // Header & UI Pills
-  pill: {
-    background: "#2E7D32",    // Forest Green (like reference buttons)
-    border: "#FFD54F",        // Gold rim
-    text: "#FFFFFF",
-    icon: "#FFD54F",          // Gold icon
-    shadow: "#1B5E20",        // Dark green shadow
-  },
-  
-  // Footer Circular Buttons
-  button: {
-    primary: "#4CAF50",       // Standard Green
-    secondary: "#0277BD",     // Blue
-    function: "#66BB6A",      // Lighter green for footer buttons
-    functionShadow: "#388E3C",// Darker green 3D edge
-    gold: "#FFC107",          // Gold/Yellow
-    text: "#FFFFFF"
-  },
-
-  // Text Colors
-  foreground: "#FFFFFF",
-  foregroundDark: "#3E2723",
-  muted: "#BCAAA4",
-  mutedDark: "#5D4037", 
-  
-  // State colors
-  overlay: "rgba(0,0,0,0.6)",
-  error: "#D32F2F",
-  success: "#4CAF50",
-  warning: "#FFA000",
-  
-  // Base for standard borders
-  border: "#8B4513",
-
-  // Legacy mappings for existing components not yet migrated
-  primary: "#6D2323",
-  secondary: "#FFD54F",
-  accent: "#388E3C",
-  card: "#FEF9E7",
+const palette = {
+  deepGreen: "#0F1C1A",
+  forest: "#0F2E28",
+  teal: "#0F3C34",
+  emerald: "#1C7C57",
+  jade: "#22A06B",
+  gold: "#F2C14F",
+  amber: "#FFB648",
+  sand: "#F5E9D7",
+  linen: "#F9F3EA",
+  espresso: "#3A2F2A",
+  cocoa: "#4A3A33",
+  ash: "#C6C0B8",
+  cloud: "#E2DDD6",
+  plum: "#67416D",
+  coral: "#FF7B5F",
+  mint: "#5FE1C4",
+  sky: "#5EB0FF",
+  red: "#E45757",
 };
 
 export const spacing = {
   xs: 4,
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
 };
 
 export const fontSize = {
@@ -86,32 +42,168 @@ export const fontSize = {
   xl: 24,
   xxl: 32,
   xxxl: 40,
-  title: 40,
+  display: 44,
 };
 
 export const borderRadius = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 10, // Reduced radius for "Squaricle" tile look
+  sm: 6,
+  md: 10,
+  lg: 14,
+  xl: 18,
   full: 9999,
   round: 9999,
 };
 
 export const shadows = {
+  soft: {
+    shadowColor: "rgba(0,0,0,0.45)",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  subtle: {
+    shadowColor: "rgba(0,0,0,0.35)",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.14,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  tile: {
+    shadowColor: "rgba(0,0,0,0.35)",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  // Legacy aliases for existing components
   small: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
+    shadowColor: "rgba(0,0,0,0.35)",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   tile3D: {
-    // We will handle 3D via borderBottomWidth, but add subtle drop shadow too
-    shadowColor: "#000",
+    shadowColor: "rgba(0,0,0,0.35)",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
     elevation: 3,
-  }
+  },
+};
+
+export const gradients = {
+  background: ["#0C1614", "#0F2A24", "#123830"] as const,
+  card: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.05)"] as const,
+  pill: ["rgba(34,160,107,0.9)", "rgba(17,97,79,0.9)"] as const,
+  cta: ["#22A06B", "#0F7D5C"] as const,
+  tile: ["#F6EDDF", "#ECDCC6"] as const,
+};
+
+/**
+ * Semantic colors for the current theme (default: Midnight Market).
+ * Keep legacy keys for existing components while mapping to new palette.
+ */
+export const colors = {
+  background: palette.deepGreen,
+  backgroundDark: palette.forest,
+  backgroundAlt: "#0B2420",
+
+  surface: "rgba(255,255,255,0.06)",
+  surfaceAlt: "rgba(255,255,255,0.12)",
+  surfaceCard: "rgba(255,255,255,0.08)",
+  outline: "rgba(255,255,255,0.14)",
+  outlineStrong: "rgba(255,255,255,0.28)",
+
+  textPrimary: "#F7F3EE",
+  textSecondary: "#D7D0C8",
+  textMuted: "#AFA8A0",
+
+  accent: palette.jade,
+  accentStrong: "#0F7D5C",
+  gold: palette.gold,
+  warning: palette.amber,
+  success: palette.jade,
+  error: palette.red,
+  info: palette.sky,
+
+  boardBackground: "#132722",
+  boardBorder: "#1D3A33",
+  boardShadow: "#0A1613",
+
+  tile: {
+    background: palette.linen,
+    backgroundSelected: "#22A06B",
+    border: "#E5D8C5",
+    borderBottom: "#D4C3AE",
+    borderBottomSelected: "#0F7D5C",
+    text: palette.espresso,
+    textSelected: "#F9F3EA",
+    empty: "#1A302A",
+    emptyShadow: "#0F1F1A",
+  },
+
+  pill: {
+    background: "rgba(17, 97, 79, 0.9)",
+    border: "rgba(242, 193, 79, 0.8)",
+    text: "#F9F3EA",
+    icon: palette.gold,
+    shadow: "#0A241D",
+  },
+
+  button: {
+    primary: palette.jade,
+    secondary: "#0F7D5C",
+    function: "#1C7C57",
+    functionShadow: "#0F4E3A",
+    gold: palette.gold,
+    text: "#FFFFFF",
+  },
+
+  foreground: "#FFFFFF",
+  foregroundDark: palette.espresso,
+  muted: palette.ash,
+  mutedDark: palette.cocoa,
+
+  overlay: "rgba(0,0,0,0.6)",
+  border: "rgba(255,255,255,0.14)",
+
+  // Legacy mappings
+  primary: palette.forest,
+  secondary: palette.gold,
+  card: "#F4ECDE",
+};
+
+export const typography = {
+  display: { fontSize: fontSize.display, fontWeight: "900", letterSpacing: 0.5 },
+  title: { fontSize: fontSize.xxxl, fontWeight: "800", letterSpacing: 0.25 },
+  heading: { fontSize: fontSize.xl, fontWeight: "800" },
+  body: { fontSize: fontSize.md, fontWeight: "500" },
+  label: { fontSize: fontSize.sm, fontWeight: "700", letterSpacing: 0.4 },
+  helper: { fontSize: fontSize.xs, fontWeight: "600", letterSpacing: 0.3 },
+};
+
+export const surfaces = {
+  card: {
+    backgroundColor: colors.surfaceCard,
+    borderColor: colors.outline,
+  },
+  glass: {
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.2)",
+    blur: 12,
+  },
+};
+
+export const theme = {
+  palette,
+  colors,
+  gradients,
+  spacing,
+  fontSize,
+  borderRadius,
+  shadows,
+  typography,
+  surfaces,
 };

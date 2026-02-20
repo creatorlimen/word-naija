@@ -169,10 +169,6 @@ export default function Grid({ gridState, selectedPath }: GridProps) {
   );
 }
 
-function mathMax(a: number, b: number) {
-    return a > b ? a : b;
-}
-
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -185,40 +181,40 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: "stretch",
     backgroundColor: colors.boardBackground,
-    borderRadius: 16, 
-    borderWidth: 6,
-    borderColor: colors.boardBorder,
+    borderRadius: 18, 
+    borderWidth: 2,
+    borderColor: colors.outline,
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 8,
-    borderBottomWidth: 10,
-    borderBottomColor: colors.boardShadow,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    overflow: "hidden",
+    ...shadows.soft,
   },
   cellEmpty: {
     backgroundColor: colors.tile.empty,
-    borderRadius: 8, 
+    borderRadius: 10, 
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.2)",
+    borderColor: colors.outline,
   },
   cellTile: {
     backgroundColor: colors.tile.background,
-    borderRadius: 10, 
+    borderRadius: 12, 
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.tile.border,
-    borderBottomWidth: 4, 
+    borderBottomWidth: 3, 
     borderBottomColor: colors.tile.borderBottom,
-    ...shadows.tile3D,
+    ...shadows.tile,
   },
   cellHighlighted: {
-    borderColor: colors.warning,
+    borderColor: colors.accent,
     borderWidth: 2,
+    shadowColor: colors.accent,
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
   },
   cellText: {
     fontWeight: "900",
@@ -226,6 +222,6 @@ const styles = StyleSheet.create({
     marginTop: -3,
   },
   cellTextHighlighted: {
-    color: colors.warning,
+    color: colors.accent,
   },
 });

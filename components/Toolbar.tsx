@@ -56,8 +56,6 @@ function CircleButton({
 export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWordsTarget, onShuffle, onHint, onExtra }: ToolbarProps) {
   return (
     <View style={styles.container}>
-      {/* 3 Icons Row - Friends and Themes removed */}
-      
       {/* 1. Extra */}
       <CircleButton label="📦" sublabel="EXTRA" onPress={onExtra} badge={`${extraWordsCollected}/${extraWordsTarget}`} />
 
@@ -67,9 +65,10 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
       {/* 3. Hint */}
       <CircleButton 
         label="💡" 
-        sublabel="HINT"
+        sublabel={`HINT (${hintCost})`}
         onPress={onHint} 
-        badge={hintCost}
+        badge={undefined}
+        color={colors.button.primary}
       />
     </View>
   );
@@ -78,57 +77,62 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderColor: colors.outline,
+    borderWidth: 1,
+    borderRadius: borderRadius.full,
+    ...shadows.subtle,
   },
   btnWrapper: {
     position: "relative",
     alignItems: "center",
   },
   circleBtn: {
-    width: 56,
-    height: 56,
+    width: 60,
+    height: 60,
     borderRadius: borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderBottomWidth: 4,
+    borderColor: colors.outline,
+    borderBottomWidth: 3,
     borderBottomColor: colors.button.functionShadow,
-    ...shadows.small,
+    ...shadows.subtle,
   },
   pressed: {
     transform: [{ translateY: 2 }],
     borderBottomWidth: 2,
   },
   btnIcon: {
-    fontSize: 18,
+    fontSize: 20,
     color: "#FFF",
     marginTop: -2,
   },
   btnSublabel: {
-    fontSize: 8,
+    fontSize: 9,
     fontWeight: "800",
     color: "#FFF",
-    letterSpacing: 0.5,
-    marginTop: 1,
+    letterSpacing: 0.8,
+    marginTop: 2,
   },
   badge: {
     position: "absolute",
     bottom: -8,
     right: -4,
-    backgroundColor: colors.pill.background, // Green pill style
+    backgroundColor: colors.surfaceAlt,
     borderRadius: borderRadius.full,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderWidth: 1,
-    borderColor: colors.pill.border,
+    borderColor: colors.outline,
   },
   badgeText: {
-    color: colors.pill.text,
+    color: colors.textPrimary,
     fontSize: 10,
     fontWeight: "bold",
   }

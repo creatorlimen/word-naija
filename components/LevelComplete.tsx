@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from "react-native";
 import type { Level } from "../lib/game/types";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
 
 interface LevelCompleteProps {
   visible: boolean;
@@ -48,17 +48,17 @@ export default function LevelComplete({
           <Text style={styles.subtitle}>{level.title}</Text>
 
           <View style={styles.statsRow}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{solvedWords.size}</Text>
+            <View style={styles.statChip}>
               <Text style={styles.statLabel}>Words</Text>
+              <Text style={styles.statValue}>{solvedWords.size}</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{extraWords.size}</Text>
+            <View style={styles.statChip}>
               <Text style={styles.statLabel}>Bonus</Text>
+              <Text style={styles.statValue}>{extraWords.size}</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>🪙 {coinsEarned}</Text>
-              <Text style={styles.statLabel}>Coins</Text>
+            <View style={styles.statChipAccent}>
+              <Text style={styles.statLabelAccent}>Coins</Text>
+              <Text style={styles.statValueAccent}>🪙 {coinsEarned}</Text>
             </View>
           </View>
 
@@ -112,12 +112,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   modal: {
-    backgroundColor: colors.foreground,
+    backgroundColor: colors.surfaceCard,
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
+    padding: spacing.xl,
     width: "100%",
     maxHeight: "80%",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.outline,
+    gap: spacing.sm,
+    ...shadows.soft,
   },
   emoji: {
     fontSize: 48,
@@ -125,37 +129,63 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSize.xxl,
-    fontWeight: "800",
-    color: colors.primary,
-    marginBottom: 4,
+    fontWeight: "900",
+    color: colors.textPrimary,
   },
   subtitle: {
     fontSize: fontSize.md,
-    color: colors.mutedDark,
+    color: colors.textMuted,
     marginBottom: spacing.md,
   },
   statsRow: {
     flexDirection: "row",
     marginBottom: spacing.md,
     gap: spacing.sm,
+    width: "100%",
   },
-  statCard: {
-    backgroundColor: colors.secondary,
-    borderRadius: borderRadius.md,
+  statChip: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    alignItems: "center",
-    minWidth: 80,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.outline,
+    alignItems: "flex-start",
+    gap: 2,
+  },
+  statChipAccent: {
+    flex: 1,
+    backgroundColor: "rgba(34,160,107,0.12)",
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    alignItems: "flex-start",
+    gap: 2,
   },
   statValue: {
     fontSize: fontSize.lg,
-    fontWeight: "700",
-    color: colors.foregroundDark,
+    fontWeight: "800",
+    color: colors.textPrimary,
   },
   statLabel: {
     fontSize: fontSize.xs,
-    color: colors.foregroundDark,
-    marginTop: 2,
+    color: colors.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  statValueAccent: {
+    fontSize: fontSize.lg,
+    fontWeight: "900",
+    color: colors.textPrimary,
+  },
+  statLabelAccent: {
+    fontSize: fontSize.xs,
+    color: colors.accent,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
   },
   meaningsScroll: {
     maxHeight: 180,
@@ -165,16 +195,16 @@ const styles = StyleSheet.create({
   meaningRow: {
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.muted,
+    borderBottomColor: colors.outline,
   },
   meaningWord: {
     fontSize: fontSize.md,
-    fontWeight: "700",
-    color: colors.primary,
+    fontWeight: "800",
+    color: colors.textPrimary,
   },
   meaningText: {
     fontSize: fontSize.sm,
-    color: colors.mutedDark,
+    color: colors.textMuted,
     marginTop: 2,
   },
   primaryButton: {
@@ -185,6 +215,9 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.outlineStrong,
+    ...shadows.subtle,
   },
   secondaryButton: {
     backgroundColor: "transparent",
@@ -194,7 +227,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: colors.muted,
+    borderColor: colors.outline,
   },
   buttonPressed: {
     opacity: 0.8,
@@ -202,12 +235,12 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.foreground,
   },
   secondaryButtonText: {
     fontSize: fontSize.md,
-    fontWeight: "600",
-    color: colors.mutedDark,
+    fontWeight: "700",
+    color: colors.textMuted,
   },
 });

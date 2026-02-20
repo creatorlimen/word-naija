@@ -10,10 +10,10 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-  ImageBackground,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { LinearGradient } from "expo-linear-gradient";
 import Grid from "./Grid";
 import LetterCircle from "./LetterCircle"; 
 import Toolbar from "./Toolbar";
@@ -23,14 +23,14 @@ import SettingsModal from "./SettingsModal";
 import FTUE from "./FTUE";
 import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
-import { colors, fontSize, spacing, borderRadius, shadows } from "../constants/theme";
+import { colors, fontSize, spacing, borderRadius, shadows, gradients } from "../constants/theme";
 
 interface GameBoardProps {
   onGoHome: () => void;
 }
 
 export default function GameBoard({ onGoHome }: GameBoardProps) {
-  const { state, progress, isComplete, isLoading, error } = useGameState();
+  const { state, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -48,6 +48,10 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     if (!state?.currentLevel) return 0;
     return getCoinsEarned(state);
   }, [state]);
+
+  const totalWords = state?.currentLevel?.targetWords.length ?? 0;
+  const solvedWordsCount = state?.solvedWords?.size ?? 0;
+  const sessionProgress = totalWords > 0 ? Math.min(1, solvedWordsCount / totalWords) : 0;
 
   // Loading
   if (isLoading) {
@@ -77,11 +81,13 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   if (!state?.currentLevel) return null;
 
   return (
-    <ImageBackground 
-      source={require("../assets/adaptive-icon.png")} // Placeholder BG
-      style={styles.background}
-      imageStyle={{ opacity: 0.05 }} // Subtle texture
-    >
+    <View style={styles.background}>
+      <LinearGradient
+        colors={gradients.background}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
       <SafeAreaView style={styles.container} edges={["top"]}>
         <StatusBar style="light" />
 
@@ -106,13 +112,18 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           {/* Right: Coin Pill */}
           <View style={styles.coinPill}>
             <View style={styles.coinIconContainer}>
-               <Text style={styles.coinIcon}>$</Text>
+               <Text style={styles.coinIcon}>🪙</Text>
             </View>
             <Text style={styles.coinText}>{state.coins}</Text>
-            <View style={styles.plusButton}>
-               <Text style={styles.plusText}>+</Text>
-            </View>
           </View>
+        </View>
+
+        {/* Session progress */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${sessionProgress * 100}%` }]} />
+          </View>
+          <Text style={styles.progressText}>{solvedWordsCount}/{totalWords} words solved</Text>
         </View>
 
         {/* -- Game Area -- */}
@@ -189,7 +200,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           onPlayAgain={handlePlayAgain}
         />
       </SafeAreaView>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -241,9 +252,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    height: 60,
+    height: 64,
   },
   headerLeft: {
     flexDirection: "row",
@@ -255,35 +266,35 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.pill.background,
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.pill.border,
+    borderColor: colors.outline,
     marginRight: spacing.sm,
     ...shadows.small,
   },
   iconText: {
     fontSize: fontSize.lg,
-    color: colors.pill.icon,
+    color: colors.textPrimary,
   },
   
   /* CENTER PILL (LEVEL) */
   levelPill: {
-    backgroundColor: colors.pill.background,
-    paddingVertical: 6,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    paddingVertical: 8,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.pill.border,
-    minWidth: 100,
+    borderColor: colors.outline,
+    minWidth: 120,
     alignItems: "center",
-    ...shadows.small,
+    ...shadows.subtle,
   },
   levelText: {
-    color: colors.pill.text,
+    color: colors.textPrimary,
     fontSize: fontSize.md,
     fontWeight: "800",
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
 
@@ -291,76 +302,61 @@ const styles = StyleSheet.create({
   coinPill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.pill.background,
-    paddingVertical: 4,
-    paddingLeft: 4,
-    paddingRight: 4,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    paddingVertical: 6,
+    paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.pill.border,
-    minWidth: 80,
-    ...shadows.small,
+    borderColor: colors.outline,
+    minWidth: 88,
+    gap: spacing.xs,
+    ...shadows.subtle,
   },
   coinIconContainer: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.pill.icon,
+    backgroundColor: "rgba(34,160,107,0.25)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 4,
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
   coinIcon: {
-    color: colors.pill.background,
-    fontSize: fontSize.sm,
+    color: colors.gold,
+    fontSize: fontSize.md,
     fontWeight: "bold",
   },
   coinText: {
-    color: colors.pill.text,
+    color: colors.textPrimary,
     fontSize: fontSize.sm,
-    fontWeight: "700",
-    marginRight: 8,
-  },
-  plusButton: {
-    width: 20,
-    height: 20,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.success,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  plusText: {
-    color: "#FFF",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginTop: -2,
+    fontWeight: "800",
   },
 
   progressContainer: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xs,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
   },
   progressBar: {
-    height: 6,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    height: 8,
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.full,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
   progressFill: {
     height: "100%",
-    backgroundColor: colors.success,
+    backgroundColor: colors.accent,
     borderRadius: borderRadius.full,
   },
   progressText: {
-    color: "rgba(255,255,255,0.8)",
+    color: colors.textMuted,
     fontSize: fontSize.xs,
-    textAlign: "center",
+    textAlign: "left",
     marginTop: 4,
-    fontWeight: "600",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: {width: 0, height: 1},
-    textShadowRadius: 2
+    fontWeight: "700",
   },
   
   separator: {
