@@ -47,7 +47,7 @@ export function generateLevelFromWords(
   let retryCount = 0;
 
   // 2. Iteratively place remaining words
-  while (unplacedWords.length > 0 && retryCount < unplacedWords.length * 2) {
+  while (unplacedWords.length > 0 && retryCount < Math.max(50, unplacedWords.length * unplacedWords.length)) {
     let placedSomething = false;
 
     // Try to fit each unplaced word
@@ -77,6 +77,36 @@ export function generateLevelFromWords(
       if (skipped) unplacedWords.push(skipped);
       retryCount++;
     }
+  }
+
+  // 2b. Last-resort fallback: island placement for any words the crossword loop couldn't fit
+  for (let i = 0; i < unplacedWords.length; ) {
+    const candidate = unplacedWords[i];
+    const islandMove = findIslandPlacement(candidate.word, grid, placements);
+    if (islandMove) {
+      placeWordOnGrid(
+        candidate.word,
+        candidate.meaning,
+        islandMove.row,
+        islandMove.col,
+        islandMove.direction,
+        placements,
+        grid
+      );
+      placedWordsSet.add(candidate.word);
+      unplacedWords.splice(i, 1);
+    } else {
+      i++;
+    }
+  }
+
+  // Detect any words that still couldn't be placed — crash loudly so it is never silently shipped
+  const droppedWords = wordDefs.filter(wd => !placements.some(p => p.word === wd.word));
+  if (droppedWords.length > 0) {
+    throw new Error(
+      `Level ${levelId}: failed to place word(s): ${droppedWords.map(w => w.word).join(', ')}. ` +
+      `Check for insufficient letter overlap or too many same-length words.`
+    );
   }
 
   // 3. Determine bounding box and normalize
@@ -244,6 +274,43 @@ function isValidPlacement(
     }
     
     return true;
+}
+
+/**
+ * Last-resort placement: puts a word in empty space outside the current grid's bounding box,
+ * with a 2-cell buffer to satisfy the no-adjacency rule. Used when intersection-based placement
+ * has exhausted all geometric possibilities.
+ */
+function findIslandPlacement(
+  word: string,
+  grid: Map<string, string>,
+  placements: PlacedWord[]
+): { row: number; col: number; direction: Direction } | null {
+  if (placements.length === 0) return null;
+
+  // Compute bounding box of existing occupied cells
+  let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
+  for (const key of grid.keys()) {
+    const [r, c] = key.split(',').map(Number);
+    minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+    minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+  }
+
+  // Try four candidate positions around the existing content with a 2-cell gap
+  const candidates: { row: number; col: number; direction: Direction }[] = [
+    { row: minR - 2, col: minC, direction: "horizontal" },  // above
+    { row: maxR + 2, col: minC, direction: "horizontal" },  // below
+    { row: minR, col: minC - 2, direction: "vertical" },    // left
+    { row: minR, col: maxC + 2, direction: "vertical" },    // right
+  ];
+
+  for (const candidate of candidates) {
+    if (isValidPlacement(word, candidate.row, candidate.col, candidate.direction, grid)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 function getBounds(placements: PlacedWord[]) {
