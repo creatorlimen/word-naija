@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: fontSize.lg,
-    fontWeight: "800",
+    fontWeight: "900",
     color: colors.textPrimary,
     textAlign: "center",
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
   },
   statIconBonus: {
-    fontSize: fontSize.xxl,
+    fontSize: fontSize.xl,
     color: "#FFFFFF",
   },
   statLabel: {
