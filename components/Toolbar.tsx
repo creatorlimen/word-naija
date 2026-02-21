@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
 import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
 
@@ -20,6 +20,7 @@ function CircleButton({
   badge,
   topBadge,
   pulseAnim,
+  glowColor,
 }: { 
   label: string; 
   sublabel: string;
@@ -28,25 +29,26 @@ function CircleButton({
   badge?: string | number;
   topBadge?: string | number;
   pulseAnim?: Animated.Value;
+  glowColor?: string;
 }) {
   const inner = (
     <View style={styles.btnWrapper}>
-      {topBadge !== undefined && (
-        <View style={[styles.badge, styles.badgeTop]}>
-          <Text style={styles.badgeText}>{topBadge}</Text>
-        </View>
-      )}
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
           styles.circleBtn,
-          { backgroundColor: color },
+          { backgroundColor: glowColor ?? color },
           pressed && styles.pressed,
         ]}
       >
         <Text style={styles.btnIcon}>{label}</Text>
         <Text style={styles.btnSublabel}>{sublabel}</Text>
       </Pressable>
+      {topBadge !== undefined && (
+        <View style={[styles.badge, styles.badgeTop]}>
+          <Text style={styles.badgeText}>{topBadge}</Text>
+        </View>
+      )}
       {badge !== undefined && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badge}</Text>
@@ -68,15 +70,27 @@ function CircleButton({
 export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWordsTarget, onShuffle, onHint, onExtra }: ToolbarProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const prevExtraRef = useRef(extraWordsCollected);
+  const [isGlowing, setIsGlowing] = useState(false);
 
   useEffect(() => {
-    if (extraWordsCollected > prevExtraRef.current) {
-      // Bounce the EXTRA button to signal the new word landed there
+    const prev = prevExtraRef.current;
+
+    if (extraWordsCollected > prev) {
+      // New extra word added — gentle bounce
       Animated.sequence([
         Animated.spring(pulseAnim, { toValue: 1.35, useNativeDriver: true, speed: 40, bounciness: 14 }),
         Animated.spring(pulseAnim, { toValue: 1, useNativeDriver: true, speed: 24, bounciness: 6 }),
       ]).start();
+    } else if (extraWordsCollected === 0 && prev > 0) {
+      // Box just filled — coins awarded — big burst + gold glow
+      setIsGlowing(true);
+      setTimeout(() => setIsGlowing(false), 900);
+      Animated.sequence([
+        Animated.spring(pulseAnim, { toValue: 1.6, useNativeDriver: true, speed: 60, bounciness: 22 }),
+        Animated.spring(pulseAnim, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
+      ]).start();
     }
+
     prevExtraRef.current = extraWordsCollected;
   }, [extraWordsCollected]);
 
@@ -87,8 +101,9 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         label="📦"
         sublabel="EXTRA"
         onPress={onExtra}
-        badge={`${extraWordsCollected}/${extraWordsTarget}`}
+        topBadge={`${extraWordsCollected}/${extraWordsTarget}`}
         pulseAnim={pulseAnim}
+        glowColor={isGlowing ? "#C9A227" : undefined}
       />
 
       {/* 2. Shuffle */}
@@ -169,6 +184,7 @@ const styles = StyleSheet.create({
     right: -4,
     backgroundColor: colors.accent,
     borderColor: colors.outlineStrong,
+    zIndex: 10,
   },
   badgeText: {
     color: colors.textPrimary,

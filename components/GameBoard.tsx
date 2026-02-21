@@ -10,6 +10,7 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -70,6 +71,21 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
     prevSolvedRef.current = new Set(curr);
   }, [state?.solvedWords]);
+
+  // Coin pill pulse — fires whenever coins increase
+  const coinPulseAnim = useRef(new Animated.Value(1)).current;
+  const prevCoinsRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!state?.coins) return;
+    if (prevCoinsRef.current !== null && state.coins > prevCoinsRef.current) {
+      Animated.sequence([
+        Animated.spring(coinPulseAnim, { toValue: 1.4, useNativeDriver: true, speed: 60, bounciness: 20 }),
+        Animated.spring(coinPulseAnim, { toValue: 1, useNativeDriver: true, speed: 24, bounciness: 6 }),
+      ]).start();
+    }
+    prevCoinsRef.current = state.coins;
+  }, [state?.coins]);
 
   // Play congrats sound exactly once when the level is completed
   useEffect(() => {
@@ -148,12 +164,12 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           </View>
 
           {/* Right: Coin Pill */}
-          <View style={styles.coinPill}>
+          <Animated.View style={[styles.coinPill, { transform: [{ scale: coinPulseAnim }] }]}>
             <View style={styles.coinIconContainer}>
                <Text style={styles.coinIcon}>🪙</Text>
             </View>
             <Text style={styles.coinText}>{state.coins}</Text>
-          </View>
+          </Animated.View>
         </View>
 
         {/* -- Game Area -- */}
