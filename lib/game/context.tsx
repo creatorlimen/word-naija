@@ -223,6 +223,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const currentState = stateRef.current;
       if (!currentState) return;
 
+      // Award level-completion coins before transitioning
+      const completionBonus = 15 + currentState.currentLevel.levelId * 5;
+      const coinsAfterBonus = currentState.coins + completionBonus;
+
       const nextLevelId = currentState.currentLevel.levelId + 1;
       if (nextLevelId <= TOTAL_LEVELS) {
         try {
@@ -231,7 +235,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
           const newState = await initializeGameState(
             nextLevelId,
-            currentState.coins
+            coinsAfterBonus
           );
           newState.completedLevels = newCompletedLevels;
           newState.soundEnabled = currentState.soundEnabled;

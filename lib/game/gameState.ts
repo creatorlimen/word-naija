@@ -15,7 +15,7 @@ import { loadLevel } from "./levelLoader";
 import { validateWord } from "./dictionaryLoader";
 
 // Game constants
-export const HINT_COST = 40;
+export const HINT_COST = 15;
 export const EXTRA_WORDS_TARGET = 10;
 export const EXTRA_WORDS_REWARD = 15;
 
@@ -254,17 +254,14 @@ export function submitWord(state: GameStateData): GameStateData {
   }
 
   let isTargetWord = !!targetWord;
-  let coinsEarned = 0;
 
-  if (isTargetWord) {
-    // This is a target word
-    coinsEarned = 10; // Base reward for target word
-  } else if (state.currentLevel.extraWordsAllowed) {
-    // Extra words don't give coins directly — they fill the box
-    coinsEarned = 0;
-  } else {
-    // Extra words not allowed - treat as invalid
-    return clearSelection(state);
+  if (!isTargetWord) {
+    if (state.currentLevel.extraWordsAllowed) {
+      // Extra words fill the box — no coins here
+    } else {
+      // Extra words not allowed - treat as invalid
+      return clearSelection(state);
+    }
   }
 
   // Update state
@@ -273,6 +270,7 @@ export function submitWord(state: GameStateData): GameStateData {
 
   const newExtraWords = new Set(state.extraWordsFound);
   let newExtraWordsCollected = state.extraWordsCollected;
+  let coinsEarned = 0;
   if (!isTargetWord) {
     newExtraWords.add(canonical);
     newExtraWordsCollected += 1;
@@ -375,11 +373,6 @@ export function shuffleLetters(state: GameStateData): GameStateData {
  * Reveal a hint - show one empty cell from unsolved target words
  */
 export function revealHint(state: GameStateData): GameStateData {
-  // Cost: HINT_COST coins
-  if (state.coins < HINT_COST) {
-    return state;
-  }
-
   // Find first unsolved target word
   const unsolvedWords = state.currentLevel.targetWords.filter(
     (tw) => !state.solvedWords.has(tw.word.toUpperCase())
@@ -462,21 +455,12 @@ export function isLevelComplete(state: GameStateData): boolean {
 }
 
 /**
- * Get coins earned for current level
+ * Get coins awarded on level completion: scales with difficulty.
+ * Formula: 15 + (levelId × 5)  →  Level 1 = 20, Level 2 = 25 … Level 20 = 115
  */
 export function getCoinsEarned(state: GameStateData): number {
-  let coins = 0;
-
-  // 10 coins per target word
-  coins += state.solvedWords.size * 10;
-
-  // 5 coins per extra word
-  coins += state.extraWordsFound.size * 5;
-
-  // Bonus for solving without hints
-  // (This would need additional tracking)
-
-  return coins;
+  const levelId = state.currentLevel?.levelId ?? 1;
+  return 15 + levelId * 5;
 }
 
 /**
