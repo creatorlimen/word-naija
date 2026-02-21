@@ -32,6 +32,7 @@ import {
   initializeSounds,
   playTapSound,
   playSuccessSound,
+  playExtraWordSound,
   playErrorSound,
 } from "./soundManager";
 
@@ -154,17 +155,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Action handlers — use setState callback to avoid stale closures
   const actions = {
     selectLetter: useCallback((index: number) => {
-      setState((prev) => {
-        if (!prev) return prev;
-        const next = selectLetter(prev, index);
-        // Play tap only when a new letter was actually appended
-        const prevLen = prev.selectedPath?.word.length ?? 0;
-        const nextLen = next.selectedPath?.word.length ?? 0;
-        if (nextLen > prevLen) {
-          playTapSound(next.soundEnabled);
-        }
-        return next;
-      });
+      const prev = stateRef.current;
+      if (!prev) return;
+      const next = selectLetter(prev, index);
+      const prevLen = prev.selectedPath?.word.length ?? 0;
+      const nextLen = next.selectedPath?.word.length ?? 0;
+      if (nextLen > prevLen) {
+        playTapSound(prev.soundEnabled);
+      }
+      setState(next);
     }, []),
 
     undoSelection: useCallback(() => {
@@ -176,21 +175,31 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, []),
 
     commitSelection: useCallback(() => {
-      setState((prev) => {
-        if (!prev) return prev;
-        const hadWord = (prev.selectedPath?.word.length ?? 0) > 0;
-        const beforeSize = prev.solvedWords.size;
-        const next = submitWord(prev);
-        const afterSize = next.solvedWords.size;
-        if (afterSize > beforeSize) {
-          // A new word was solved — play upbeat success sound
+      const prev = stateRef.current;
+      if (!prev) return;
+
+      const hadWord = (prev.selectedPath?.word.length ?? 0) > 0;
+      const beforeSolvedSize = prev.solvedWords.size;
+      const beforeExtraSize = prev.extraWordsFound.size;
+
+      const next = submitWord(prev);
+
+      const afterSolvedSize = next.solvedWords.size;
+      const afterExtraSize = next.extraWordsFound.size;
+
+      setState(next);
+
+      if (afterSolvedSize > beforeSolvedSize) {
+        // New word accepted — distinguish target vs extra
+        if (afterExtraSize > beforeExtraSize) {
+          playExtraWordSound(prev.soundEnabled);
+        } else {
           playSuccessSound(prev.soundEnabled);
-        } else if (hadWord) {
-          // Word was submitted but not valid / already found
-          playErrorSound(prev.soundEnabled);
         }
-        return next;
-      });
+      } else if (hadWord) {
+        // Word submitted but rejected (invalid or duplicate)
+        playErrorSound(prev.soundEnabled);
+      }
     }, []),
 
     submitWord: useCallback(() => {

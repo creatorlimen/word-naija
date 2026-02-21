@@ -23,6 +23,7 @@ import SettingsModal from "./SettingsModal";
 import FTUE from "./FTUE";
 import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
+import { playCompleteSound } from "../lib/game/soundManager";
 import { colors, fontSize, spacing, borderRadius, shadows, gradients } from "../constants/theme";
 
 interface GameBoardProps {
@@ -69,6 +70,13 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
     prevSolvedRef.current = new Set(curr);
   }, [state?.solvedWords]);
+
+  // Play congrats sound exactly once when the level is completed
+  useEffect(() => {
+    if (isComplete && state?.soundEnabled) {
+      playCompleteSound(state.soundEnabled);
+    }
+  }, [isComplete]);
 
   const handleNextLevel = useCallback(async () => {
     await actions.nextLevel();

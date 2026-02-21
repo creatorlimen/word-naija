@@ -23,7 +23,7 @@ interface LegacyFS {
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const FileSystem: LegacyFS = require("expo-file-system/legacy");
 
-type SoundType = "tap" | "success" | "error" | "complete" | "hint";
+type SoundType = "tap" | "success" | "extra" | "error" | "complete" | "hint";
 
 let audioReady = false;
 const soundCache = new Map<SoundType, AudioPlayer>();
@@ -109,18 +109,43 @@ const TONES: Record<SoundType, () => string> = {
       return 0.5 * Math.sin(2 * Math.PI * freq * t);
     }),
 
-  /** Falling thud — word not found */
+  /**
+   * Extra-word variant — same upbeat chirp but shorter, followed by a
+   * soft trailing ping after a gap (played as two sequential sounds).
+   * This tone is just the trailing ping; the main success sound fires first.
+   */
+  extra: () =>
+    synthesiseWav(90, (t) => 0.28 * Math.sin(2 * Math.PI * 1047 * t)), // C6 soft ping
   error: () =>
     synthesiseWav(200, (t, p) => {
       const freq = 340 - p * 170; // sweep 340 Hz → 170 Hz
       return 0.5 * Math.sin(2 * Math.PI * freq * t);
     }),
 
-  /** Long rising sweep — level complete */
+  /** Upbeat "ta-da-daa" three-note fanfare — level complete */
   complete: () =>
-    synthesiseWav(480, (t, p) => {
-      const freq = 440 + p * 660; // 440 Hz → 1100 Hz
-      return 0.55 * Math.sin(2 * Math.PI * freq * t);
+    synthesiseWav(560, (t) => {
+      // Three staccato notes with short silent gaps between them
+      //   "ta"  — C5 (523 Hz) 0.00–0.11 s
+      //   "da"  — E5 (659 Hz) 0.16–0.27 s
+      //   "daa" — G5 (784 Hz) 0.32–0.56 s  (held longer for emphasis)
+      const notes: { start: number; end: number; freq: number }[] = [
+        { start: 0.00, end: 0.11, freq: 523 },
+        { start: 0.16, end: 0.27, freq: 659 },
+        { start: 0.32, end: 0.56, freq: 784 },
+      ];
+      for (const note of notes) {
+        if (t >= note.start && t < note.end) {
+          const p = (t - note.start) / (note.end - note.start);
+          // Per-note envelope: sharp attack (10%), sustain, soft release (20%)
+          const env =
+            p < 0.10 ? p / 0.10
+            : p > 0.80 ? (1 - p) / 0.20
+            : 1.0;
+          return 0.6 * env * Math.sin(2 * Math.PI * note.freq * t);
+        }
+      }
+      return 0; // silence in the gaps between notes
     }),
 
   /** Soft mid-range ping — hint used */
@@ -132,7 +157,7 @@ const TONES: Record<SoundType, () => string> = {
 
 async function preloadAllSounds(): Promise<void> {
   const cacheDir = FileSystem.cacheDirectory ?? "";
-  const types: SoundType[] = ["tap", "success", "error", "complete", "hint"];
+  const types: SoundType[] = ["tap", "success", "extra", "error", "complete", "hint"];
 
   await Promise.all(
     types.map(async (type) => {
@@ -196,6 +221,15 @@ export function playTapSound(enabled: boolean): void {
 
 export function playSuccessSound(enabled: boolean): void {
   void playSound("success", enabled);
+}
+
+/**
+ * Extra word found: plays the regular success chirp, then a soft C6 ping
+ * ~330 ms later to subtly distinguish it from a target-word solve.
+ */
+export function playExtraWordSound(enabled: boolean): void {
+  void playSound("success", enabled);
+  setTimeout(() => void playSound("extra", enabled), 330);
 }
 
 export function playErrorSound(enabled: boolean): void {
