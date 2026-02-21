@@ -50,15 +50,18 @@ export default function LevelComplete({
           <View style={styles.statsRow}>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Words</Text>
+              <Text style={styles.statIcon}>📝</Text>
               <Text style={styles.statValue}>{solvedWords.size}</Text>
             </View>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Bonus</Text>
+              <Text style={styles.statIconBonus}>⭐</Text>
               <Text style={styles.statValue}>{extraWords.size}</Text>
             </View>
             <View style={styles.statChipAccent}>
               <Text style={styles.statLabelAccent}>Coins</Text>
-              <Text style={styles.statValueAccent}>🪙 {coinsEarned}</Text>
+              <Text style={styles.statIcon}>🪙</Text>
+              <Text style={styles.statValueAccent}>{coinsEarned}</Text>
             </View>
           </View>
 
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: colors.outline,
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 2,
   },
   statChipAccent: {
@@ -162,30 +165,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: colors.accent,
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 2,
   },
   statValue: {
     fontSize: fontSize.lg,
     fontWeight: "800",
     color: colors.textPrimary,
+    textAlign: "center",
+  },
+  statIcon: {
+    fontSize: fontSize.xl,
+  },
+  statIconBonus: {
+    fontSize: fontSize.xxl,
+    color: "#FFFFFF",
   },
   statLabel: {
     fontSize: fontSize.xs,
     color: colors.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
+    textAlign: "center",
   },
   statValueAccent: {
     fontSize: fontSize.lg,
     fontWeight: "900",
     color: colors.textPrimary,
+    textAlign: "center",
   },
   statLabelAccent: {
     fontSize: fontSize.xs,
     color: colors.accent,
     textTransform: "uppercase",
     letterSpacing: 0.6,
+    textAlign: "center",
   },
   meaningsScroll: {
     maxHeight: 180,
