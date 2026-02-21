@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
 import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
+import Sparkle from "./Sparkle";
 
 interface ToolbarProps {
   coins: number;
@@ -21,6 +22,7 @@ function CircleButton({
   topBadge,
   pulseAnim,
   glowColor,
+  sparkleTrigger,
 }: { 
   label: string; 
   sublabel: string;
@@ -30,6 +32,7 @@ function CircleButton({
   topBadge?: string | number;
   pulseAnim?: Animated.Value;
   glowColor?: string;
+  sparkleTrigger?: number;
 }) {
   const inner = (
     <View style={styles.btnWrapper}>
@@ -54,6 +57,7 @@ function CircleButton({
           <Text style={styles.badgeText}>{badge}</Text>
         </View>
       )}
+      <Sparkle trigger={sparkleTrigger ?? 0} />
     </View>
   );
 
@@ -71,6 +75,7 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const prevExtraRef = useRef(extraWordsCollected);
   const [isGlowing, setIsGlowing] = useState(false);
+  const [extraBurstKey, setExtraBurstKey] = useState(0);
 
   useEffect(() => {
     const prev = prevExtraRef.current;
@@ -82,9 +87,10 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         Animated.spring(pulseAnim, { toValue: 1, useNativeDriver: true, speed: 24, bounciness: 6 }),
       ]).start();
     } else if (extraWordsCollected === 0 && prev > 0) {
-      // Box just filled — coins awarded — big burst + gold glow
+      // Box just filled — coins awarded — big burst + gold glow + sparkle
       setIsGlowing(true);
       setTimeout(() => setIsGlowing(false), 900);
+      setExtraBurstKey(k => k + 1);
       Animated.sequence([
         Animated.spring(pulseAnim, { toValue: 1.6, useNativeDriver: true, speed: 60, bounciness: 22 }),
         Animated.spring(pulseAnim, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
@@ -104,6 +110,7 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         topBadge={`${extraWordsCollected}/${extraWordsTarget}`}
         pulseAnim={pulseAnim}
         glowColor={isGlowing ? "#C9A227" : undefined}
+        sparkleTrigger={extraBurstKey}
       />
 
       {/* 2. Shuffle */}

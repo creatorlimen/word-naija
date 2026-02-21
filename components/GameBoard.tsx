@@ -25,6 +25,7 @@ import FTUE from "./FTUE";
 import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { playCompleteSound } from "../lib/game/soundManager";
+import Sparkle from "./Sparkle";
 import { colors, fontSize, spacing, borderRadius, shadows, gradients } from "../constants/theme";
 
 interface GameBoardProps {
@@ -72,13 +73,15 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     prevSolvedRef.current = new Set(curr);
   }, [state?.solvedWords]);
 
-  // Coin pill pulse — fires whenever coins increase
+  // Coin pill pulse + sparkle — fires whenever coins increase
   const coinPulseAnim = useRef(new Animated.Value(1)).current;
   const prevCoinsRef = useRef<number | null>(null);
+  const [coinSparkleTrigger, setCoinSparkleTrigger] = useState(0);
 
   useEffect(() => {
     if (!state?.coins) return;
     if (prevCoinsRef.current !== null && state.coins > prevCoinsRef.current) {
+      setCoinSparkleTrigger(k => k + 1);
       Animated.sequence([
         Animated.spring(coinPulseAnim, { toValue: 1.4, useNativeDriver: true, speed: 60, bounciness: 20 }),
         Animated.spring(coinPulseAnim, { toValue: 1, useNativeDriver: true, speed: 24, bounciness: 6 }),
@@ -164,12 +167,15 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           </View>
 
           {/* Right: Coin Pill */}
-          <Animated.View style={[styles.coinPill, { transform: [{ scale: coinPulseAnim }] }]}>
-            <View style={styles.coinIconContainer}>
-               <Text style={styles.coinIcon}>🪙</Text>
-            </View>
-            <Text style={styles.coinText}>{state.coins}</Text>
-          </Animated.View>
+          <View style={{ position: "relative" }}>
+            <Animated.View style={[styles.coinPill, { transform: [{ scale: coinPulseAnim }] }]}>
+              <View style={styles.coinIconContainer}>
+                 <Text style={styles.coinIcon}>🪙</Text>
+              </View>
+              <Text style={styles.coinText}>{state.coins}</Text>
+            </Animated.View>
+            <Sparkle trigger={coinSparkleTrigger} />
+          </View>
         </View>
 
         {/* -- Game Area -- */}
