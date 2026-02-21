@@ -221,9 +221,6 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 />
             </View>
 
-            {/* Separator */}
-            <View style={styles.separator} />
-
             {/* Bottom Toolbar */}
             <View style={styles.toolbarContainer}>
                 <Toolbar
@@ -436,13 +433,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase' as const,
   },
 
-  separator: {
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    marginHorizontal: spacing.xl,
-    marginVertical: 4,
-  },
-  
   toolbarContainer: {
     marginBottom: 0,
   },
