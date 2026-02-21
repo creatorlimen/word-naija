@@ -405,15 +405,15 @@ const styles = StyleSheet.create({
   /* PREVIEW / TOAST PILL */
   previewRow: {
     alignItems: 'center',
-    paddingVertical: 3,
+    paddingVertical: 1,
   },
   previewPill: {
-    paddingHorizontal: 20,
-    paddingVertical: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 2,
     backgroundColor: 'rgba(17,97,79,0.85)',
     borderRadius: borderRadius.full,
-    minHeight: 34,
-    minWidth: 80,
+    minHeight: 24,
+    minWidth: 60,
     alignItems: 'center' as const,
     borderWidth: 1,
     borderColor: colors.outline,
@@ -427,9 +427,9 @@ const styles = StyleSheet.create({
   },
   previewPillText: {
     color: '#FFF',
-    fontSize: fontSize.lg,
+    fontSize: fontSize.sm,
     fontWeight: 'bold' as const,
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     textTransform: 'uppercase' as const,
   },
 
