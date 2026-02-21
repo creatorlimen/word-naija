@@ -24,6 +24,7 @@ function CircleButton({
   glowColor,
   sparkleTrigger,
   topBadgeOffset = -4,
+  topBadgeTop = -8,
 }: { 
   label: string; 
   sublabel: string;
@@ -35,6 +36,7 @@ function CircleButton({
   glowColor?: string;
   sparkleTrigger?: number;
   topBadgeOffset?: number;
+  topBadgeTop?: number;
 }) {
   const inner = (
     <View style={styles.btnWrapper}>
@@ -50,7 +52,7 @@ function CircleButton({
         <Text style={styles.btnSublabel}>{sublabel}</Text>
       </Pressable>
       {topBadge !== undefined && (
-        <View style={[styles.badge, styles.badgeTop, { right: topBadgeOffset }]}>
+        <View style={[styles.badge, styles.badgeTop, { right: topBadgeOffset, top: topBadgeTop }]}>
           <Text style={styles.badgeText}>{topBadge}</Text>
         </View>
       )}
@@ -113,7 +115,8 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         pulseAnim={pulseAnim}
         glowColor={isGlowing ? "#C9A227" : undefined}
         sparkleTrigger={extraBurstKey}
-        topBadgeOffset={-16}
+        topBadgeOffset={-20}
+        topBadgeTop={-4}
       />
 
       {/* 2. Shuffle */}
@@ -126,6 +129,8 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         onPress={onHint}
         topBadge={hintCost}
         color={colors.button.primary}
+        topBadgeOffset={-8}
+        topBadgeTop={-4}
       />
     </View>
   );
