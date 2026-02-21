@@ -13,7 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
 
 const FTUE_KEY = "@word_naija_ftue_complete";
 
@@ -143,17 +143,20 @@ const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.82)",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: spacing.lg,
   },
   card: {
-    backgroundColor: colors.foreground,
+    backgroundColor: "#0e2318",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
     borderRadius: borderRadius.xl,
     padding: spacing.xl,
     width: Math.min(width - 48, 360),
     alignItems: "center",
+    ...shadows.soft,
   },
   emoji: {
     fontSize: 56,
@@ -162,13 +165,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.xxl,
     fontWeight: "800",
-    color: colors.primary,
+    color: colors.textPrimary,
     textAlign: "center",
     marginBottom: spacing.sm,
   },
   body: {
     fontSize: fontSize.md,
-    color: colors.mutedDark,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: spacing.lg,
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   skipText: {
-    color: colors.mutedDark,
+    color: colors.textMuted,
     fontSize: fontSize.sm,
   },
 });
