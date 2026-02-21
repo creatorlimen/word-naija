@@ -23,6 +23,7 @@ function CircleButton({
   pulseAnim,
   glowColor,
   sparkleTrigger,
+  topBadgeOffset = -4,
 }: { 
   label: string; 
   sublabel: string;
@@ -33,6 +34,7 @@ function CircleButton({
   pulseAnim?: Animated.Value;
   glowColor?: string;
   sparkleTrigger?: number;
+  topBadgeOffset?: number;
 }) {
   const inner = (
     <View style={styles.btnWrapper}>
@@ -48,7 +50,7 @@ function CircleButton({
         <Text style={styles.btnSublabel}>{sublabel}</Text>
       </Pressable>
       {topBadge !== undefined && (
-        <View style={[styles.badge, styles.badgeTop]}>
+        <View style={[styles.badge, styles.badgeTop, { right: topBadgeOffset }]}>
           <Text style={styles.badgeText}>{topBadge}</Text>
         </View>
       )}
@@ -111,6 +113,7 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         pulseAnim={pulseAnim}
         glowColor={isGlowing ? "#C9A227" : undefined}
         sparkleTrigger={extraBurstKey}
+        topBadgeOffset={-16}
       />
 
       {/* 2. Shuffle */}
@@ -163,12 +166,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   btnIcon: {
-    fontSize: 20,
+    fontSize: 15,
     color: "#FFF",
     marginTop: -2,
   },
   btnSublabel: {
-    fontSize: 9,
+    fontSize: 7,
     fontWeight: "800",
     color: "#FFF",
     letterSpacing: 0.8,

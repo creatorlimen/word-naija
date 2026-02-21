@@ -358,14 +358,16 @@ const styles = StyleSheet.create({
     borderColor: colors.outline,
     minWidth: 120,
     alignItems: "center",
+    justifyContent: "center",
     ...shadows.subtle,
   },
   levelText: {
     color: colors.textPrimary,
-    fontSize: fontSize.md,
+    fontSize: fontSize.sm,
     fontWeight: "800",
     letterSpacing: 0.8,
     textTransform: "uppercase",
+    textAlign: "center",
   },
 
   /* RIGHT PILL (COINS) */
