@@ -28,6 +28,12 @@ import {
 import { loadDictionary } from "./dictionaryLoader";
 import { loadProgress, saveProgress, getDefaultProgress } from "./persistence";
 import { TOTAL_LEVELS } from "./levelLoader";
+import {
+  initializeSounds,
+  playTapSound,
+  playSuccessSound,
+  playErrorSound,
+} from "./soundManager";
 
 // ============================================================================
 // Context Types
@@ -74,6 +80,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
         // Load dictionary first
         await loadDictionary();
+
+        // Initialise audio — preloads synthesised WAV tones
+        await initializeSounds();
 
         // Load saved progress
         const savedProgress = await loadProgress();
@@ -145,7 +154,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Action handlers — use setState callback to avoid stale closures
   const actions = {
     selectLetter: useCallback((index: number) => {
-      setState((prev) => (prev ? selectLetter(prev, index) : prev));
+      setState((prev) => {
+        if (!prev) return prev;
+        const next = selectLetter(prev, index);
+        // Play tap only when a new letter was actually appended
+        const prevLen = prev.selectedPath?.word.length ?? 0;
+        const nextLen = next.selectedPath?.word.length ?? 0;
+        if (nextLen > prevLen) {
+          playTapSound(next.soundEnabled);
+        }
+        return next;
+      });
     }, []),
 
     undoSelection: useCallback(() => {
@@ -157,7 +176,21 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, []),
 
     commitSelection: useCallback(() => {
-      setState((prev) => (prev ? submitWord(prev) : prev));
+      setState((prev) => {
+        if (!prev) return prev;
+        const hadWord = (prev.selectedPath?.word.length ?? 0) > 0;
+        const beforeSize = prev.solvedWords.size;
+        const next = submitWord(prev);
+        const afterSize = next.solvedWords.size;
+        if (afterSize > beforeSize) {
+          // A new word was solved — play upbeat success sound
+          playSuccessSound(prev.soundEnabled);
+        } else if (hadWord) {
+          // Word was submitted but not valid / already found
+          playErrorSound(prev.soundEnabled);
+        }
+        return next;
+      });
     }, []),
 
     submitWord: useCallback(() => {
