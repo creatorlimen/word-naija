@@ -42,6 +42,7 @@ import {
 
 interface GameContextType {
   state: GameStateData;
+  toastMessage: string | null;
   actions: {
     selectLetter: (index: number) => void;
     undoSelection: () => void;
@@ -68,6 +69,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GameStateData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showToast(msg: string) {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToastMessage(msg);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 1800);
+  }
 
   // Use ref to avoid stale closures in nextLevel
   const stateRef = useRef(state);
@@ -178,26 +187,34 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const prev = stateRef.current;
       if (!prev) return;
 
-      const hadWord = (prev.selectedPath?.word.length ?? 0) > 0;
+      const word = prev.selectedPath?.word?.toUpperCase() ?? '';
+      const hadWord = word.length > 0;
+      const isDuplicateExtra  = hadWord && prev.extraWordsFound.has(word);
+      const isDuplicateTarget = hadWord && !isDuplicateExtra && prev.solvedWords.has(word);
+
       const beforeSolvedSize = prev.solvedWords.size;
-      const beforeExtraSize = prev.extraWordsFound.size;
+      const beforeExtraSize  = prev.extraWordsFound.size;
 
       const next = submitWord(prev);
 
       const afterSolvedSize = next.solvedWords.size;
-      const afterExtraSize = next.extraWordsFound.size;
+      const afterExtraSize  = next.extraWordsFound.size;
 
       setState(next);
 
       if (afterSolvedSize > beforeSolvedSize) {
-        // New word accepted — distinguish target vs extra
         if (afterExtraSize > beforeExtraSize) {
           playExtraWordSound(prev.soundEnabled);
         } else {
           playSuccessSound(prev.soundEnabled);
         }
+      } else if (isDuplicateTarget) {
+        showToast('Already found! ✓');
+        playErrorSound(prev.soundEnabled);
+      } else if (isDuplicateExtra) {
+        showToast('Already found this bonus word!');
+        playErrorSound(prev.soundEnabled);
       } else if (hadWord) {
-        // Word submitted but rejected (invalid or duplicate)
         playErrorSound(prev.soundEnabled);
       }
     }, []),
@@ -261,6 +278,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const value: GameContextType = {
     state: state || ({} as GameStateData),
+    toastMessage,
     actions,
     isLoading,
     error,
@@ -284,11 +302,11 @@ export function useGame(): GameContextType {
 }
 
 export function useGameState() {
-  const { state, isLoading, error } = useGame();
+  const { state, toastMessage, isLoading, error } = useGame();
   const progress = state?.currentLevel ? getLevelProgress(state) : null;
   const isComplete = state?.currentLevel ? isLevelComplete(state) : false;
 
-  return { state, progress, isComplete, isLoading, error };
+  return { state, toastMessage, progress, isComplete, isLoading, error };
 }
 
 export function useGameActions() {

@@ -26,7 +26,6 @@ const DEBUG_MODE = __DEV__ && false; // Set to true to see hit areas
 interface LetterCircleProps {
   letters: Letter[];
   selectedIndices: number[];
-  currentWord: string;
   onSelectLetter: (index: number) => void;
   onUndoSelection: () => void;
   onClear: () => void;
@@ -36,7 +35,6 @@ interface LetterCircleProps {
 export default function LetterCircle({
   letters,
   selectedIndices,
-  currentWord,
   onSelectLetter,
   onUndoSelection,
   onClear,
@@ -226,10 +224,6 @@ export default function LetterCircle({
 
   return (
     <View style={styles.container}>
-      <View style={[styles.previewContainer, { opacity: currentWord ? 1 : 0 }]}>
-        <Text style={styles.previewText}>{currentWord}</Text>
-      </View>
-
       <View style={styles.wheelBackplate}>
         <View
           ref={wheelViewRef}
@@ -310,25 +304,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  previewContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "rgba(17, 97, 79, 0.8)",
-    borderRadius: borderRadius.full,
-    marginBottom: 12,
-    minHeight: 40,
-    minWidth: 80,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-  previewText: {
-    color: "#FFF",
-    fontSize: fontSize.lg,
-    fontWeight: "bold",
-    letterSpacing: 2,
-    textTransform: "uppercase",
   },
   wheelContainer: {
     width: CIRCLE_SIZE,

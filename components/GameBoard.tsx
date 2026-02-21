@@ -33,7 +33,7 @@ interface GameBoardProps {
 }
 
 export default function GameBoard({ onGoHome }: GameBoardProps) {
-  const { state, isComplete, isLoading, error } = useGameState();
+  const { state, toastMessage, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -188,6 +188,24 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
             />
         </View>
 
+        {/* -- Word Preview / Duplicate Toast -- */}
+        {(() => {
+          const word = state.selectedPath?.word || '';
+          const msg   = toastMessage || word;
+          const isToast = !!toastMessage;
+          return (
+            <View style={styles.previewRow}>
+              <View style={[
+                styles.previewPill,
+                isToast && styles.previewPillToast,
+                !msg && styles.previewPillHidden,
+              ]}>
+                <Text style={styles.previewPillText}>{msg}</Text>
+              </View>
+            </View>
+          );
+        })()}
+
         {/* Tools & Wheel at bottom */}
         {/* We want the wheel centered, and footer below it */}
         <View style={{ flexGrow: 0, paddingBottom: 8 }}>
@@ -196,10 +214,9 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 <LetterCircle
                     letters={state.letterWheel}
                     selectedIndices={state.selectedPath?.letterIndices || []}
-                    currentWord={state.selectedPath?.word || ""}
                     onSelectLetter={(idx) => actions.selectLetter(idx)}
                     onUndoSelection={() => actions.undoSelection()}
-                    onClear={() => actions.clearSelection()} // Should be unused by pan logic now
+                    onClear={() => actions.clearSelection()}
                     onCommit={() => actions.commitSelection()}
                 />
             </View>
@@ -384,6 +401,37 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: fontSize.sm,
     fontWeight: "800",
+  },
+
+  /* PREVIEW / TOAST PILL */
+  previewRow: {
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  previewPill: {
+    paddingHorizontal: 20,
+    paddingVertical: 9,
+    backgroundColor: 'rgba(17,97,79,0.85)',
+    borderRadius: borderRadius.full,
+    minHeight: 40,
+    minWidth: 80,
+    alignItems: 'center' as const,
+    borderWidth: 1,
+    borderColor: colors.outline,
+  },
+  previewPillToast: {
+    backgroundColor: 'rgba(160,100,17,0.90)',
+    borderColor: 'rgba(255,180,50,0.5)',
+  },
+  previewPillHidden: {
+    opacity: 0,
+  },
+  previewPillText: {
+    color: '#FFF',
+    fontSize: fontSize.lg,
+    fontWeight: 'bold' as const,
+    letterSpacing: 2,
+    textTransform: 'uppercase' as const,
   },
 
   separator: {
