@@ -3,7 +3,7 @@
  * Swipe-to-select input wheel with wooden tile styling.
  */
 
-import React, { useRef, useMemo, useCallback } from "react";
+import React, { useRef, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Dimensions,
   LayoutChangeEvent,
+  Animated,
 } from "react-native";
 import Svg, { Line, Circle } from "react-native-svg";
 import type { Letter } from "../lib/game/types";
@@ -76,6 +77,67 @@ export default function LetterCircle({
 
   const positionsRef = useRef(positions);
   positionsRef.current = positions;
+
+  // --- Animated shuffle -------------------------------------------------------
+  // Map: letter.id -> Animated.ValueXY (persists across renders)
+  const tileAnims = useRef<Map<string, Animated.ValueXY>>(new Map()).current;
+  // Map: letter.id -> last told-to position {left, top}
+  const prevPosById = useRef<Map<string, { left: number; top: number }>>(new Map());
+
+  // Eagerly initialise any letter that doesn’t yet have an anim value.
+  // (Safe ref-mutation during render — no setState, no side-effects that React cares about.)
+  letters.forEach((l, i) => {
+    if (!tileAnims.has(l.id)) {
+      tileAnims.set(l.id, new Animated.ValueXY({ x: positions[i].left, y: positions[i].top }));
+      prevPosById.current.set(l.id, { left: positions[i].left, top: positions[i].top });
+    }
+  });
+
+  // When the letters array reference changes (only happens on shuffle / level reset),
+  // spring every tile from where it was to its new slot.
+  useEffect(() => {
+    const springs: Animated.CompositeAnimation[] = [];
+
+    letters.forEach((l, i) => {
+      const newPos = positions[i];
+      const oldPos = prevPosById.current.get(l.id);
+
+      // Update stored target before starting animation
+      prevPosById.current.set(l.id, { left: newPos.left, top: newPos.top });
+
+      if (!oldPos) return; // Freshly added letter — already placed by init above
+
+      const moved =
+        Math.abs(oldPos.left - newPos.left) > 0.5 ||
+        Math.abs(oldPos.top  - newPos.top)  > 0.5;
+      if (!moved) return;
+
+      const anim = tileAnims.get(l.id)!;
+      anim.stopAnimation();
+      // Snap to last-known position, then spring to new slot
+      anim.setValue({ x: oldPos.left, y: oldPos.top });
+      springs.push(
+        Animated.spring(anim, {
+          toValue: { x: newPos.left, y: newPos.top },
+          useNativeDriver: true,
+          speed: 16,
+          bounciness: 9,
+        })
+      );
+    });
+
+    if (springs.length > 0) Animated.parallel(springs).start();
+
+    // Remove anim values for letters no longer in the wheel (level reset)
+    const liveIds = new Set(letters.map((l) => l.id));
+    for (const id of tileAnims.keys()) {
+      if (!liveIds.has(id)) {
+        tileAnims.delete(id);
+        prevPosById.current.delete(id);
+      }
+    }
+  }, [letters]); // fires only when the array reference changes
+  // ---------------------------------------------------------------------------
 
   const wheelLayoutRef = useRef({ pageX: 0, pageY: 0 });
   const wheelViewRef = useRef<View>(null);
@@ -211,22 +273,31 @@ export default function LetterCircle({
 
           {letters.map((l, i) => {
             const selected = selectedIndices.includes(i);
-            const pos = positions[i];
+            const anim = tileAnims.get(l.id);
+            if (!anim) return null;
 
             return (
-              <View
-                key={i}
+              <Animated.View
+                key={l.id}
                 pointerEvents="none"
                 style={[
                   styles.tile,
-                  { left: pos.left, top: pos.top },
                   selected && styles.tileSelected,
+                  {
+                    left: 0,
+                    top: 0,
+                    transform: [
+                      { translateX: anim.x },
+                      { translateY: anim.y },
+                      { scale: selected ? 1.12 : 1 },
+                    ],
+                  },
                 ]}
               >
                 <Text style={[styles.tileText, selected && styles.tileTextSelected]}>
                   {l.char}
                 </Text>
-              </View>
+              </Animated.View>
             );
           })}
         </View>
@@ -289,7 +360,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.tile.backgroundSelected,
     borderColor: colors.accent,
     borderBottomColor: colors.tile.borderBottomSelected,
-    transform: [{ scale: 1.12 }],
     zIndex: 10,
   },
   tileText: {

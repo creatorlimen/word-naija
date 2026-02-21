@@ -28,6 +28,7 @@ export interface GridState {
 // ============================================================================
 
 export interface Letter {
+  id: string;   // Stable identity — survives shuffles
   char: string;
   index: number; // Position in wheel
   used: boolean; // True if already placed in a word

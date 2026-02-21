@@ -93,6 +93,7 @@ function createGridState(level: Level): GridState {
  */
 function createLetterWheel(letters: string[]): Letter[] {
   return letters.map((char, index) => ({
+    id: `letter-${index}`,
     char: char.toUpperCase(),
     index,
     used: false,
