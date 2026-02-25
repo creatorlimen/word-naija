@@ -62,6 +62,9 @@ function AppNavigator() {
 
   const handleFTUEComplete = useCallback(() => {
     setFtueComplete(true);
+    // First-time user: jump straight into the game with coach marks
+    setStartWithTutorial(true);
+    setScreen("game");
   }, []);
 
   if (isLoading) {
