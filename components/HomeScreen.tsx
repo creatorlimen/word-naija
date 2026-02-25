@@ -34,6 +34,7 @@ import Icon from "./Icon";
 import type { IconName } from "./Icon";
 import MedalBadge from "./MedalBadge";
 import SettingsModal from "./SettingsModal";
+import FTUE from "./FTUE";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -51,6 +52,7 @@ export default function HomeScreen({
   onStart,
 }: HomeScreenProps) {
   const [showSettings, setShowSettings] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const { state } = useGameState();
   const actions = useGameActions();
 
@@ -180,9 +182,12 @@ export default function HomeScreen({
         soundEnabled={state?.soundEnabled ?? true}
         onToggleSound={() => actions.toggleSound()}
         onClose={() => setShowSettings(false)}
-        onHowToPlay={() => setShowSettings(false)}
+        onHowToPlay={() => { setShowSettings(false); setShowHowToPlay(true); }}
         onQuit={() => setShowSettings(false)}
       />
+
+      {/* ── How to Play (relaunched FTUE) ── */}
+      <FTUE forceShow={showHowToPlay} onComplete={() => setShowHowToPlay(false)} />
     </SafeAreaView>
   );
 }

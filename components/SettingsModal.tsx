@@ -106,14 +106,16 @@ export default function SettingsModal({
       onRequestClose={onClose}
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        {/* Prevent tap-through from closing when tapping the panel */}
-        <Pressable style={styles.panel} onPress={() => {}}>
-          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-
-          {/* Close button */}
+        {/* Wrapper allows close button to sit outside the clipped panel */}
+        <View style={styles.panelWrapper}>
+          {/* Close button — outside overflow:hidden panel */}
           <Pressable style={styles.closeButton} onPress={onClose} hitSlop={12}>
             <Icon name="close" size={14} color={colors.textPrimary} />
           </Pressable>
+
+          {/* Prevent tap-through from closing when tapping the panel */}
+          <Pressable style={styles.panel} onPress={() => {}}>
+            <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
 
           {/* Title */}
           <Text style={styles.title}>Settings</Text>
@@ -185,6 +187,7 @@ export default function SettingsModal({
           </View>
 
         </Pressable>
+        </View>
       </Pressable>
     </Modal>
   );
@@ -201,8 +204,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  panel: {
+  panelWrapper: {
     width: "84%",
+    alignItems: "center",
+    position: "relative",
+  },
+  panel: {
+    width: "100%",
     backgroundColor: PANEL_BG,
     borderRadius: borderRadius.xl,
     overflow: "hidden" as const,
