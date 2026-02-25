@@ -98,9 +98,9 @@ export default function HomeScreen({
 
           {/* Stats row */}
           <View style={styles.statsRow}>
-            <StatCard value={levelsCompleted} label="Levels" />
+            <StatCard value={levelsCompleted} label="Levels" icon="🏆" />
             <StatCard value={coins} label="Coins" icon="🪙" highlight />
-            <StatCard value={`${progressPercent}%`} label="Progress" />
+            <StatCard value={`${progressPercent}%`} label="Progress" icon="📈" />
           </View>
 
           {/* Progress bar */}
@@ -198,7 +198,7 @@ function StatCard({
       <Text style={[styles.statValue, highlight && styles.statValueGold]}>
         {value}
       </Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={styles.statLabel} numberOfLines={1}>{label}</Text>
     </View>
   );
 }
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     color: colors.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.3,
   },
   progressBar: {
     height: 8,
