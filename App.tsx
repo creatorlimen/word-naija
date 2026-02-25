@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -34,8 +35,9 @@ import FTUE from "./components/FTUE";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { colors, fontSize, spacing, fontFamily, gradients } from "./constants/theme";
+import { colors, fontSize, spacing, fontFamily, gradients, shadows, borderRadius } from "./constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import DecoBackground from "./components/DecoBackground";
 
 type Screen = "home" | "game";
 
@@ -76,8 +78,11 @@ function AppNavigator() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
-        <ActivityIndicator size="large" color={colors.gold} />
-        <Text style={styles.loadingText}>Loading Word Naija...</Text>
+        <DecoBackground variant="home" />
+        <Image source={require("./assets/logo.png")} style={styles.splashLogo} resizeMode="contain" />
+        <Text style={styles.splashTitle}>Word Naija</Text>
+        <Text style={styles.splashTagline}>The Nigerian Word Puzzle</Text>
+        <ActivityIndicator size="large" color={colors.gold} style={{ marginTop: spacing.xxl }} />
         <StatusBar style="light" />
       </View>
     );
@@ -149,7 +154,6 @@ export default function App() {
           end={{ x: 1, y: 1 }}
         />
         <ActivityIndicator size="large" color={colors.gold} />
-        <Text style={styles.loadingText}>Word Naija</Text>
         <StatusBar style="light" />
       </View>
     );
@@ -172,6 +176,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
+  },
+  splashLogo: {
+    width: 120,
+    height: 120,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.lg,
+    ...shadows.glow,
+  },
+  splashTitle: {
+    color: colors.gold,
+    fontSize: fontSize.xxxl,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 1.5,
+    marginBottom: spacing.xs,
+  },
+  splashTagline: {
+    color: colors.textMuted,
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.bodyMedium,
+    letterSpacing: 0.5,
   },
   loadingText: {
     color: colors.gold,
