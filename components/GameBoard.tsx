@@ -27,6 +27,7 @@ import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameS
 import { playCompleteSound } from "../lib/game/soundManager";
 import Sparkle from "./Sparkle";
 import DecoBackground from "./DecoBackground";
+import Icon from "./Icon";
 import { colors, fontSize, spacing, borderRadius, shadows, gradients, fontFamily } from "../constants/theme";
 
 interface GameBoardProps {
@@ -130,7 +131,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
       <View style={styles.centered}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
         <DecoBackground variant="game" />
-        <Text style={styles.errorEmoji}>😕</Text>
+        <Icon name="frown" size={48} color={colors.textMuted} />
         <Text style={styles.errorText}>{error}</Text>
         <Pressable onPress={onGoHome} style={styles.errorButton}>
           <Text style={styles.errorButtonText}>Go Home</Text>
@@ -159,10 +160,10 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           {/* Left: Back & Settings */}
           <View style={styles.headerLeft}>
             <Pressable onPress={onGoHome} style={styles.iconButton}>
-              <Text style={styles.iconText}>←</Text>
+              <Icon name="back" size={18} color={colors.textPrimary} />
             </Pressable>
             <Pressable style={styles.iconButton} onPress={() => setShowSettings(true)}>
-               <Text style={styles.iconText}>⚙</Text>
+               <Icon name="settings" size={18} color={colors.textPrimary} />
             </Pressable>
           </View>
 
@@ -175,7 +176,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           <View style={{ position: "relative" }}>
             <Animated.View style={[styles.coinPill, { transform: [{ scale: coinPulseAnim }] }]}>
               <View style={styles.coinIconContainer}>
-                 <Text style={styles.coinIcon}>🪙</Text>
+                 <Icon name="coin" size={14} color={colors.gold} />
               </View>
               <Text style={styles.coinText}>{state.coins}</Text>
             </Animated.View>
@@ -283,17 +284,13 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: spacing.md,
     fontSize: fontSize.md,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     color: colors.textGold,
-  },
-  errorEmoji: {
-    fontSize: 48,
-    marginBottom: spacing.md,
   },
   errorText: {
     color: colors.textPrimary,
     fontSize: fontSize.md,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     textAlign: "center",
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
@@ -365,7 +362,7 @@ const styles = StyleSheet.create({
   levelLabel: {
     color: colors.textMuted,
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.semiBold,
+    fontFamily: fontFamily.bodySemiBold,
     letterSpacing: 1.2,
     textTransform: "uppercase",
   },

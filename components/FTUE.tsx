@@ -15,29 +15,32 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
+import Icon from "./Icon";
+import type { IconName } from "./Icon";
 
 const FTUE_KEY = "@word_naija_ftue_complete";
 
-const slides = [
+const slides: { iconName: IconName | null; logo?: boolean; title: string; body: string }[] = [
   {
-    emoji: null,
+    iconName: null,
     logo: true,
     title: "Welcome to Word Naija!",
     body: "The Nigerian word puzzle game where you discover English and Pidgin words.",
   },
   {
-    emoji: "👆",
+    iconName: "send",
     title: "Swipe to Connect",
     body: "Swipe letters on the wheel to form words. Each word fits into the crossword grid.",
   },
   {
-    emoji: "💡",
+    iconName: "hint",
     title: "Need a Hint?",
     body: "Spend 15 coins to reveal a letter on the grid. You earn coins by completing levels and finding bonus words.",
   },
   {
-    emoji: "🎯",
+    iconName: "target",
     title: "Ready?",
     body: "Find all the target words to complete each level. Discover extra words for bonus coins!",
   },
@@ -103,15 +106,18 @@ export default function FTUE({ onComplete, forceShow }: FTUEProps) {
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
       <View style={styles.overlay}>
         <View style={styles.card}>
+          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
           {slide.logo ? (
             <Image
               source={require("../assets/logo.png")}
               style={styles.logoImage}
               resizeMode="contain"
             />
-          ) : (
-            <Text style={styles.emoji}>{slide.emoji}</Text>
-          )}
+          ) : slide.iconName ? (
+            <View style={styles.iconWrap}>
+              <Icon name={slide.iconName} size={40} color={colors.gold} />
+            </View>
+          ) : null}
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.body}>{slide.body}</Text>
 
@@ -160,7 +166,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   card: {
-    backgroundColor: "rgba(8,20,16,0.96)",
+    backgroundColor: "rgba(8,20,16,0.75)",
+    overflow: "hidden" as const,
     borderWidth: 1,
     borderColor: colors.outlineGoldStrong,
     borderRadius: borderRadius.xl,
@@ -172,6 +179,17 @@ const styles = StyleSheet.create({
   emoji: {
     fontSize: 48,
     marginBottom: spacing.lg,
+  },
+  iconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "rgba(212,168,67,0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.outlineGold,
   },
   logoImage: {
     width: 80,
@@ -188,7 +206,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: fontSize.md,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.bodyRegular,
     color: colors.textMuted,
     textAlign: "center",
     lineHeight: 22,
@@ -234,6 +252,6 @@ const styles = StyleSheet.create({
   skipText: {
     color: colors.textMuted,
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
   },
 });

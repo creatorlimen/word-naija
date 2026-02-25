@@ -12,9 +12,11 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { BlurView } from "expo-blur";
 import { colors, borderRadius, fontSize, spacing, shadows, fontFamily } from "../constants/theme";
 import { EXTRA_WORDS_TARGET, EXTRA_WORDS_REWARD } from "../lib/game/gameState";
 import { getDictionaryEntry } from "../lib/game/dictionaryLoader";
+import Icon from "./Icon";
 
 interface ExtraWordsModalProps {
   visible: boolean;
@@ -44,9 +46,10 @@ export default function ExtraWordsModal({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
+          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
           {/* Close button */}
           <Pressable onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeText}>✕</Text>
+            <Icon name="close" size={14} color={colors.textPrimary} />
           </Pressable>
 
           {/* Title */}
@@ -55,7 +58,10 @@ export default function ExtraWordsModal({
           {/* Reward callout */}
           <View style={styles.rewardCallout}>
             <Text style={styles.rewardLabel}>Fill the box to earn</Text>
-            <Text style={styles.rewardAmount}>🪙 {EXTRA_WORDS_REWARD} coins</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <Icon name="coin" size={14} color={colors.gold} />
+              <Text style={styles.rewardAmount}>{EXTRA_WORDS_REWARD} coins</Text>
+            </View>
           </View>
 
           {/* Word list */}
@@ -78,7 +84,7 @@ export default function ExtraWordsModal({
             </ScrollView>
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyEmoji}>🔍</Text>
+              <Icon name="search" size={36} color={colors.textMuted} />
               <Text style={styles.emptyText}>
                 Discover words beyond the target list to collect them here!
               </Text>
@@ -122,9 +128,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modal: {
-    backgroundColor: "rgba(10,24,20,0.97)",
+    backgroundColor: "rgba(10,24,20,0.75)",
     borderTopLeftRadius: borderRadius.xxl,
     borderTopRightRadius: borderRadius.xxl,
+    overflow: "hidden" as const,
     padding: spacing.xl,
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xxxl,
@@ -182,7 +189,7 @@ const styles = StyleSheet.create({
   },
   rewardLabel: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     color: colors.textMuted,
   },
   rewardAmount: {
@@ -209,7 +216,7 @@ const styles = StyleSheet.create({
   },
   wordMeaning: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.bodyRegular,
     color: colors.textMuted,
     marginTop: 2,
   },
@@ -227,7 +234,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.bodyRegular,
     color: colors.textMuted,
     textAlign: "center",
     lineHeight: 20,
@@ -251,7 +258,7 @@ const styles = StyleSheet.create({
   /* Progress text */
   progressText: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     color: colors.textMuted,
     marginBottom: spacing.lg,
   },

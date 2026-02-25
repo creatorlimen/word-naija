@@ -16,7 +16,9 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurView } from "expo-blur";
 import { colors, spacing, fontSize, borderRadius, shadows, fontFamily } from "../constants/theme";
+import Icon from "./Icon";
 
 const NOTIF_KEY = "@word_naija_notifications";
 
@@ -106,10 +108,11 @@ export default function SettingsModal({
       <Pressable style={styles.backdrop} onPress={onClose}>
         {/* Prevent tap-through from closing when tapping the panel */}
         <Pressable style={styles.panel} onPress={() => {}}>
+          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
 
           {/* Close button */}
           <Pressable style={styles.closeButton} onPress={onClose} hitSlop={12}>
-            <Text style={styles.closeText}>✕</Text>
+            <Icon name="close" size={14} color={colors.textPrimary} />
           </Pressable>
 
           {/* Title */}
@@ -147,15 +150,18 @@ export default function SettingsModal({
           {/* --- How to Play --- */}
           <Pressable style={styles.row} onPress={onHowToPlay}>
             <Text style={styles.rowLabel}>How to Play</Text>
-            <Text style={styles.chevron}>›</Text>
+            <Icon name="chevron" size={18} color={colors.textMuted} />
           </Pressable>
 
           <View style={styles.rowDivider} />
 
           {/* --- Dev: Reset (testing only) --- */}
           <Pressable style={styles.row} onPress={handleResetAll}>
-            <Text style={styles.resetLabel}>⚠️ Reset All Data</Text>
-            <Text style={styles.chevron}>›</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Icon name="alert" size={14} color="#E05A5A" />
+              <Text style={styles.resetLabel}>Reset All Data</Text>
+            </View>
+            <Icon name="chevron" size={18} color={colors.textMuted} />
           </Pressable>
 
           <View style={styles.divider} />
@@ -164,11 +170,7 @@ export default function SettingsModal({
           <View style={styles.bottomRow}>
             {/* Power / Quit */}
             <Pressable style={styles.powerButton} onPress={handleQuit}>
-              {/* Power icon: circle arc + vertical line, built from Views */}
-              <View style={styles.powerIconWrap}>
-                <View style={styles.powerIconLine} />
-                <View style={styles.powerIconArc} />
-              </View>
+              <Icon name="power" size={20} color={colors.textPrimary} />
             </Pressable>
 
             {/* Contact Us */}
@@ -188,7 +190,7 @@ export default function SettingsModal({
   );
 }
 
-const PANEL_BG = "rgba(8, 20, 16, 0.95)";
+const PANEL_BG = "rgba(8, 20, 16, 0.75)";
 const PANEL_BORDER = "rgba(255,255,255,0.18)";
 const ROW_DIVIDER = "rgba(255,255,255,0.08)";
 
@@ -203,6 +205,7 @@ const styles = StyleSheet.create({
     width: "84%",
     backgroundColor: PANEL_BG,
     borderRadius: borderRadius.xl,
+    overflow: "hidden" as const,
     borderWidth: 1,
     borderColor: "rgba(212,168,67,0.45)",
     paddingHorizontal: spacing.xl,
@@ -253,13 +256,13 @@ const styles = StyleSheet.create({
   rowLabel: {
     color: colors.textPrimary,
     fontSize: fontSize.md,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     letterSpacing: 0.3,
   },
   resetLabel: {
     color: "#E05A5A",
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     letterSpacing: 0.3,
   },
   rowDivider: {

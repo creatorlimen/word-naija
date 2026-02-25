@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 import {
   colors,
   borderRadius,
@@ -28,6 +29,8 @@ import {
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
 import Achievements from "./Achievements";
 import DecoBackground from "./DecoBackground";
+import Icon from "./Icon";
+import type { IconName } from "./Icon";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -76,7 +79,7 @@ export default function HomeScreen({
               style={styles.achievementChip}
               onPress={() => setShowAchievements((v) => !v)}
             >
-              <Text style={styles.achievementChipIcon}>🏅</Text>
+              <Icon name="medal" size={14} color={colors.gold} />
               <Text style={styles.achievementChipCount}>{achievements.length}</Text>
             </Pressable>
           )}
@@ -89,6 +92,7 @@ export default function HomeScreen({
 
         {/* ── Stats Card — glass panel ── */}
         <View style={styles.statsCard}>
+          <BlurView intensity={25} tint="dark" style={StyleSheet.absoluteFill} />
           <LinearGradient
             colors={gradients.glass}
             style={StyleSheet.absoluteFill}
@@ -100,9 +104,9 @@ export default function HomeScreen({
 
           {/* Stats row */}
           <View style={styles.statsRow}>
-            <StatCard value={levelsCompleted} label="Levels" icon="🏆" />
-            <StatCard value={coins} label="Coins" icon="🪙" highlight />
-            <StatCard value={`${progressPercent}%`} label="Progress" icon="📈" />
+            <StatCard value={levelsCompleted} label="Levels" iconName="trophy" />
+            <StatCard value={coins} label="Coins" iconName="coin" highlight />
+            <StatCard value={`${progressPercent}%`} label="Progress" iconName="chart" />
           </View>
 
           {/* Progress bar */}
@@ -122,6 +126,7 @@ export default function HomeScreen({
         {/* ── Achievement section ── */}
         {showAchievements && achievements.length > 0 && (
           <View style={styles.achievementCard}>
+            <BlurView intensity={25} tint="dark" style={StyleSheet.absoluteFill} />
             <LinearGradient
               colors={gradients.glass}
               style={StyleSheet.absoluteFill}
@@ -135,10 +140,10 @@ export default function HomeScreen({
         {/* ── Feature grid (first-time only) ── */}
         {levelsCompleted === 0 && (
           <View style={styles.featureGrid}>
-            <FeatureCard icon="📖" title="Bilingual" text="Learn Nigerian & English words" />
-            <FeatureCard icon="🧩" title="Crosswords" text="Intersecting handcrafted puzzles" />
-            <FeatureCard icon="🪙" title="Earn Coins" text="Collect extras, spend on hints" />
-            <FeatureCard icon="🎯" title="Daily Run" text="Short sessions, bonus rewards" />
+            <FeatureCard iconName="book" title="Bilingual" text="Learn Nigerian & English words" />
+            <FeatureCard iconName="puzzle" title="Crosswords" text="Intersecting handcrafted puzzles" />
+            <FeatureCard iconName="coin" title="Earn Coins" text="Collect extras, spend on hints" />
+            <FeatureCard iconName="target" title="Daily Run" text="Short sessions, bonus rewards" />
           </View>
         )}
 
@@ -167,16 +172,17 @@ export default function HomeScreen({
 
 /* ── Sub-components ── */
 
-function FeatureCard({ icon, title, text }: { icon: string; title: string; text: string }) {
+function FeatureCard({ iconName, title, text }: { iconName: IconName; title: string; text: string }) {
   return (
     <View style={styles.featureCard}>
+      <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
       <LinearGradient
         colors={gradients.glass}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       />
-      <Text style={styles.featureIcon}>{icon}</Text>
+      <Icon name={iconName} size={22} color={colors.gold} />
       <Text style={styles.featureTitle}>{title}</Text>
       <Text style={styles.featureText}>{text}</Text>
     </View>
@@ -186,17 +192,17 @@ function FeatureCard({ icon, title, text }: { icon: string; title: string; text:
 function StatCard({
   label,
   value,
-  icon,
+  iconName,
   highlight,
 }: {
   label: string;
   value: string | number;
-  icon?: string;
+  iconName?: IconName;
   highlight?: boolean;
 }) {
   return (
     <View style={[styles.statCard, highlight && styles.statCardHighlight]}>
-      {icon && <Text style={styles.statIcon}>{icon}</Text>}
+      {iconName && <Icon name={iconName} size={18} color={highlight ? colors.gold : colors.textMuted} />}
       <Text style={[styles.statValue, highlight && styles.statValueGold]}>
         {value}
       </Text>
@@ -289,7 +295,7 @@ const styles = StyleSheet.create({
   },
   statsCardSub: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     color: colors.textMuted,
     marginTop: -spacing.sm,
   },
@@ -325,7 +331,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: fontSize.xs,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodySemiBold,
     color: colors.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.3,
@@ -343,7 +349,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     color: colors.textMuted,
     fontSize: fontSize.xs,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     marginTop: -spacing.xs,
   },
 
@@ -381,7 +387,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.bodyRegular,
     color: colors.textMuted,
     lineHeight: 18,
   },

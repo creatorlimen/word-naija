@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
 import { colors, borderRadius, fontSize, spacing, shadows, fontFamily } from "../constants/theme";
 import Sparkle from "./Sparkle";
+import Icon from "./Icon";
+import type { IconName } from "./Icon";
 
 interface ToolbarProps {
   coins: number;
@@ -14,7 +16,7 @@ interface ToolbarProps {
 }
 
 function CircleButton({ 
-  label, 
+  iconName, 
   sublabel,
   onPress, 
   color = colors.button.function,
@@ -26,7 +28,7 @@ function CircleButton({
   topBadgeOffset = -4,
   topBadgeTop = -8,
 }: { 
-  label: string; 
+  iconName: IconName; 
   sublabel: string;
   onPress: () => void; 
   color?: string;
@@ -48,7 +50,7 @@ function CircleButton({
           pressed && styles.pressed,
         ]}
       >
-        <Text style={styles.btnIcon}>{label}</Text>
+        <Icon name={iconName} size={16} color="#FFF" />
         <Text style={styles.btnSublabel}>{sublabel}</Text>
       </Pressable>
       {topBadge !== undefined && (
@@ -108,7 +110,7 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
     <View style={styles.container}>
       {/* 1. Extra */}
       <CircleButton
-        label="📦"
+        iconName="package"
         sublabel="EXTRA"
         onPress={onExtra}
         topBadge={`${extraWordsCollected}/${extraWordsTarget}`}
@@ -120,11 +122,11 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
       />
 
       {/* 2. Shuffle */}
-      <CircleButton label="🔀" sublabel="SHUFFLE" onPress={onShuffle} />
+      <CircleButton iconName="shuffle" sublabel="SHUFFLE" onPress={onShuffle} />
 
       {/* 3. Hint — cost shown as top badge, label centered */}
       <CircleButton
-        label="💡"
+        iconName="hint"
         sublabel="HINT"
         onPress={onHint}
         topBadge={hintCost}

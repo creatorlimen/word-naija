@@ -20,6 +20,12 @@ import {
   Poppins_800ExtraBold,
   Poppins_900Black,
 } from "@expo-google-fonts/poppins";
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans";
 import { GameProvider, useGameState, useGameActions } from "./lib/game/context";
 import { getAchievements } from "./lib/game/stats";
 import HomeScreen from "./components/HomeScreen";
@@ -27,6 +33,7 @@ import GameBoard from "./components/GameBoard";
 import FTUE from "./components/FTUE";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
 import { colors, fontSize, spacing, fontFamily, gradients } from "./constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -74,7 +81,7 @@ function AppNavigator() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
-        <Text style={styles.errorEmoji}>😕</Text>
+        <Feather name="frown" size={48} color={colors.textMuted} style={{ marginBottom: spacing.md }} />
         <Text style={styles.errorText}>{error}</Text>
         <StatusBar style="light" />
       </View>
@@ -114,6 +121,10 @@ export default function App() {
     Poppins_700Bold,
     Poppins_800ExtraBold,
     Poppins_900Black,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
   });
 
   if (!fontsLoaded) {

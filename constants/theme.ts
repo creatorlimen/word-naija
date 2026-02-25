@@ -219,14 +219,20 @@ export const colors = {
   card: palette.linen,
 };
 
-/** Font family names — loaded via expo-font / @expo-google-fonts/poppins */
+/** Font family names — loaded via expo-font / @expo-google-fonts */
 export const fontFamily = {
+  /* Primary — Poppins (headlines, display, buttons) */
   regular: "Poppins_400Regular",
   medium: "Poppins_500Medium",
   semiBold: "Poppins_600SemiBold",
   bold: "Poppins_700Bold",
   extraBold: "Poppins_800ExtraBold",
   black: "Poppins_900Black",
+  /* Secondary — DM Sans (body text, labels, captions) */
+  bodyRegular: "DMSans_400Regular",
+  bodyMedium: "DMSans_500Medium",
+  bodySemiBold: "DMSans_600SemiBold",
+  bodyBold: "DMSans_700Bold",
 };
 
 export const typography = {
@@ -234,9 +240,9 @@ export const typography = {
   title: { fontSize: fontSize.xxxl, fontFamily: fontFamily.extraBold, letterSpacing: 0.3 },
   heading: { fontSize: fontSize.xl, fontFamily: fontFamily.bold },
   subheading: { fontSize: fontSize.lg, fontFamily: fontFamily.semiBold },
-  body: { fontSize: fontSize.md, fontFamily: fontFamily.medium },
-  label: { fontSize: fontSize.sm, fontFamily: fontFamily.semiBold, letterSpacing: 0.5 },
-  caption: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, letterSpacing: 0.3 },
+  body: { fontSize: fontSize.md, fontFamily: fontFamily.bodyMedium },
+  label: { fontSize: fontSize.sm, fontFamily: fontFamily.bodySemiBold, letterSpacing: 0.5 },
+  caption: { fontSize: fontSize.xs, fontFamily: fontFamily.bodyMedium, letterSpacing: 0.3 },
 };
 
 export const surfaces = {

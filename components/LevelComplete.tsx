@@ -13,8 +13,10 @@ import {
   ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 import type { Level } from "../lib/game/types";
 import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
+import Icon from "./Icon";
 
 interface LevelCompleteProps {
   visible: boolean;
@@ -44,24 +46,25 @@ export default function LevelComplete({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <Text style={styles.emoji}>🎉</Text>
+          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
+          <Icon name="celebrate" size={40} color={colors.gold} />
           <Text style={styles.title}>Level Complete!</Text>
           <Text style={styles.subtitle}>{level.title}</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Words</Text>
-              <Text style={styles.statIcon}>📝</Text>
+              <Icon name="edit" size={16} color={colors.textMuted} />
               <Text style={styles.statValue}>{solvedWords.size}</Text>
             </View>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Bonus</Text>
-              <Text style={styles.statIconBonus}>⭐</Text>
+              <Icon name="star" size={16} color={colors.gold} />
               <Text style={styles.statValue}>{extraWords.size}</Text>
             </View>
             <View style={styles.statChipAccent}>
               <Text style={styles.statLabelAccent}>Coins</Text>
-              <Text style={styles.statIcon}>🪙</Text>
+              <Icon name="coin" size={16} color={colors.gold} />
               <Text style={styles.statValueAccent}>{coinsEarned}</Text>
             </View>
           </View>
@@ -115,9 +118,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modal: {
-    backgroundColor: "rgba(8,20,16,0.96)",
+    backgroundColor: "rgba(8,20,16,0.75)",
     borderTopLeftRadius: borderRadius.xxl,
     borderTopRightRadius: borderRadius.xxl,
+    overflow: "hidden" as const,
     padding: spacing.xl,
     paddingBottom: spacing.xxxl,
     width: "100%",
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: fontSize.xs,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodyMedium,
     color: colors.textMuted,
     marginBottom: spacing.sm,
   },
@@ -187,7 +191,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 10,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodySemiBold,
     color: colors.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
   },
   statLabelAccent: {
     fontSize: 10,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.bodySemiBold,
     color: colors.textGold,
     textTransform: "uppercase",
     letterSpacing: 0.6,
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
   },
   meaningText: {
     fontSize: fontSize.sm,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.bodyRegular,
     color: colors.textMuted,
     marginTop: 2,
   },
