@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "rgba(8,20,16,0.96)",
     borderWidth: 1,
-    borderColor: colors.outlineStrong,
+    borderColor: colors.outlineGoldStrong,
     borderRadius: borderRadius.xl,
     padding: spacing.xxl,
     width: Math.min(width - 48, 360),
@@ -210,19 +210,20 @@ const styles = StyleSheet.create({
     width: 20,
   },
   nextButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.gold,
     paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xxl,
     borderRadius: borderRadius.full,
     minWidth: 200,
     alignItems: "center",
+    ...shadows.glow,
   },
   buttonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.97 }],
   },
   nextButtonText: {
-    color: colors.foreground,
+    color: "#3A2F2A",
     fontSize: fontSize.lg,
     fontFamily: fontFamily.semiBold,
   },

@@ -26,6 +26,7 @@ import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { playCompleteSound } from "../lib/game/soundManager";
 import Sparkle from "./Sparkle";
+import DecoBackground from "./DecoBackground";
 import { colors, fontSize, spacing, borderRadius, shadows, gradients, fontFamily } from "../constants/theme";
 
 interface GameBoardProps {
@@ -115,6 +116,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     return (
       <View style={styles.centered}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+        <DecoBackground variant="game" />
         <ActivityIndicator size="large" color={colors.gold} />
         <Text style={styles.loadingText}>Loading...</Text>
         <StatusBar style="light" />
@@ -127,6 +129,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     return (
       <View style={styles.centered}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+        <DecoBackground variant="game" />
         <Text style={styles.errorEmoji}>😕</Text>
         <Text style={styles.errorText}>{error}</Text>
         <Pressable onPress={onGoHome} style={styles.errorButton}>
@@ -147,6 +150,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
       />
+      <DecoBackground variant="game" />
       <SafeAreaView style={styles.container} edges={["top"]}>
         <StatusBar style="light" />
 

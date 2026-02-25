@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: PANEL_BG,
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: PANEL_BORDER,
+    borderColor: "rgba(212,168,67,0.45)",
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xl,

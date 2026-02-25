@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderBottomWidth: 0,
-    borderColor: colors.outlineStrong,
+    borderColor: colors.outlineGoldStrong,
     ...shadows.soft,
   },
 
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: colors.accent,
+    backgroundColor: colors.gold,
     borderRadius: borderRadius.full,
   },
 

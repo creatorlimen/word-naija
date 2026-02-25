@@ -27,6 +27,7 @@ import {
 } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
 import Achievements from "./Achievements";
+import DecoBackground from "./DecoBackground";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -55,6 +56,7 @@ export default function HomeScreen({
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
       />
+      <DecoBackground variant="home" />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -149,7 +151,7 @@ export default function HomeScreen({
           ]}
         >
           <LinearGradient
-            colors={gradients.cta}
+            colors={gradients.ctaGold}
             style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0.5 }}
@@ -275,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: colors.outlineStrong,
+    borderColor: colors.outlineGoldStrong,
     overflow: "hidden",
     gap: spacing.md,
     ...shadows.soft,
@@ -399,7 +401,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: fontSize.lg,
     fontFamily: fontFamily.bold,
-    color: colors.foreground,
+    color: "#3A2F2A",
     letterSpacing: 0.5,
   },
 });

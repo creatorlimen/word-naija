@@ -14,8 +14,12 @@ const palette = {
   /* Gold spectrum */
   gold: "#D4A843",
   goldLight: "#E8C766",
+  goldMid: "#C9952E",
   goldDark: "#A68632",
+  goldDeep: "#8A6F1E",
   amber: "#FFB648",
+  champagne: "#F5DEB3",
+  bronze: "#CD7F32",
 
   /* Neutrals */
   ivory: "#FAF6F0",
@@ -61,6 +65,7 @@ export const borderRadius = {
   lg: 16,
   xl: 20,
   xxl: 28,
+  squircle: 22,   // organic super-ellipse feel
   full: 9999,
   round: 9999,
 };
@@ -116,11 +121,15 @@ export const gradients = {
   card: ["rgba(255,255,255,0.08)", "rgba(255,255,255,0.03)"] as const,
   glass: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.04)"] as const,
   goldShimmer: [palette.goldDark, palette.gold, palette.goldLight] as const,
+  goldSurface: ["#C9952E", "#D4A843", "#E8C766"] as const,
+  goldButton: ["#D4A843", "#B8922A", "#A68632"] as const,
+  goldTile: ["#F5DEB3", "#E8C766", "#D4A843"] as const,
   cta: ["#1A8F5C", "#0F6B45"] as const,
   ctaGold: [palette.gold, palette.goldDark] as const,
   pill: ["rgba(34,160,107,0.85)", "rgba(15,80,58,0.85)"] as const,
   tile: ["#FAF6F0", "#F0E6D4"] as const,
-  wheelBg: ["rgba(212,168,67,0.15)", "rgba(212,168,67,0.05)"] as const,
+  tileGold: ["#E8D5A0", "#D4A843"] as const,
+  wheelBg: ["rgba(212,168,67,0.18)", "rgba(212,168,67,0.06)"] as const,
 };
 
 /**
@@ -139,6 +148,7 @@ export const colors = {
   outline: "rgba(255,255,255,0.12)",
   outlineStrong: "rgba(255,255,255,0.22)",
   outlineGold: "rgba(212,168,67,0.35)",
+  outlineGoldStrong: "rgba(212,168,67,0.55)",
 
   /* Text hierarchy */
   textPrimary: "#F5F1EB",
@@ -161,14 +171,15 @@ export const colors = {
   boardBorder: "rgba(255,255,255,0.10)",
   boardShadow: "#040F0B",
 
-  /* Tiles — cream/ivory with depth */
+  /* Tiles — warm gold/ivory with depth */
   tile: {
-    background: palette.ivory,
+    background: "#F5E3B8",            // warm champagne gold
+    backgroundAlt: "#E8D5A0",         // slightly deeper gold for wheel tiles
     backgroundSelected: palette.jade,
-    border: "rgba(0,0,0,0.08)",
-    borderBottom: "rgba(0,0,0,0.15)",
+    border: "rgba(166,134,50,0.25)",
+    borderBottom: "rgba(140,110,30,0.35)",
     borderBottomSelected: "#0F6B45",
-    text: palette.espresso,
+    text: "#4A3520",                   // warm dark brown for legibility
     textSelected: "#FFFFFF",
     empty: "rgba(255,255,255,0.04)",
     emptyShadow: "rgba(0,0,0,0.2)",

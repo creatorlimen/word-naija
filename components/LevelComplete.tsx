@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     borderWidth: 1,
     borderBottomWidth: 0,
-    borderColor: colors.outlineStrong,
+    borderColor: colors.outlineGoldStrong,
     ...shadows.soft,
   },
   emoji: {
@@ -229,14 +229,14 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   primaryButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.gold,
     paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.full,
     width: "100%",
     alignItems: "center",
     marginBottom: spacing.sm,
-    ...shadows.subtle,
+    ...shadows.glow,
   },
   secondaryButton: {
     backgroundColor: colors.button.secondary,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontSize: fontSize.lg,
     fontFamily: fontFamily.bold,
-    color: colors.foreground,
+    color: "#3A2F2A",
   },
   secondaryButtonText: {
     fontSize: fontSize.md,
