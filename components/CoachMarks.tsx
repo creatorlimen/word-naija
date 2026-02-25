@@ -101,12 +101,14 @@ export default function CoachMarks({ targets, onComplete }: CoachMarksProps) {
   const TOOLTIP_WIDTH = Math.min(SCREEN_W - 48, 300);
   const tooltipLeft = Math.max(24, Math.min(cx - TOOLTIP_WIDTH / 2, SCREEN_W - TOOLTIP_WIDTH - 24));
   const ARROW_SIZE = 10;
-  const GAP = 16;
 
   const tooltipAbove = target.tooltipPosition === "above";
-  const tooltipTop = tooltipAbove
-    ? cy - r - GAP - 100 // approximate height; auto-adjusts via flexbox
-    : cy + r + GAP;
+  // For "below": use top — arrow (up) tip sits at circle bottom edge
+  // For "above": use bottom — arrow (down) tip sits at circle top edge
+  //   bottom anchors the tooltip's bottom edge, so height doesn't matter
+  const tooltipPositionStyle = tooltipAbove
+    ? { bottom: SCREEN_H - cy + r + ARROW_SIZE }  // arrow tip lands at cy - r
+    : { top: cy + r };                              // arrow tip lands at cy + r
 
   /* Arrow position (centered on spotlight) */
   const arrowLeft = cx - tooltipLeft - ARROW_SIZE;
@@ -138,8 +140,8 @@ export default function CoachMarks({ targets, onComplete }: CoachMarksProps) {
             styles.tooltip,
             {
               left: tooltipLeft,
-              top: tooltipTop,
               width: TOOLTIP_WIDTH,
+              ...tooltipPositionStyle,
             },
           ]}
         >
