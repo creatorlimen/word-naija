@@ -27,10 +27,12 @@ import {
   fontFamily,
 } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
-import Achievements from "./Achievements";
+import { useGameState, useGameActions } from "../lib/game/context";
 import DecoBackground from "./DecoBackground";
 import Icon from "./Icon";
 import type { IconName } from "./Icon";
+import MedalBadge from "./MedalBadge";
+import SettingsModal from "./SettingsModal";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -48,10 +50,12 @@ export default function HomeScreen({
   onStart,
 }: HomeScreenProps) {
   const progressPercent = Math.round((levelsCompleted / TOTAL_LEVELS) * 100);
-  const [showAchievements, setShowAchievements] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const { state } = useGameState();
+  const actions = useGameActions();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar style="light" />
       <LinearGradient
         colors={gradients.background}
@@ -65,7 +69,7 @@ export default function HomeScreen({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header with logo ── */}
+        {/* ── Header ── */}
         <View style={styles.headerRow}>
           <View style={styles.logoBadge}>
             <Image
@@ -74,68 +78,57 @@ export default function HomeScreen({
               resizeMode="contain"
             />
           </View>
-          {achievements.length > 0 && (
-            <Pressable
-              style={styles.achievementChip}
-              onPress={() => setShowAchievements((v) => !v)}
-            >
-              <Icon name="medal" size={14} color={colors.gold} />
-              <Text style={styles.achievementChipCount}>{achievements.length}</Text>
-            </Pressable>
-          )}
         </View>
 
-        {/* ── Wordmark ── */}
-        <View style={styles.wordmarkSection}>
-          <Text style={styles.title}>Dashboard</Text>
-        </View>
+        {/* ── Title ── */}
+        <Text style={styles.title}>Dashboard</Text>
 
-        {/* ── Stats Card — glass panel ── */}
+        {/* ── Stats Card — two-column layout ── */}
         <View style={styles.statsCard}>
-          <BlurView intensity={25} tint="dark" style={StyleSheet.absoluteFill} />
+          <BlurView intensity={60} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
           <LinearGradient
             colors={gradients.glass}
             style={StyleSheet.absoluteFill}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
           />
-          <Text style={styles.statsCardTitle}>Game Stats</Text>
-          <Text style={styles.statsCardSub}>Daily Progress {progressPercent}%</Text>
-
-          {/* Stats row */}
-          <View style={styles.statsRow}>
-            <StatCard value={levelsCompleted} label="Levels" iconName="trophy" />
-            <StatCard value={coins} label="Coins" iconName="coin" highlight />
-            <StatCard value={`${progressPercent}%`} label="Progress" iconName="chart" />
+          <View style={styles.statsInner}>
+            {/* Left column — text stats */}
+            <View style={styles.statsLeft}>
+              <Text style={styles.statsCardTitle}>Game Stats</Text>
+              <View style={styles.statRow}>
+                <Text style={styles.statRowLabel}>Daily Progress:</Text>
+                <Text style={styles.statRowValue}>{progressPercent}%</Text>
+              </View>
+              <View style={styles.statRow}>
+                <Text style={styles.statRowLabel}>Coins:</Text>
+                <Text style={styles.statRowValueGold}>{coins}</Text>
+              </View>
+            </View>
+            {/* Right column — medal hero */}
+            <View style={styles.statsRight}>
+              <MedalBadge size={100} />
+            </View>
           </View>
-
-          {/* Progress bar */}
-          <View style={styles.progressBar}>
-            <LinearGradient
-              colors={gradients.cta}
-              style={[styles.progressFill, { width: `${progressPercent}%` }]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            />
-          </View>
-          <Text style={styles.progressLabel}>
-            {levelsCompleted} of {TOTAL_LEVELS} levels completed
-          </Text>
         </View>
 
         {/* ── Achievement section ── */}
-        {showAchievements && achievements.length > 0 && (
-          <View style={styles.achievementCard}>
-            <BlurView intensity={25} tint="dark" style={StyleSheet.absoluteFill} />
-            <LinearGradient
-              colors={gradients.glass}
-              style={StyleSheet.absoluteFill}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-            />
-            <Achievements achievements={achievements} />
-          </View>
-        )}
+        <Text style={styles.achievementHeading}>Achievement</Text>
+
+        <View style={styles.achievementList}>
+          <AchievementRow
+            iconName="star"
+            iconBg="#1C7C57"
+            title="Earns"
+            subtitle={`Daily Progress: ${progressPercent}%`}
+          />
+          <AchievementRow
+            iconName="trophy"
+            iconBg="#A68632"
+            title="Achievement"
+            subtitle={`Achievement: ${Math.min(progressPercent + 10, 100)}%`}
+          />
+        </View>
 
         {/* ── Feature grid (first-time only) ── */}
         {levelsCompleted === 0 && (
@@ -146,36 +139,54 @@ export default function HomeScreen({
             <FeatureCard iconName="target" title="Daily Run" text="Short sessions, bonus rewards" />
           </View>
         )}
-
-        {/* ── CTA Button ── */}
-        <Pressable
-          onPress={onStart}
-          style={({ pressed }) => [
-            styles.startButton,
-            pressed && styles.startButtonPressed,
-          ]}
-        >
-          <LinearGradient
-            colors={gradients.ctaGold}
-            style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0.5 }}
-          />
-          <Text style={styles.startButtonText}>
-            {levelsCompleted > 0 ? "Continue Playing" : "Start Playing"}
-          </Text>
-        </Pressable>
       </ScrollView>
+
+      {/* ── Bottom Tab Bar ── */}
+      <BottomTabBar onPlay={onStart} onSettings={() => setShowSettings(true)} />
+
+      {/* ── Settings Modal ── */}
+      <SettingsModal
+        visible={showSettings}
+        soundEnabled={state?.soundEnabled ?? true}
+        onToggleSound={() => actions.toggleSound()}
+        onClose={() => setShowSettings(false)}
+        onHowToPlay={() => setShowSettings(false)}
+        onQuit={() => setShowSettings(false)}
+      />
     </SafeAreaView>
   );
 }
 
 /* ── Sub-components ── */
 
+function AchievementRow({
+  iconName,
+  iconBg,
+  title,
+  subtitle,
+}: {
+  iconName: IconName;
+  iconBg: string;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <View style={styles.achievementRow}>
+      <View style={[styles.achievementIcon, { backgroundColor: iconBg }]}>
+        <Icon name={iconName} size={18} color="#FFFFFF" />
+      </View>
+      <View style={styles.achievementTextCol}>
+        <Text style={styles.achievementTitle}>{title}</Text>
+        <Text style={styles.achievementSubtitle}>{subtitle}</Text>
+      </View>
+    </View>
+  );
+}
+
 function FeatureCard({ iconName, title, text }: { iconName: IconName; title: string; text: string }) {
   return (
     <View style={styles.featureCard}>
-      <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+      <BlurView intensity={50} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
       <LinearGradient
         colors={gradients.glass}
         style={StyleSheet.absoluteFill}
@@ -189,29 +200,53 @@ function FeatureCard({ iconName, title, text }: { iconName: IconName; title: str
   );
 }
 
-function StatCard({
-  label,
-  value,
-  iconName,
-  highlight,
+function BottomTabBar({
+  onPlay,
+  onSettings,
 }: {
-  label: string;
-  value: string | number;
-  iconName?: IconName;
-  highlight?: boolean;
+  onPlay: () => void;
+  onSettings?: () => void;
 }) {
   return (
-    <View style={[styles.statCard, highlight && styles.statCardHighlight]}>
-      {iconName && <Icon name={iconName} size={18} color={highlight ? colors.gold : colors.textMuted} />}
-      <Text style={[styles.statValue, highlight && styles.statValueGold]}>
-        {value}
-      </Text>
-      <Text style={styles.statLabel} numberOfLines={1}>{label}</Text>
+    <View style={styles.tabBar}>
+      <BlurView intensity={40} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(8,20,16,0.6)" }]} />
+
+      {/* Home tab (active) */}
+      <Pressable style={styles.tabItem}>
+        <View style={styles.tabIconActive}>
+          <Icon name="grid" size={20} color="#FFFFFF" />
+        </View>
+      </Pressable>
+
+      {/* Play tab (center CTA) */}
+      <Pressable
+        onPress={onPlay}
+        style={({ pressed }) => [
+          styles.tabPlayButton,
+          pressed && { opacity: 0.9, transform: [{ scale: 0.96 }] },
+        ]}
+      >
+        <LinearGradient
+          colors={gradients.ctaGold}
+          style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0.5 }}
+        />
+        <Icon name="play" size={24} color="#3A2F2A" />
+      </Pressable>
+
+      {/* Settings tab */}
+      <Pressable style={styles.tabItem} onPress={onSettings}>
+        <Icon name="settings" size={22} color={colors.textMuted} />
+      </Pressable>
     </View>
   );
 }
 
 /* ── Styles ── */
+
+const TAB_BAR_HEIGHT = 72;
 
 const styles = StyleSheet.create({
   container: {
@@ -222,8 +257,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.xxxl,
-    gap: spacing.xl,
+    paddingBottom: TAB_BAR_HEIGHT + spacing.xl,
+    gap: spacing.xxl,
   },
 
   /* Header */
@@ -247,30 +282,8 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
   },
-  achievementChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: colors.surfaceGlass,
-    borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderWidth: 1,
-    borderColor: colors.outlineGold,
-  },
-  achievementChipIcon: {
-    fontSize: 14,
-  },
-  achievementChipCount: {
-    color: colors.textGold,
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.bold,
-  },
 
-  /* Wordmark */
-  wordmarkSection: {
-    marginTop: -spacing.sm,
-  },
+  /* Title */
   title: {
     fontSize: fontSize.xxxl,
     fontFamily: fontFamily.extraBold,
@@ -278,91 +291,98 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  /* Stats card */
+  /* ── Stats card (two-column) ── */
   statsCard: {
     borderRadius: borderRadius.xl,
     padding: spacing.xl,
     borderWidth: 1,
     borderColor: colors.outlineGoldStrong,
     overflow: "hidden",
-    gap: spacing.md,
     ...shadows.soft,
+  },
+  statsInner: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  statsLeft: {
+    flex: 1,
+    gap: spacing.sm,
   },
   statsCardTitle: {
     fontSize: fontSize.lg,
     fontFamily: fontFamily.bold,
     color: colors.textPrimary,
+    marginBottom: spacing.xs,
   },
-  statsCardSub: {
+  statRow: {
+    gap: 2,
+  },
+  statRowLabel: {
     fontSize: fontSize.sm,
     fontFamily: fontFamily.bodyMedium,
     color: colors.textMuted,
-    marginTop: -spacing.sm,
   },
-  statsRow: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    alignItems: "center",
-    gap: 2,
-  },
-  statCardHighlight: {
-    borderColor: colors.outlineGold,
-    backgroundColor: "rgba(212,168,67,0.08)",
-  },
-  statIcon: {
-    fontSize: 18,
-  },
-  statValue: {
-    fontSize: fontSize.lg,
+  statRowValue: {
+    fontSize: fontSize.xxl,
     fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
+    lineHeight: fontSize.xxl + 4,
   },
-  statValueGold: {
+  statRowValueGold: {
+    fontSize: fontSize.xxl,
+    fontFamily: fontFamily.extraBold,
     color: colors.textGold,
+    lineHeight: fontSize.xxl + 4,
   },
-  statLabel: {
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.bodySemiBold,
-    color: colors.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.full,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: borderRadius.full,
-  },
-  progressLabel: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.bodyMedium,
-    marginTop: -spacing.xs,
+  statsRight: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: spacing.md,
   },
 
-  /* Achievement card */
-  achievementCard: {
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.outlineStrong,
-    overflow: "hidden",
+  /* ── Achievement section ── */
+  achievementHeading: {
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.bold,
+    color: colors.textPrimary,
+    fontStyle: "italic",
+  },
+  achievementList: {
+    gap: spacing.md,
+    marginTop: -spacing.sm,
+  },
+  achievementRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FAF6F0",
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    gap: spacing.md,
+    ...shadows.subtle,
+  },
+  achievementIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  achievementTextCol: {
+    flex: 1,
+    gap: 2,
+  },
+  achievementTitle: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.bold,
+    color: "#3A2F2A",
+  },
+  achievementSubtitle: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.bodyRegular,
+    color: "#7A7068",
   },
 
-  /* Feature grid */
+  /* ── Feature grid ── */
   featureGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -377,9 +397,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     overflow: "hidden",
   },
-  featureIcon: {
-    fontSize: 22,
-  },
   featureTitle: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.bold,
@@ -392,22 +409,44 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* CTA Button */
-  startButton: {
+  /* ── Bottom Tab Bar ── */
+  tabBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: TAB_BAR_HEIGHT,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.outline,
     overflow: "hidden",
-    paddingVertical: spacing.lg + 2,
+  },
+  tabItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 48,
+    height: 48,
+  },
+  tabIconActive: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: colors.surfaceGlass,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.outlineGold,
+  },
+  tabPlayButton: {
+    width: 56,
+    height: 56,
     borderRadius: borderRadius.full,
     alignItems: "center",
-    ...shadows.soft,
-  },
-  startButtonPressed: {
-    opacity: 0.92,
-    transform: [{ scale: 0.98 }],
-  },
-  startButtonText: {
-    fontSize: fontSize.lg,
-    fontFamily: fontFamily.bold,
-    color: "#3A2F2A",
-    letterSpacing: 0.5,
+    justifyContent: "center",
+    overflow: "hidden",
+    ...shadows.glow,
   },
 });
