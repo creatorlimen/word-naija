@@ -77,6 +77,25 @@ export default function SettingsModal({
     ]);
   }, [onQuit]);
 
+  const handleResetAll = useCallback(() => {
+    Alert.alert(
+      "Reset All Data",
+      "This will wipe all progress, coins, and settings — like a fresh install. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: async () => {
+            await AsyncStorage.clear();
+            onClose();
+            onQuit();
+          },
+        },
+      ]
+    );
+  }, [onClose, onQuit]);
+
   return (
     <Modal
       visible={visible}
@@ -128,6 +147,14 @@ export default function SettingsModal({
           {/* --- How to Play --- */}
           <Pressable style={styles.row} onPress={onHowToPlay}>
             <Text style={styles.rowLabel}>How to Play</Text>
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+
+          <View style={styles.rowDivider} />
+
+          {/* --- Dev: Reset (testing only) --- */}
+          <Pressable style={styles.row} onPress={handleResetAll}>
+            <Text style={styles.resetLabel}>⚠️ Reset All Data</Text>
             <Text style={styles.chevron}>›</Text>
           </Pressable>
 
@@ -226,6 +253,12 @@ const styles = StyleSheet.create({
   rowLabel: {
     color: colors.textPrimary,
     fontSize: fontSize.md,
+    fontFamily: fontFamily.medium,
+    letterSpacing: 0.3,
+  },
+  resetLabel: {
+    color: "#E05A5A",
+    fontSize: fontSize.sm,
     fontFamily: fontFamily.medium,
     letterSpacing: 0.3,
   },
