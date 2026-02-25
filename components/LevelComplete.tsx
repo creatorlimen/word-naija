@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
   },
   statIconBonus: {
     fontSize: fontSize.md,
+    color: colors.gold,
   },
   statLabel: {
     fontSize: 10,
