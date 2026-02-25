@@ -1,6 +1,6 @@
 /**
- * Word Naija - FTUE Onboarding Component
- * First-Time User Experience modal
+ * Word Naija - FTUE Onboarding Component (v4 — Afro-Minimal Premium)
+ * Interactive "Show, Don't Tell" onboarding with glass cards.
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -11,22 +11,25 @@ import {
   Modal,
   StyleSheet,
   Dimensions,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
+import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
 
 const FTUE_KEY = "@word_naija_ftue_complete";
 
 const slides = [
   {
-    emoji: "🇳🇬",
+    emoji: null,
+    logo: true,
     title: "Welcome to Word Naija!",
     body: "The Nigerian word puzzle game where you discover English and Pidgin words.",
   },
   {
-    emoji: "🧩",
-    title: "How to Play",
-    body: "Tap letters from the wheel to form words. Each word fits into the crossword grid at specific positions.",
+    emoji: "👆",
+    title: "Swipe to Connect",
+    body: "Swipe letters on the wheel to form words. Each word fits into the crossword grid.",
   },
   {
     emoji: "💡",
@@ -100,7 +103,15 @@ export default function FTUE({ onComplete, forceShow }: FTUEProps) {
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
       <View style={styles.overlay}>
         <View style={styles.card}>
-          <Text style={styles.emoji}>{slide.emoji}</Text>
+          {slide.logo ? (
+            <Image
+              source={require("../assets/logo.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <Text style={styles.emoji}>{slide.emoji}</Text>
+          )}
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.body}>{slide.body}</Text>
 
@@ -143,60 +154,67 @@ const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.82)",
+    backgroundColor: colors.overlay,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
   card: {
-    backgroundColor: "#0e2318",
+    backgroundColor: "rgba(8,20,16,0.96)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
+    borderColor: colors.outlineStrong,
     borderRadius: borderRadius.xl,
-    padding: spacing.xl,
+    padding: spacing.xxl,
     width: Math.min(width - 48, 360),
     alignItems: "center",
     ...shadows.soft,
   },
   emoji: {
-    fontSize: 56,
-    marginBottom: spacing.md,
+    fontSize: 48,
+    marginBottom: spacing.lg,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.lg,
   },
   title: {
     fontSize: fontSize.xxl,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
     color: colors.textPrimary,
     textAlign: "center",
     marginBottom: spacing.sm,
   },
   body: {
     fontSize: fontSize.md,
+    fontFamily: fontFamily.regular,
     color: colors.textMuted,
     textAlign: "center",
-    lineHeight: 24,
-    marginBottom: spacing.lg,
+    lineHeight: 22,
+    marginBottom: spacing.xl,
   },
   dots: {
     flexDirection: "row",
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
+    gap: spacing.sm,
   },
   dot: {
     width: 8,
     height: 8,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.muted,
-    marginHorizontal: 4,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.surface,
   },
   dotActive: {
-    backgroundColor: colors.accent,
-    width: 16,
+    backgroundColor: colors.gold,
+    width: 20,
   },
   nextButton: {
     backgroundColor: colors.accent,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xxl,
-    borderRadius: borderRadius.lg,
-    minWidth: 180,
+    borderRadius: borderRadius.full,
+    minWidth: 200,
     alignItems: "center",
   },
   buttonPressed: {
@@ -206,14 +224,15 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: colors.foreground,
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontFamily: fontFamily.semiBold,
   },
   skipButton: {
-    marginTop: spacing.md,
+    marginTop: spacing.lg,
     padding: spacing.sm,
   },
   skipText: {
     color: colors.textMuted,
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
   },
 });

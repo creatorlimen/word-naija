@@ -1,11 +1,11 @@
 /**
- * Word Naija - Error Boundary
- * Catches render errors and displays a fallback UI
+ * Word Naija - Error Boundary (v4 — Afro-Minimal Premium)
+ * Catches render errors and displays a fallback UI with glass styling.
  */
 
 import React, { Component } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, fontFamily } from "../constants/theme";
 
 interface Props {
   children: React.ReactNode;
@@ -74,30 +74,31 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSize.xxl,
-    fontWeight: "800",
-    color: colors.foreground,
+    fontFamily: fontFamily.extraBold,
+    color: colors.textPrimary,
     marginBottom: spacing.sm,
   },
   message: {
     fontSize: fontSize.md,
-    color: colors.muted,
+    fontFamily: fontFamily.regular,
+    color: colors.textMuted,
     textAlign: "center",
     marginBottom: spacing.xl,
     lineHeight: 22,
   },
   button: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.gold,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xxl,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
   },
   buttonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.97 }],
   },
   buttonText: {
-    color: colors.foreground,
+    color: colors.background,
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
   },
 });

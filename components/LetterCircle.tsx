@@ -1,6 +1,6 @@
 /**
- * Word Naija — LetterCircle Component (v3 - Fixed gestures)
- * Swipe-to-select input wheel with wooden tile styling.
+ * Word Naija — LetterCircle Component (v4 — Afro-Minimal Premium)
+ * Golden glow wheel with ivory tiles in a glass card container.
  */
 
 import React, { useRef, useMemo, useCallback, useEffect } from "react";
@@ -14,8 +14,9 @@ import {
   Animated,
 } from "react-native";
 import Svg, { Line, Circle } from "react-native-svg";
+import { LinearGradient } from "expo-linear-gradient";
 import type { Letter } from "../lib/game/types";
-import { colors, borderRadius, fontSize, shadows } from "../constants/theme";
+import { colors, borderRadius, fontSize, shadows, gradients, fontFamily } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH - 60, 280); // Spacious wheel for up to 8 tiles
@@ -224,7 +225,14 @@ export default function LetterCircle({
 
   return (
     <View style={styles.container}>
+      {/* Glass card background with golden glow */}
       <View style={styles.wheelBackplate}>
+        <LinearGradient
+          colors={gradients.wheelBg}
+          style={[StyleSheet.absoluteFill, { borderRadius: (CIRCLE_SIZE + 36) / 2 }]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+        />
         <View
           ref={wheelViewRef}
           onLayout={onWheelLayout}
@@ -316,32 +324,36 @@ const styles = StyleSheet.create({
     borderRadius: (CIRCLE_SIZE + 36) / 2,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.outlineGold,
+    overflow: "hidden",
+    ...shadows.glow,
   },
   tile: {
     position: "absolute",
     width: TILE_SIZE,
     height: TILE_SIZE,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     backgroundColor: colors.tile.background,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.tile.border,
-    borderBottomWidth: 4,
+    borderBottomWidth: 3,
     borderBottomColor: colors.tile.borderBottom,
     ...shadows.tile3D,
   },
   tileSelected: {
     backgroundColor: colors.tile.backgroundSelected,
-    borderColor: colors.accent,
+    borderColor: colors.accentStrong,
     borderBottomColor: colors.tile.borderBottomSelected,
     zIndex: 10,
   },
   tileText: {
-    fontSize: 28,
-    fontWeight: "900",
+    fontSize: 26,
+    fontFamily: fontFamily.black,
     color: colors.tile.text,
-    marginTop: -4,
+    marginTop: -3,
   },
   tileTextSelected: {
     color: colors.tile.textSelected,

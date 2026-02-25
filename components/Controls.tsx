@@ -5,7 +5,7 @@
 
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, fontFamily } from "../constants/theme";
 
 interface ControlsProps {
   levelNumber: number;
@@ -98,12 +98,12 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: fontSize.md,
-    fontWeight: "600",
+    fontFamily: fontFamily.semiBold,
     color: colors.foreground,
   },
   coinText: {
     fontSize: fontSize.md,
-    fontWeight: "600",
+    fontFamily: fontFamily.semiBold,
     color: colors.secondary,
   },
   buttonRow: {
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   },
   controlLabel: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.medium,
     color: colors.foreground,
   },
   controlLabelDisabled: {

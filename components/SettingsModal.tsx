@@ -16,7 +16,7 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { colors, spacing, fontSize, borderRadius, shadows } from "../constants/theme";
+import { colors, spacing, fontSize, borderRadius, shadows, fontFamily } from "../constants/theme";
 
 const NOTIF_KEY = "@word_naija_notifications";
 
@@ -161,26 +161,26 @@ export default function SettingsModal({
   );
 }
 
-const PANEL_BG = "rgba(10, 24, 22, 0.9)";
-const PANEL_BORDER = "rgba(255,255,255,0.2)";
-const ROW_DIVIDER = "rgba(255,255,255,0.12)";
+const PANEL_BG = "rgba(8, 20, 16, 0.95)";
+const PANEL_BORDER = "rgba(255,255,255,0.18)";
+const ROW_DIVIDER = "rgba(255,255,255,0.08)";
 
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.65)",
+    backgroundColor: colors.overlay,
     alignItems: "center",
     justifyContent: "center",
   },
   panel: {
-    width: "82%",
+    width: "84%",
     backgroundColor: PANEL_BG,
     borderRadius: borderRadius.xl,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: PANEL_BORDER,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xl,
     ...shadows.soft,
   },
   closeButton: {
@@ -189,8 +189,8 @@ const styles = StyleSheet.create({
     right: -14,
     width: 34,
     height: 34,
-    borderRadius: 17,
-    backgroundColor: PANEL_BORDER,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -198,21 +198,21 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   closeText: {
-    color: colors.foreground,
-    fontSize: 15,
-    fontWeight: "700",
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontFamily: fontFamily.bold,
     lineHeight: 18,
   },
   title: {
-    color: colors.foreground,
+    color: colors.textPrimary,
     fontSize: fontSize.xl,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     textAlign: "center",
-    letterSpacing: 1,
-    marginBottom: spacing.md,
+    letterSpacing: 0.5,
+    marginBottom: spacing.lg,
   },
   divider: {
-    height: 1.5,
+    height: 1,
     backgroundColor: PANEL_BORDER,
     marginVertical: spacing.sm,
     opacity: 0.5,
@@ -224,35 +224,35 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   rowLabel: {
-    color: colors.foreground,
+    color: colors.textPrimary,
     fontSize: fontSize.md,
-    letterSpacing: 0.5,
+    fontFamily: fontFamily.medium,
+    letterSpacing: 0.3,
   },
   rowDivider: {
     height: 1,
     backgroundColor: ROW_DIVIDER,
   },
   chevron: {
-    color: colors.foreground,
-    fontSize: 26,
-    lineHeight: 28,
-    fontWeight: "300",
+    color: colors.textMuted,
+    fontSize: 24,
+    lineHeight: 26,
   },
   bottomRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: spacing.md,
+    marginTop: spacing.lg,
     gap: spacing.sm,
   },
   powerButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 46,
+    height: 46,
+    borderRadius: borderRadius.full,
     backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.outline,
   },
   powerIconWrap: {
@@ -261,17 +261,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // Vertical line at top of the power icon
   powerIconLine: {
     position: "absolute",
     top: 0,
     width: 2.5,
     height: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.textPrimary,
     borderRadius: 2,
     zIndex: 2,
   },
-  // Arc (open circle) forming the rest of the power icon
   powerIconArc: {
     position: "absolute",
     bottom: 0,
@@ -279,15 +277,14 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 2.5,
-    borderColor: "#FFFFFF",
-    // Clip the top gap where the line sits
+    borderColor: colors.textPrimary,
     borderTopColor: "transparent",
   },
   contactButton: {
     flex: 1,
     height: 44,
     backgroundColor: colors.surface,
-    borderRadius: 22,
+    borderRadius: borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -295,26 +292,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   contactText: {
-    color: colors.foreground,
-    fontSize: 11,
-    fontWeight: "700",
+    color: colors.textPrimary,
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.semiBold,
     textAlign: "center",
-    includeFontPadding: false,
   } as any,
   shareButton: {
     flex: 1,
     height: 44,
-    backgroundColor: colors.success,
-    borderRadius: 22,
+    backgroundColor: colors.accent,
+    borderRadius: borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: colors.outline,
+    borderColor: colors.accentStrong,
   },
   shareText: {
     color: "#FFFFFF",
     fontSize: fontSize.sm,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+    fontFamily: fontFamily.semiBold,
+    letterSpacing: 0.3,
   },
 });

@@ -1,6 +1,6 @@
 /**
- * Word Naija - HomeScreen Component
- * Welcome screen with stats and start button
+ * Word Naija - HomeScreen Component (v4 — Afro-Minimal Premium)
+ * Dashboard with glass cards, gold accents, Poppins typography.
  */
 
 import React, { useState } from "react";
@@ -10,6 +10,8 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
+  Dimensions,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -21,9 +23,12 @@ import {
   spacing,
   gradients,
   shadows,
+  fontFamily,
 } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
 import Achievements from "./Achievements";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface HomeScreenProps {
   coins: number;
@@ -47,70 +52,95 @@ export default function HomeScreen({
       <LinearGradient
         colors={gradients.background}
         style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        start={{ x: 0.2, y: 0 }}
+        end={{ x: 0.8, y: 1 }}
       />
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero / wordmark */}
-        <View style={styles.heroCard}>
-          <View style={styles.heroHeader}>
-            <View style={styles.wordmarkRow}>
-              <View style={styles.flagBadge}>
-                <Text style={styles.flagText}>🇳🇬</Text>
-              </View>
-              <View>
-                <Text style={styles.title}>Word Naija</Text>
-                <Text style={styles.subtitle}>Afro-minimal word puzzle</Text>
-              </View>
-            </View>
-            {achievements.length > 0 && (
-              <Pressable
-                style={styles.badgeChip}
-                onPress={() => setShowAchievements((v) => !v)}
-              >
-                <Text style={styles.badgeChipText}>🏅 {achievements.length}</Text>
-                <Text style={styles.badgeChipCaret}>
-                  {showAchievements ? "▲" : "▼"}
-                </Text>
-              </Pressable>
-            )}
+        {/* ── Header with logo ── */}
+        <View style={styles.headerRow}>
+          <View style={styles.logoBadge}>
+            <Image
+              source={require("../assets/logo.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
-
-          <View style={styles.statsRow}>
-            <StatCard label="Levels" value={levelsCompleted} />
-            <StatCard label="Coins" value={`🪙 ${coins}`} />
-            <StatCard label="Progress" value={`${progressPercent}%`} />
-          </View>
-
-          <View style={styles.progressSection}>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
-            </View>
-            <Text style={styles.progressLabel}>
-              {levelsCompleted} of {TOTAL_LEVELS} levels completed
-            </Text>
-          </View>
-
-          {/* Achievements — inline, revealed by chip tap */}
-          {showAchievements && achievements.length > 0 && (
-            <Achievements achievements={achievements} />
+          {achievements.length > 0 && (
+            <Pressable
+              style={styles.achievementChip}
+              onPress={() => setShowAchievements((v) => !v)}
+            >
+              <Text style={styles.achievementChipIcon}>🏅</Text>
+              <Text style={styles.achievementChipCount}>{achievements.length}</Text>
+            </Pressable>
           )}
         </View>
 
-        {/* Feature grid — first-timers only */}
-        {levelsCompleted === 0 && (
-          <View style={styles.featureGrid}>
-            <FeatureCard emoji="📖" title="Bilingual" text="Learn Nigerian & English words" />
-            <FeatureCard emoji="🧩" title="Crosswords" text="Intersecting puzzles that feel handcrafted" />
-            <FeatureCard emoji="🪙" title="Earn coins" text="Collect extras, spend on smarter hints" />
-            <FeatureCard emoji="🎯" title="Daily run" text="Short sessions with bonus rewards" />
+        {/* ── Wordmark ── */}
+        <View style={styles.wordmarkSection}>
+          <Text style={styles.title}>Dashboard</Text>
+        </View>
+
+        {/* ── Stats Card — glass panel ── */}
+        <View style={styles.statsCard}>
+          <LinearGradient
+            colors={gradients.glass}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+          />
+          <Text style={styles.statsCardTitle}>Game Stats</Text>
+          <Text style={styles.statsCardSub}>Daily Progress {progressPercent}%</Text>
+
+          {/* Stats row */}
+          <View style={styles.statsRow}>
+            <StatCard value={levelsCompleted} label="Levels" />
+            <StatCard value={coins} label="Coins" icon="🪙" highlight />
+            <StatCard value={`${progressPercent}%`} label="Progress" />
+          </View>
+
+          {/* Progress bar */}
+          <View style={styles.progressBar}>
+            <LinearGradient
+              colors={gradients.cta}
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            />
+          </View>
+          <Text style={styles.progressLabel}>
+            {levelsCompleted} of {TOTAL_LEVELS} levels completed
+          </Text>
+        </View>
+
+        {/* ── Achievement section ── */}
+        {showAchievements && achievements.length > 0 && (
+          <View style={styles.achievementCard}>
+            <LinearGradient
+              colors={gradients.glass}
+              style={StyleSheet.absoluteFill}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            />
+            <Achievements achievements={achievements} />
           </View>
         )}
 
-        {/* Start button */}
+        {/* ── Feature grid (first-time only) ── */}
+        {levelsCompleted === 0 && (
+          <View style={styles.featureGrid}>
+            <FeatureCard icon="📖" title="Bilingual" text="Learn Nigerian & English words" />
+            <FeatureCard icon="🧩" title="Crosswords" text="Intersecting handcrafted puzzles" />
+            <FeatureCard icon="🪙" title="Earn Coins" text="Collect extras, spend on hints" />
+            <FeatureCard icon="🎯" title="Daily Run" text="Short sessions, bonus rewards" />
+          </View>
+        )}
+
+        {/* ── CTA Button ── */}
         <Pressable
           onPress={onStart}
           style={({ pressed }) => [
@@ -120,9 +150,9 @@ export default function HomeScreen({
         >
           <LinearGradient
             colors={gradients.cta}
-            style={StyleSheet.absoluteFill}
+            style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            end={{ x: 1, y: 0.5 }}
           />
           <Text style={styles.startButtonText}>
             {levelsCompleted > 0 ? "Continue Playing" : "Start Playing"}
@@ -133,24 +163,47 @@ export default function HomeScreen({
   );
 }
 
-function FeatureCard({ emoji, title, text }: { emoji: string; title: string; text: string }) {
+/* ── Sub-components ── */
+
+function FeatureCard({ icon, title, text }: { icon: string; title: string; text: string }) {
   return (
     <View style={styles.featureCard}>
-      <Text style={styles.featureEmoji}>{emoji}</Text>
+      <LinearGradient
+        colors={gradients.glass}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
+      <Text style={styles.featureIcon}>{icon}</Text>
       <Text style={styles.featureTitle}>{title}</Text>
       <Text style={styles.featureText}>{text}</Text>
     </View>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  highlight,
+}: {
+  label: string;
+  value: string | number;
+  icon?: string;
+  highlight?: boolean;
+}) {
   return (
-    <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
+    <View style={[styles.statCard, highlight && styles.statCardHighlight]}>
+      {icon && <Text style={styles.statIcon}>{icon}</Text>}
+      <Text style={[styles.statValue, highlight && styles.statValueGold]}>
+        {value}
+      </Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 }
+
+/* ── Styles ── */
 
 const styles = StyleSheet.create({
   container: {
@@ -160,164 +213,193 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xl,
-    gap: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xxxl,
+    gap: spacing.xl,
   },
-  heroCard: {
-    backgroundColor: colors.surfaceCard,
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    gap: spacing.md,
-    ...shadows.subtle,
-  },
-  heroHeader: {
+
+  /* Header */
+  headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  wordmarkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  flagBadge: {
-    width: 46,
-    height: 46,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
+  logoBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.surfaceGlass,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.outline,
+    overflow: "hidden",
   },
-  flagText: {
-    fontSize: 26,
+  logoImage: {
+    width: 36,
+    height: 36,
   },
-  title: {
-    fontSize: fontSize.xxxl,
-    fontWeight: "900",
-    color: colors.textPrimary,
-    letterSpacing: 0.3,
-  },
-  subtitle: {
-    fontSize: fontSize.md,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  badgeChip: {
+  achievementChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceGlass,
     borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.xs + 2,
     borderWidth: 1,
-    borderColor: colors.outline,
+    borderColor: colors.outlineGold,
   },
-  badgeChipText: {
-    color: colors.textPrimary,
+  achievementChipIcon: {
+    fontSize: 14,
+  },
+  achievementChipCount: {
+    color: colors.textGold,
     fontSize: fontSize.sm,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
   },
-  badgeChipCaret: {
+
+  /* Wordmark */
+  wordmarkSection: {
+    marginTop: -spacing.sm,
+  },
+  title: {
+    fontSize: fontSize.xxxl,
+    fontFamily: fontFamily.extraBold,
+    color: colors.textPrimary,
+    letterSpacing: 0.3,
+  },
+
+  /* Stats card */
+  statsCard: {
+    borderRadius: borderRadius.xl,
+    padding: spacing.xl,
+    borderWidth: 1,
+    borderColor: colors.outlineStrong,
+    overflow: "hidden",
+    gap: spacing.md,
+    ...shadows.soft,
+  },
+  statsCardTitle: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.bold,
+    color: colors.textPrimary,
+  },
+  statsCardSub: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
     color: colors.textMuted,
-    fontSize: 10,
+    marginTop: -spacing.sm,
   },
   statsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.sm,
     borderWidth: 1,
     borderColor: colors.outline,
-    ...shadows.subtle,
+    alignItems: "center",
+    gap: 2,
+  },
+  statCardHighlight: {
+    borderColor: colors.outlineGold,
+    backgroundColor: "rgba(212,168,67,0.08)",
+  },
+  statIcon: {
+    fontSize: 18,
   },
   statValue: {
     fontSize: fontSize.xl,
-    fontWeight: "800",
+    fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
+  },
+  statValueGold: {
+    color: colors.textGold,
   },
   statLabel: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.medium,
     color: colors.textMuted,
-    marginTop: 4,
-    letterSpacing: 0.4,
-  },
-  progressSection: {
-    gap: spacing.xs,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
   },
   progressBar: {
-    height: 10,
+    height: 8,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.full,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.outline,
   },
   progressFill: {
     height: "100%",
-    backgroundColor: colors.accent,
     borderRadius: borderRadius.full,
   },
   progressLabel: {
     color: colors.textMuted,
     fontSize: fontSize.xs,
-    textAlign: "left",
+    fontFamily: fontFamily.medium,
+    marginTop: -spacing.xs,
   },
+
+  /* Achievement card */
+  achievementCard: {
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.outlineStrong,
+    overflow: "hidden",
+  },
+
+  /* Feature grid */
   featureGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: spacing.md,
   },
   featureCard: {
-    width: "47%",
-    backgroundColor: colors.surfaceCard,
+    width: (SCREEN_WIDTH - spacing.xl * 2 - spacing.md) / 2,
     borderRadius: borderRadius.lg,
-    padding: spacing.md,
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.outline,
     gap: spacing.xs,
+    overflow: "hidden",
   },
-  featureEmoji: {
-    fontSize: 20,
+  featureIcon: {
+    fontSize: 22,
   },
   featureTitle: {
     fontSize: fontSize.md,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
     color: colors.textPrimary,
   },
   featureText: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textMuted,
+    lineHeight: 18,
   },
+
+  /* CTA Button */
   startButton: {
-    position: "relative",
     overflow: "hidden",
-    backgroundColor: colors.accent,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.xl,
+    paddingVertical: spacing.lg + 2,
+    borderRadius: borderRadius.full,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.outlineStrong,
     ...shadows.soft,
   },
   startButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.99 }],
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }],
   },
   startButtonText: {
-    fontSize: fontSize.xl,
-    fontWeight: "900",
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.bold,
     color: colors.foreground,
-    letterSpacing: 0.4,
+    letterSpacing: 0.5,
   },
 });

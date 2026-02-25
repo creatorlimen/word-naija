@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
-import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, shadows, fontFamily } from "../constants/theme";
 import Sparkle from "./Sparkle";
 
 interface ToolbarProps {
@@ -139,24 +139,23 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: spacing.xl,
-    paddingVertical: 4,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
     borderColor: colors.outline,
     borderWidth: 1,
     borderRadius: borderRadius.full,
-    ...shadows.subtle,
   },
   btnWrapper: {
     position: "relative",
     alignItems: "center",
   },
   circleBtn: {
-    width: 52,
-    height: 52,
+    width: 50,
+    height: 50,
     borderRadius: borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
@@ -171,14 +170,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   btnIcon: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#FFF",
     marginTop: -2,
   },
   btnSublabel: {
     fontSize: 7,
-    fontWeight: "800",
-    color: "#FFF",
+    fontFamily: fontFamily.bold,
+    color: "rgba(255,255,255,0.8)",
     letterSpacing: 0.8,
     marginTop: 2,
   },
@@ -204,6 +203,6 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.textPrimary,
     fontSize: 10,
-    fontWeight: "bold",
+    fontFamily: fontFamily.bold,
   }
 });

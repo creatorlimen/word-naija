@@ -1,11 +1,11 @@
 /**
- * Word Naija - Achievements Component
- * Displays earned badges on HomeScreen
+ * Word Naija - Achievements Component (v4 — Afro-Minimal Premium)
+ * Glass badge grid with gold accents.
  */
 
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { colors, borderRadius, fontSize, spacing } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, fontFamily } from "../constants/theme";
 
 interface AchievementsProps {
   achievements: string[];
@@ -57,19 +57,20 @@ export default function Achievements({ achievements }: AchievementsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: spacing.md,
-    marginBottom: spacing.md,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   heading: {
     fontSize: fontSize.md,
-    fontWeight: "700",
-    color: colors.foreground,
+    fontFamily: fontFamily.bold,
+    color: colors.textPrimary,
     marginBottom: spacing.sm,
     textAlign: "center",
   },
   emptyText: {
     fontSize: fontSize.sm,
-    color: colors.muted,
+    fontFamily: fontFamily.regular,
+    color: colors.textMuted,
     textAlign: "center",
     fontStyle: "italic",
   },
@@ -80,19 +81,22 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   badge: {
-    backgroundColor: "rgba(255,255,255,0.12)",
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     alignItems: "center",
-    minWidth: 72,
+    minWidth: 76,
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
   badgeEmoji: {
-    fontSize: 22,
+    fontSize: 20,
   },
   badgeLabel: {
     fontSize: fontSize.xs,
-    color: colors.foreground,
+    fontFamily: fontFamily.medium,
+    color: colors.textPrimary,
     marginTop: 2,
   },
 });

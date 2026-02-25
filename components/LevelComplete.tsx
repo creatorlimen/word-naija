@@ -1,6 +1,6 @@
 /**
- * Word Naija - LevelComplete Component
- * Modal shown when all target words are found
+ * Word Naija - LevelComplete Component (v4 — Afro-Minimal Premium)
+ * Slide-up glass modal for level completion.
  */
 
 import React from "react";
@@ -12,8 +12,9 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import type { Level } from "../lib/game/types";
-import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
+import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
 
 interface LevelCompleteProps {
   visible: boolean;
@@ -109,34 +110,37 @@ export default function LevelComplete({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.82)",
-    justifyContent: "center",
+    backgroundColor: colors.overlay,
+    justifyContent: "flex-end",
     alignItems: "center",
-    paddingHorizontal: spacing.lg,
   },
   modal: {
-    backgroundColor: "#0e2318",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
-    borderRadius: borderRadius.xl,
+    backgroundColor: "rgba(8,20,16,0.96)",
+    borderTopLeftRadius: borderRadius.xxl,
+    borderTopRightRadius: borderRadius.xxl,
     padding: spacing.xl,
+    paddingBottom: spacing.xxxl,
     width: "100%",
-    maxHeight: "80%",
+    maxHeight: "85%",
     alignItems: "center",
     gap: spacing.sm,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: colors.outlineStrong,
     ...shadows.soft,
   },
   emoji: {
-    fontSize: 48,
-    marginBottom: spacing.sm,
+    fontSize: 44,
+    marginBottom: spacing.xs,
   },
   title: {
     fontSize: fontSize.xxl,
-    fontWeight: "900",
+    fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
   },
   subtitle: {
-    fontSize: fontSize.md,
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
     color: colors.textMuted,
     marginBottom: spacing.md,
   },
@@ -150,8 +154,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     borderWidth: 1,
     borderColor: colors.outline,
     alignItems: "center",
@@ -159,18 +163,18 @@ const styles = StyleSheet.create({
   },
   statChipAccent: {
     flex: 1,
-    backgroundColor: "rgba(34,160,107,0.12)",
+    backgroundColor: "rgba(212,168,67,0.08)",
     borderRadius: borderRadius.lg,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.outlineGold,
     alignItems: "center",
     gap: 2,
   },
   statValue: {
-    fontSize: fontSize.lg,
-    fontWeight: "900",
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
     textAlign: "center",
   },
@@ -179,24 +183,25 @@ const styles = StyleSheet.create({
   },
   statIconBonus: {
     fontSize: fontSize.xl,
-    color: "#FFFFFF",
   },
   statLabel: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.medium,
     color: colors.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     textAlign: "center",
   },
   statValueAccent: {
-    fontSize: fontSize.lg,
-    fontWeight: "900",
-    color: colors.textPrimary,
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.extraBold,
+    color: colors.textGold,
     textAlign: "center",
   },
   statLabelAccent: {
     fontSize: fontSize.xs,
-    color: colors.accent,
+    fontFamily: fontFamily.medium,
+    color: colors.textGold,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     textAlign: "center",
@@ -213,48 +218,47 @@ const styles = StyleSheet.create({
   },
   meaningWord: {
     fontSize: fontSize.md,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
     color: colors.textPrimary,
   },
   meaningText: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textMuted,
     marginTop: 2,
   },
   primaryButton: {
     backgroundColor: colors.accent,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
     width: "100%",
     alignItems: "center",
     marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.outlineStrong,
     ...shadows.subtle,
   },
   secondaryButton: {
-    backgroundColor: "transparent",
-    paddingVertical: spacing.sm,
+    backgroundColor: colors.button.secondary,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
     width: "100%",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: colors.outline,
+    borderColor: colors.button.secondaryBorder,
   },
   buttonPressed: {
-    opacity: 0.8,
+    opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   primaryButtonText: {
     fontSize: fontSize.lg,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
     color: colors.foreground,
   },
   secondaryButtonText: {
     fontSize: fontSize.md,
-    fontWeight: "700",
+    fontFamily: fontFamily.semiBold,
     color: colors.textMuted,
   },
 });

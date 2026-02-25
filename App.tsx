@@ -1,6 +1,6 @@
 /**
  * Word Naija - App Entry Point
- * Wraps GameProvider and switches between HomeScreen and GameBoard
+ * Wraps GameProvider, loads Poppins fonts, switches between HomeScreen and GameBoard
  */
 
 import React, { useState, useCallback } from "react";
@@ -11,6 +11,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useFonts } from "expo-font";
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  Poppins_800ExtraBold,
+  Poppins_900Black,
+} from "@expo-google-fonts/poppins";
 import { GameProvider, useGameState, useGameActions } from "./lib/game/context";
 import { getAchievements } from "./lib/game/stats";
 import HomeScreen from "./components/HomeScreen";
@@ -18,7 +27,8 @@ import GameBoard from "./components/GameBoard";
 import FTUE from "./components/FTUE";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { colors, fontSize, spacing } from "./constants/theme";
+import { colors, fontSize, spacing, fontFamily, gradients } from "./constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Screen = "home" | "game";
 
@@ -42,7 +52,13 @@ function AppNavigator() {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.secondary} />
+        <LinearGradient
+          colors={gradients.background}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
+        <ActivityIndicator size="large" color={colors.gold} />
         <Text style={styles.loadingText}>Loading Word Naija...</Text>
         <StatusBar style="light" />
       </View>
@@ -52,6 +68,12 @@ function AppNavigator() {
   if (error) {
     return (
       <View style={styles.centered}>
+        <LinearGradient
+          colors={gradients.background}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
         <Text style={styles.errorEmoji}>😕</Text>
         <Text style={styles.errorText}>{error}</Text>
         <StatusBar style="light" />
@@ -85,6 +107,31 @@ function AppNavigator() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_800ExtraBold,
+    Poppins_900Black,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.centered}>
+        <LinearGradient
+          colors={gradients.background}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
+        <ActivityIndicator size="large" color={colors.gold} />
+        <Text style={styles.loadingText}>Word Naija</Text>
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
@@ -104,17 +151,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   loadingText: {
-    color: colors.secondary,
-    fontSize: fontSize.md,
-    marginTop: spacing.md,
+    color: colors.gold,
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.semiBold,
+    marginTop: spacing.lg,
+    letterSpacing: 1,
   },
   errorEmoji: {
     fontSize: 48,
     marginBottom: spacing.md,
   },
   errorText: {
-    color: colors.foreground,
+    color: colors.textPrimary,
     fontSize: fontSize.md,
+    fontFamily: fontFamily.medium,
     textAlign: "center",
     paddingHorizontal: spacing.xl,
   },

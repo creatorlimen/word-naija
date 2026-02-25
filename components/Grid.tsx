@@ -1,6 +1,6 @@
 /**
- * Word Naija - Grid Component (v2 - Visual Overhaul)
- * Displays the crossword puzzle grid as a wooden board with cream tiles.
+ * Word Naija - Grid Component (v4 — Afro-Minimal Premium)
+ * Crossword grid with clean ivory tiles on transparent board.
  */
 
 import React, { useEffect, useRef, useState } from "react";
@@ -13,7 +13,7 @@ import {
   LayoutChangeEvent,
 } from "react-native";
 import type { GridState, SelectionPath } from "../lib/game/types";
-import { colors, borderRadius, shadows } from "../constants/theme";
+import { colors, borderRadius, shadows, fontFamily } from "../constants/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const GRID_PADDING = 20;
@@ -209,26 +209,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: "stretch",
     backgroundColor: colors.boardBackground,
-    borderRadius: 18, 
-    borderWidth: 2,
-    borderColor: colors.outline,
+    borderRadius: borderRadius.xl, 
+    borderWidth: 1,
+    borderColor: colors.boardBorder,
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 8,
     paddingVertical: 12,
     paddingHorizontal: 12,
     overflow: "hidden",
-    ...shadows.soft,
   },
   cellEmpty: {
     backgroundColor: colors.tile.empty,
-    borderRadius: 10, 
+    borderRadius: borderRadius.sm, 
     borderWidth: 1,
-    borderColor: colors.outline,
+    borderColor: "rgba(255,255,255,0.06)",
   },
   cellTile: {
     backgroundColor: colors.tile.background,
-    borderRadius: 12, 
+    borderRadius: borderRadius.sm, 
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -241,19 +240,19 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
     borderWidth: 2,
     shadowColor: colors.accent,
-    shadowOpacity: 0.45,
-    shadowRadius: 6,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
   },
   cellText: {
-    fontWeight: "900",
+    fontFamily: fontFamily.black,
     color: colors.tile.text,
-    marginTop: -3,
+    marginTop: -2,
   },
   cellTextHighlighted: {
     color: colors.accent,
   },
   flashOverlay: {
-    borderRadius: 12,
+    borderRadius: borderRadius.sm,
     backgroundColor: colors.accent,
   },
 });

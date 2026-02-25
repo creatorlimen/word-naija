@@ -1,6 +1,6 @@
 /**
- * Word Naija - GameBoard Component (v2 - Visual Overhaul)
- * Main game screen: Wood theme, pill headers, nature background.
+ * Word Naija - GameBoard Component (v4 — Afro-Minimal Premium)
+ * Main game screen with glass header, refined grid, gold accents.
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -26,7 +26,7 @@ import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { playCompleteSound } from "../lib/game/soundManager";
 import Sparkle from "./Sparkle";
-import { colors, fontSize, spacing, borderRadius, shadows, gradients } from "../constants/theme";
+import { colors, fontSize, spacing, borderRadius, shadows, gradients, fontFamily } from "../constants/theme";
 
 interface GameBoardProps {
   onGoHome: () => void;
@@ -114,7 +114,8 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.secondary} />
+        <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+        <ActivityIndicator size="large" color={colors.gold} />
         <Text style={styles.loadingText}>Loading...</Text>
         <StatusBar style="light" />
       </View>
@@ -125,6 +126,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
   if (error) {
     return (
       <View style={styles.centered}>
+        <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
         <Text style={styles.errorEmoji}>😕</Text>
         <Text style={styles.errorText}>{error}</Text>
         <Pressable onPress={onGoHome} style={styles.errorButton}>
@@ -142,28 +144,28 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
       <LinearGradient
         colors={gradients.background}
         style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        start={{ x: 0.2, y: 0 }}
+        end={{ x: 0.8, y: 1 }}
       />
       <SafeAreaView style={styles.container} edges={["top"]}>
         <StatusBar style="light" />
 
-        {/* -- Header -- */}
+        {/* ── Header ── */}
         <View style={styles.header}>
           {/* Left: Back & Settings */}
           <View style={styles.headerLeft}>
             <Pressable onPress={onGoHome} style={styles.iconButton}>
               <Text style={styles.iconText}>←</Text>
             </Pressable>
-            {/* Settings */}
             <Pressable style={styles.iconButton} onPress={() => setShowSettings(true)}>
-               <Text style={styles.iconText}>⚙️</Text>
+               <Text style={styles.iconText}>⚙</Text>
             </Pressable>
           </View>
 
           {/* Center: Level Pill */}
           <View style={styles.levelPill}>
-            <Text style={styles.levelText}>Level {state.currentLevel.levelId}</Text>
+            <Text style={styles.levelLabel}>LEVEL</Text>
+            <Text style={styles.levelNumber}>{state.currentLevel.levelId}</Text>
           </View>
 
           {/* Right: Coin Pill */}
@@ -178,8 +180,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           </View>
         </View>
 
-        {/* -- Game Area -- */}
-        {/* Grid takes available upper space */}
+        {/* ── Grid area ── */}
         <View style={{ flex: 1, zIndex: 1, paddingTop: spacing.xs }}>
             <Grid 
                 gridState={state.gridState} 
@@ -188,7 +189,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
             />
         </View>
 
-        {/* -- Word Preview / Duplicate Toast -- */}
+        {/* ── Word Preview / Toast ── */}
         {(() => {
           const word = state.selectedPath?.word || '';
           const msg   = toastMessage || word;
@@ -206,10 +207,11 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           );
         })()}
 
-        {/* Tools & Wheel at bottom */}
-        {/* We want the wheel centered, and footer below it */}
+        {/* ── Wheel & Toolbar ── */}
         <View style={{ flexGrow: 0, paddingBottom: 4 }}>
-            {/* Letter Wheel Input */}
+            <View style={styles.wheelLabel}>
+              <Text style={styles.wheelLabelText}>Swipe to Connect</Text>
+            </View>
             <View style={{ height: 340, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
@@ -221,7 +223,6 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 />
             </View>
 
-            {/* Bottom Toolbar */}
             <View style={styles.toolbarContainer}>
                 <Toolbar
                     coins={state.coins}
@@ -281,29 +282,33 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: spacing.md,
     fontSize: fontSize.md,
-    color: colors.foreground,
+    fontFamily: fontFamily.medium,
+    color: colors.textGold,
   },
   errorEmoji: {
     fontSize: 48,
     marginBottom: spacing.md,
   },
   errorText: {
-    color: colors.foreground,
+    color: colors.textPrimary,
     fontSize: fontSize.md,
+    fontFamily: fontFamily.medium,
     textAlign: "center",
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
   },
   errorButton: {
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.button.secondary,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.button.secondaryBorder,
   },
   errorButtonText: {
     color: colors.foreground,
     fontSize: fontSize.md,
-    fontWeight: "600",
+    fontFamily: fontFamily.semiBold,
   },
   
   background: {
@@ -314,14 +319,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   
-  /* HEADER STYLES */
+  /* ── HEADER ── */
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    height: 52,
+    height: 54,
   },
   headerLeft: {
     flexDirection: "row",
@@ -329,8 +334,8 @@ const styles = StyleSheet.create({
     width: 90, 
   },
   iconButton: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surface,
@@ -338,89 +343,100 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.outline,
     marginRight: spacing.sm,
-    ...shadows.small,
   },
   iconText: {
     fontSize: fontSize.lg,
     color: colors.textPrimary,
   },
   
-  /* CENTER PILL (LEVEL) */
+  /* ── LEVEL PILL ── */
   levelPill: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    paddingVertical: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surfaceGlass,
+    paddingVertical: 7,
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.full,
     borderWidth: 1,
     borderColor: colors.outline,
-    minWidth: 120,
-    alignItems: "center",
-    justifyContent: "center",
+    gap: spacing.xs,
     ...shadows.subtle,
   },
-  levelText: {
-    color: colors.textPrimary,
-    fontSize: fontSize.sm,
-    fontWeight: "800",
-    letterSpacing: 0.8,
+  levelLabel: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.semiBold,
+    letterSpacing: 1.2,
     textTransform: "uppercase",
-    textAlign: "center",
+  },
+  levelNumber: {
+    color: colors.textPrimary,
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.bold,
   },
 
-  /* RIGHT PILL (COINS) */
+  /* ── COIN PILL ── */
   coinPill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: colors.surfaceGlass,
     paddingVertical: 6,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.outline,
-    minWidth: 88,
+    borderColor: colors.outlineGold,
+    minWidth: 84,
     gap: spacing.xs,
     ...shadows.subtle,
   },
   coinIconContainer: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: borderRadius.full,
-    backgroundColor: "rgba(34,160,107,0.25)",
+    backgroundColor: "rgba(212,168,67,0.15)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.outline,
   },
   coinIcon: {
-    color: colors.gold,
-    fontSize: fontSize.md,
-    fontWeight: "bold",
+    fontSize: fontSize.sm,
   },
   coinText: {
-    color: colors.textPrimary,
+    color: colors.textGold,
     fontSize: fontSize.sm,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
   },
 
-  /* PREVIEW / TOAST PILL */
+  /* ── WHEEL LABEL ── */
+  wheelLabel: {
+    alignItems: "center",
+    paddingVertical: 2,
+  },
+  wheelLabelText: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.medium,
+    letterSpacing: 0.8,
+  },
+
+  /* ── PREVIEW / TOAST ── */
   previewRow: {
     alignItems: 'center',
     paddingVertical: 1,
   },
   previewPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 2,
-    backgroundColor: 'rgba(17,97,79,0.85)',
+    paddingHorizontal: 16,
+    paddingVertical: 3,
+    backgroundColor: 'rgba(17,97,79,0.8)',
     borderRadius: borderRadius.full,
-    minHeight: 24,
+    minHeight: 26,
     minWidth: 60,
     alignItems: 'center' as const,
     borderWidth: 1,
     borderColor: colors.outline,
   },
   previewPillToast: {
-    backgroundColor: 'rgba(160,100,17,0.90)',
-    borderColor: 'rgba(255,180,50,0.5)',
+    backgroundColor: 'rgba(160,100,17,0.85)',
+    borderColor: 'rgba(212,168,67,0.4)',
   },
   previewPillHidden: {
     opacity: 0,
@@ -428,8 +444,8 @@ const styles = StyleSheet.create({
   previewPillText: {
     color: '#FFF',
     fontSize: fontSize.sm,
-    fontWeight: 'bold' as const,
-    letterSpacing: 1.5,
+    fontFamily: fontFamily.bold,
+    letterSpacing: 2,
     textTransform: 'uppercase' as const,
   },
 

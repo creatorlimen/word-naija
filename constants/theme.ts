@@ -1,22 +1,32 @@
 /**
- * Word Naija - Theme Constants (v3 — Afro-minimal)
- * Dual palettes (Savanna Light / Midnight Market) + semantic tokens.
+ * Word Naija - Theme Constants (v4 — Afro-Minimal Premium)
+ * Deep green + gold palette, glassmorphism surfaces, Poppins typography.
  */
 
 const palette = {
-  deepGreen: "#0F1C1A",
-  forest: "#0F2E28",
+  /* Greens — background depth */
+  deepGreen: "#061A14",
+  forest: "#0C2820",
   teal: "#0F3C34",
   emerald: "#1C7C57",
   jade: "#22A06B",
-  gold: "#F2C14F",
+
+  /* Gold spectrum */
+  gold: "#D4A843",
+  goldLight: "#E8C766",
+  goldDark: "#A68632",
   amber: "#FFB648",
+
+  /* Neutrals */
+  ivory: "#FAF6F0",
   sand: "#F5E9D7",
   linen: "#F9F3EA",
   espresso: "#3A2F2A",
   cocoa: "#4A3A33",
   ash: "#C6C0B8",
   cloud: "#E2DDD6",
+
+  /* Accents */
   plum: "#67416D",
   coral: "#FF7B5F",
   mint: "#5FE1C4",
@@ -35,164 +45,208 @@ export const spacing = {
 };
 
 export const fontSize = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 20,
-  xl: 24,
-  xxl: 32,
-  xxxl: 40,
-  display: 44,
+  xs: 11,
+  sm: 13,
+  md: 15,
+  lg: 18,
+  xl: 22,
+  xxl: 28,
+  xxxl: 34,
+  display: 42,
 };
 
 export const borderRadius = {
-  sm: 6,
-  md: 10,
-  lg: 14,
-  xl: 18,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 28,
   full: 9999,
   round: 9999,
 };
 
 export const shadows = {
   soft: {
-    shadowColor: "rgba(0,0,0,0.45)",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 8,
   },
   subtle: {
-    shadowColor: "rgba(0,0,0,0.35)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.14,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
   },
   tile: {
-    shadowColor: "rgba(0,0,0,0.35)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 3,
   },
-  // Legacy aliases for existing components
+  glow: {
+    shadowColor: palette.gold,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  // Legacy aliases
   small: {
-    shadowColor: "rgba(0,0,0,0.35)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowOpacity: 0.22,
+    shadowRadius: 6,
     elevation: 3,
   },
   tile3D: {
-    shadowColor: "rgba(0,0,0,0.35)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOpacity: 0.28,
+    shadowRadius: 5,
     elevation: 3,
   },
 };
 
 export const gradients = {
-  background: ["#0C1614", "#0F2A24", "#123830"] as const,
-  card: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.05)"] as const,
-  pill: ["rgba(34,160,107,0.9)", "rgba(17,97,79,0.9)"] as const,
-  cta: ["#22A06B", "#0F7D5C"] as const,
-  tile: ["#F6EDDF", "#ECDCC6"] as const,
+  background: ["#051510", "#0A241C", "#0E3028"] as const,
+  card: ["rgba(255,255,255,0.08)", "rgba(255,255,255,0.03)"] as const,
+  glass: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.04)"] as const,
+  goldShimmer: [palette.goldDark, palette.gold, palette.goldLight] as const,
+  cta: ["#1A8F5C", "#0F6B45"] as const,
+  ctaGold: [palette.gold, palette.goldDark] as const,
+  pill: ["rgba(34,160,107,0.85)", "rgba(15,80,58,0.85)"] as const,
+  tile: ["#FAF6F0", "#F0E6D4"] as const,
+  wheelBg: ["rgba(212,168,67,0.15)", "rgba(212,168,67,0.05)"] as const,
 };
 
 /**
- * Semantic colors for the current theme (default: Midnight Market).
- * Keep legacy keys for existing components while mapping to new palette.
+ * Semantic colors — Afro-Minimal Midnight palette
  */
 export const colors = {
   background: palette.deepGreen,
-  backgroundDark: palette.forest,
-  backgroundAlt: "#0B2420",
+  backgroundDark: "#040F0B",
+  backgroundAlt: "#081E16",
 
-  surface: "rgba(255,255,255,0.06)",
-  surfaceAlt: "rgba(255,255,255,0.12)",
-  surfaceCard: "rgba(255,255,255,0.08)",
-  outline: "rgba(255,255,255,0.14)",
-  outlineStrong: "rgba(255,255,255,0.28)",
+  /* Glass surfaces */
+  surface: "rgba(255,255,255,0.05)",
+  surfaceAlt: "rgba(255,255,255,0.08)",
+  surfaceCard: "rgba(255,255,255,0.06)",
+  surfaceGlass: "rgba(255,255,255,0.10)",
+  outline: "rgba(255,255,255,0.12)",
+  outlineStrong: "rgba(255,255,255,0.22)",
+  outlineGold: "rgba(212,168,67,0.35)",
 
-  textPrimary: "#F7F3EE",
-  textSecondary: "#D7D0C8",
-  textMuted: "#AFA8A0",
+  /* Text hierarchy */
+  textPrimary: "#F5F1EB",
+  textSecondary: "#D0C9C0",
+  textMuted: "#9A938B",
+  textGold: palette.gold,
 
+  /* Semantic */
   accent: palette.jade,
   accentStrong: "#0F7D5C",
   gold: palette.gold,
+  goldLight: palette.goldLight,
   warning: palette.amber,
   success: palette.jade,
   error: palette.red,
   info: palette.sky,
 
-  boardBackground: "#132722",
-  boardBorder: "#1D3A33",
-  boardShadow: "#0A1613",
+  /* Game board */
+  boardBackground: "rgba(255,255,255,0.04)",
+  boardBorder: "rgba(255,255,255,0.10)",
+  boardShadow: "#040F0B",
 
+  /* Tiles — cream/ivory with depth */
   tile: {
-    background: palette.linen,
-    backgroundSelected: "#22A06B",
-    border: "#E5D8C5",
-    borderBottom: "#D4C3AE",
-    borderBottomSelected: "#0F7D5C",
+    background: palette.ivory,
+    backgroundSelected: palette.jade,
+    border: "rgba(0,0,0,0.08)",
+    borderBottom: "rgba(0,0,0,0.15)",
+    borderBottomSelected: "#0F6B45",
     text: palette.espresso,
-    textSelected: "#F9F3EA",
-    empty: "#1A302A",
-    emptyShadow: "#0F1F1A",
+    textSelected: "#FFFFFF",
+    empty: "rgba(255,255,255,0.04)",
+    emptyShadow: "rgba(0,0,0,0.2)",
   },
 
+  /* Pill / badges */
   pill: {
-    background: "rgba(17, 97, 79, 0.9)",
-    border: "rgba(242, 193, 79, 0.8)",
-    text: "#F9F3EA",
+    background: "rgba(17,97,79,0.8)",
+    border: "rgba(212,168,67,0.5)",
+    text: "#F5F1EB",
     icon: palette.gold,
-    shadow: "#0A241D",
+    shadow: "#0A1F18",
   },
 
+  /* Buttons — 3-tier hierarchy */
   button: {
     primary: palette.jade,
-    secondary: "#0F7D5C",
-    function: "#1C7C57",
-    functionShadow: "#0F4E3A",
+    primaryShadow: "#0F6B45",
+    secondary: "rgba(255,255,255,0.08)",
+    secondaryBorder: "rgba(255,255,255,0.18)",
+    function: "rgba(255,255,255,0.08)",
+    functionBorder: "rgba(255,255,255,0.15)",
+    functionShadow: "rgba(0,0,0,0.3)",
     gold: palette.gold,
     text: "#FFFFFF",
   },
 
+  /* Legacy mappings */
   foreground: "#FFFFFF",
   foregroundDark: palette.espresso,
   muted: palette.ash,
   mutedDark: palette.cocoa,
-
-  overlay: "rgba(0,0,0,0.6)",
-  border: "rgba(255,255,255,0.14)",
-
-  // Legacy mappings
+  overlay: "rgba(0,0,0,0.65)",
+  border: "rgba(255,255,255,0.12)",
   primary: palette.forest,
   secondary: palette.gold,
-  card: "#F4ECDE",
+  card: palette.linen,
+};
+
+/** Font family names — loaded via expo-font / @expo-google-fonts/poppins */
+export const fontFamily = {
+  regular: "Poppins_400Regular",
+  medium: "Poppins_500Medium",
+  semiBold: "Poppins_600SemiBold",
+  bold: "Poppins_700Bold",
+  extraBold: "Poppins_800ExtraBold",
+  black: "Poppins_900Black",
 };
 
 export const typography = {
-  display: { fontSize: fontSize.display, fontWeight: "900", letterSpacing: 0.5 },
-  title: { fontSize: fontSize.xxxl, fontWeight: "800", letterSpacing: 0.25 },
-  heading: { fontSize: fontSize.xl, fontWeight: "800" },
-  body: { fontSize: fontSize.md, fontWeight: "500" },
-  label: { fontSize: fontSize.sm, fontWeight: "700", letterSpacing: 0.4 },
-  helper: { fontSize: fontSize.xs, fontWeight: "600", letterSpacing: 0.3 },
+  display: { fontSize: fontSize.display, fontFamily: fontFamily.black, letterSpacing: 0.5 },
+  title: { fontSize: fontSize.xxxl, fontFamily: fontFamily.extraBold, letterSpacing: 0.3 },
+  heading: { fontSize: fontSize.xl, fontFamily: fontFamily.bold },
+  subheading: { fontSize: fontSize.lg, fontFamily: fontFamily.semiBold },
+  body: { fontSize: fontSize.md, fontFamily: fontFamily.medium },
+  label: { fontSize: fontSize.sm, fontFamily: fontFamily.semiBold, letterSpacing: 0.5 },
+  caption: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, letterSpacing: 0.3 },
 };
 
 export const surfaces = {
   card: {
     backgroundColor: colors.surfaceCard,
     borderColor: colors.outline,
+    borderWidth: 1,
+    borderRadius: borderRadius.xl,
   },
   glass: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderColor: "rgba(255,255,255,0.2)",
-    blur: 12,
+    backgroundColor: colors.surfaceGlass,
+    borderColor: colors.outlineStrong,
+    borderWidth: 1,
+    borderRadius: borderRadius.xl,
+    overflow: "hidden" as const,
+  },
+  glassSubtle: {
+    backgroundColor: colors.surface,
+    borderColor: colors.outline,
+    borderWidth: 1,
+    borderRadius: borderRadius.lg,
   },
 };
 
@@ -202,6 +256,7 @@ export const theme = {
   gradients,
   spacing,
   fontSize,
+  fontFamily,
   borderRadius,
   shadows,
   typography,

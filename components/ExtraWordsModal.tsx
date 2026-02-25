@@ -1,7 +1,6 @@
 /**
- * Word Naija - ExtraWordsModal Component
- * Shows extra words collection progress with a treasure chest theme.
- * Awards coins when the box is full (10 words = 15 coins).
+ * Word Naija - ExtraWordsModal Component (v4 — Afro-Minimal Premium)
+ * Glass slide-up panel for extra words collection.
  */
 
 import React from "react";
@@ -12,7 +11,8 @@ import {
   Modal,
   StyleSheet,
 } from "react-native";
-import { colors, borderRadius, fontSize, spacing, shadows } from "../constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
+import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
 import { EXTRA_WORDS_TARGET, EXTRA_WORDS_REWARD } from "../lib/game/gameState";
 
 interface ExtraWordsModalProps {
@@ -119,78 +119,82 @@ export default function ExtraWordsModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "center",
+    backgroundColor: colors.overlay,
+    justifyContent: "flex-end",
     alignItems: "center",
-    paddingHorizontal: spacing.lg,
   },
   modal: {
-    backgroundColor: "#00838F", // Teal like the reference
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    paddingTop: spacing.xl,
+    backgroundColor: "rgba(10,24,20,0.95)",
+    borderTopLeftRadius: borderRadius.xxl,
+    borderTopRightRadius: borderRadius.xxl,
+    borderRadius: 0,
+    padding: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xxxl,
     width: "100%",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FFD54F",
-    ...shadows.small,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: colors.outlineStrong,
+    ...shadows.soft,
   },
 
-  /* Close X button */
+  /* Close X */
   closeButton: {
     position: "absolute",
-    top: 12,
-    right: 12,
+    top: 14,
+    right: 16,
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.outline,
     zIndex: 10,
   },
   closeText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontFamily: fontFamily.bold,
   },
 
   /* Title */
   title: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: "#FFF",
-    marginBottom: spacing.sm,
-    textShadowColor: "rgba(0,0,0,0.4)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.bold,
+    color: colors.textPrimary,
+    marginBottom: spacing.xs,
   },
 
   /* Description */
   description: {
-    fontSize: fontSize.md,
-    color: "rgba(255,255,255,0.9)",
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
+    color: colors.textMuted,
     textAlign: "center",
-    lineHeight: 22,
-    marginBottom: spacing.md,
+    lineHeight: 20,
+    marginBottom: spacing.lg,
   },
 
   /* Reward callout */
   rewardCallout: {
-    backgroundColor: "#FFF",
+    backgroundColor: colors.surfaceGlass,
     borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
-    marginBottom: spacing.md,
-    ...shadows.small,
+    alignSelf: "center",
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.outlineGold,
   },
   rewardLabel: {
     fontSize: fontSize.sm,
-    fontWeight: "600",
-    color: "#333",
+    fontFamily: fontFamily.medium,
+    color: colors.textSecondary,
     marginRight: spacing.sm,
   },
   rewardRow: {
@@ -201,29 +205,29 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "#FFC107",
+    backgroundColor: "rgba(212,168,67,0.2)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 4,
   },
   coinIconText: {
-    fontWeight: "bold",
-    fontSize: 14,
-    color: "#5D4037",
+    fontFamily: fontFamily.bold,
+    fontSize: 13,
+    color: colors.textGold,
   },
   rewardAmount: {
-    fontSize: 20,
-    fontWeight: "900",
-    color: "#333",
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.extraBold,
+    color: colors.textGold,
   },
 
   /* Chest */
   chestContainer: {
     alignItems: "center",
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   chestEmoji: {
-    fontSize: 72,
+    fontSize: 56,
     marginBottom: spacing.xs,
   },
   tilesRow: {
@@ -233,8 +237,8 @@ const styles = StyleSheet.create({
     maxWidth: 200,
   },
   miniTile: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
     borderRadius: 4,
     backgroundColor: colors.tile.background,
     alignItems: "center",
@@ -244,69 +248,65 @@ const styles = StyleSheet.create({
     borderColor: colors.tile.border,
   },
   miniTileText: {
-    fontSize: 10,
-    color: colors.tile.text,
-    fontWeight: "bold",
+    fontSize: 9,
+    color: colors.accent,
+    fontFamily: fontFamily.bold,
   },
 
   /* Progress bar */
   progressBarOuter: {
     width: "100%",
-    height: 24,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 12,
+    height: 10,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.full,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.2)",
     marginBottom: spacing.sm,
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: "#66BB6A",
-    borderRadius: 10,
-    // Glossy effect via border
-    borderTopWidth: 2,
-    borderTopColor: "rgba(255,255,255,0.4)",
+    backgroundColor: colors.accent,
+    borderRadius: borderRadius.full,
   },
 
   /* Progress text */
   progressText: {
     fontSize: fontSize.sm,
-    color: "rgba(255,255,255,0.8)",
+    fontFamily: fontFamily.medium,
+    color: colors.textMuted,
     marginBottom: spacing.xs,
   },
   progressCount: {
-    fontWeight: "900",
-    color: "#FFD54F",
+    fontFamily: fontFamily.extraBold,
+    color: colors.textGold,
     fontSize: fontSize.md,
   },
 
   /* Level stat */
   levelStat: {
     fontSize: fontSize.xs,
-    color: "rgba(255,255,255,0.6)",
-    marginBottom: spacing.md,
+    fontFamily: fontFamily.medium,
+    color: colors.textMuted,
+    marginBottom: spacing.lg,
   },
 
   /* Close button (bottom) */
   closeBtn: {
-    backgroundColor: "#43A047",
-    paddingVertical: 12,
-    paddingHorizontal: spacing.xl,
+    backgroundColor: colors.button.secondary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xxl,
     borderRadius: borderRadius.full,
-    borderBottomWidth: 4,
-    borderBottomColor: "#2E7D32",
+    borderWidth: 1,
+    borderColor: colors.button.secondaryBorder,
     minWidth: 160,
     alignItems: "center",
-    ...shadows.small,
   },
   closeBtnPressed: {
-    transform: [{ translateY: 2 }],
-    borderBottomWidth: 2,
+    opacity: 0.85,
+    transform: [{ scale: 0.97 }],
   },
   closeBtnText: {
-    color: "#FFF",
-    fontSize: fontSize.lg,
-    fontWeight: "800",
+    color: colors.textPrimary,
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.semiBold,
   },
 });
