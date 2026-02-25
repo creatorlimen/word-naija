@@ -52,7 +52,7 @@ function CircleButton({
         <Text style={styles.btnSublabel}>{sublabel}</Text>
       </Pressable>
       {topBadge !== undefined && (
-        <View style={[styles.badge, styles.badgeTop, { right: topBadgeOffset, top: topBadgeTop }]}>
+        <View pointerEvents="none" style={[styles.badge, styles.badgeTop, { right: topBadgeOffset, top: topBadgeTop }]}>
           <Text style={styles.badgeText}>{topBadge}</Text>
         </View>
       )}

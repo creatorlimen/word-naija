@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   statValue: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
   },

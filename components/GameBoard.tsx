@@ -164,8 +164,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
           {/* Center: Level Pill */}
           <View style={styles.levelPill}>
-            <Text style={styles.levelLabel}>LEVEL</Text>
-            <Text style={styles.levelNumber}>{state.currentLevel.levelId}</Text>
+            <Text style={styles.levelLabel}>LEVEL <Text style={styles.levelNumber}>{state.currentLevel.levelId}</Text></Text>
           </View>
 
           {/* Right: Coin Pill */}
@@ -356,20 +355,20 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     borderWidth: 1,
     borderColor: colors.outline,
-    gap: spacing.xs,
     ...shadows.subtle,
   },
   levelLabel: {
     color: colors.textMuted,
-    fontSize: fontSize.xs,
+    fontSize: fontSize.sm,
     fontFamily: fontFamily.semiBold,
     letterSpacing: 1.2,
     textTransform: "uppercase",
   },
   levelNumber: {
     color: colors.textPrimary,
-    fontSize: fontSize.md,
+    fontSize: fontSize.sm,
     fontFamily: fontFamily.bold,
+    letterSpacing: 0,
   },
 
   /* ── COIN PILL ── */
