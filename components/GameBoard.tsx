@@ -250,6 +250,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           visible={showExtraModal}
           extraWordsCollected={state.extraWordsCollected ?? 0}
           extraWordsThisLevel={state.extraWordsFound?.size ?? 0}
+          extraWordsFound={state.extraWordsFound ?? new Set()}
           onClose={() => setShowExtraModal(false)}
         />
 
