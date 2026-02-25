@@ -60,7 +60,7 @@ export default function GameBoard({ onGoHome, startWithTutorial }: GameBoardProp
     let timer: ReturnType<typeof setTimeout> | null = null;
 
     if (startWithTutorial) {
-      // Explicitly requested from HomeScreen "How to Play"
+      // Explicitly requested from HomeScreen "Learn the Game"
       timer = setTimeout(() => {
         if (!cancelled) measureAndShowCoach();
       }, 700);
@@ -351,7 +351,7 @@ export default function GameBoard({ onGoHome, startWithTutorial }: GameBoardProp
           onQuit={() => { setShowSettings(false); onGoHome(); }}
         />
 
-        {/* -- How to Play (relaunched FTUE) — welcome card only -- */}
+        {/* -- Learn the Game (relaunched FTUE) — welcome card only -- */}
         <FTUE forceShow={showHowToPlay} onComplete={() => setShowHowToPlay(false)} />
 
         {/* -- Coach Marks (interactive spotlight overlay) -- */}

@@ -124,17 +124,17 @@ export default function SettingsModal({
           {/* Divider */}
           <View style={styles.divider} />
 
-          {/* --- How to Play --- */}
+          {/* --- Learn the Game --- */}
           <Pressable style={styles.row} onPress={onHowToPlay}>
-            <Text style={styles.rowLabel}>How to Play</Text>
+            <Text style={styles.rowLabel}>Learn the Game</Text>
             <Icon name="chevron" size={18} color={colors.textMuted} />
           </Pressable>
 
           <View style={styles.rowDivider} />
 
-          {/* --- Sound --- */}
+          {/* --- Sound Effects --- */}
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Sound</Text>
+            <Text style={styles.rowLabel}>Sound Effects</Text>
             <Switch
               value={soundEnabled}
               onValueChange={onToggleSound}
@@ -166,14 +166,14 @@ export default function SettingsModal({
 
           {/* --- Bottom Actions --- */}
           <View style={styles.bottomRow}>
-            {/* Contact Us */}
+            {/* Get in Touch */}
             <Pressable style={styles.contactButton} onPress={handleContactUs}>
-              <Text style={styles.contactText}>Contact Us</Text>
+              <Text style={styles.contactText}>Get in Touch</Text>
             </Pressable>
 
-            {/* Share */}
+            {/* Spread the Word */}
             <Pressable style={styles.shareButton} onPress={handleShare}>
-              <Text style={styles.shareText}>Share</Text>
+              <Text style={styles.shareText}>Spread the Word</Text>
             </Pressable>
           </View>
 
@@ -342,11 +342,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.accentStrong,
+    paddingHorizontal: spacing.xs,
   },
   shareText: {
     color: "#FFFFFF",
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     fontFamily: fontFamily.semiBold,
-    letterSpacing: 0.3,
-  },
+    textAlign: "center",
+  } as any,
 });

@@ -45,7 +45,7 @@ export default function Controls({
         />
         <ControlButton
           label={soundEnabled ? "🔊" : "🔇"}
-          sublabel="Sound"
+          sublabel="Sound Effects"
           onPress={onToggleSound}
         />
         <ControlButton label="🔄" sublabel="Reset" onPress={onReset} />
