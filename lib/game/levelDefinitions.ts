@@ -2,6 +2,8 @@
  * Word Naija - Level Configuration
  * Defines the words and themes for each level.
  * The LevelGenerator converts these lists into playable grids.
+ *
+ * ≥ 50 % of words in every level are Pidgin / Nigerian English.
  */
 
 interface WordDef {
@@ -16,231 +18,224 @@ interface LevelConfig {
 }
 
 export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
+    // ── Easy levels (1-7): 4 words, 3-5 letters ──────────────────────
     1: {
-        title: "Introduction",
+        title: "Chop Life",
         difficulty: "easy",
         words: [
-            { word: "CHOP", meaning: "To eat or consume food (Nigerian slang)" },
-            { word: "HOT", meaning: "Having a high temperature" },
-            { word: "POT", meaning: "A container used for cooking" },
-            { word: "TOP", meaning: "The highest point or surface" },
-        ]
+            { word: "CHOP", meaning: "To eat or consume food" },
+            { word: "OGA", meaning: "Boss or person in charge" },
+            { word: "COP", meaning: "To seize or catch" },
+            { word: "GAP", meaning: "An opening or space between" },
+        ],
     },
     2: {
         title: "Family",
         difficulty: "easy",
         words: [
-            { word: "MAMA", meaning: "Mother (informal)" },
-            { word: "PAPA", meaning: "Father (informal)" },
-            { word: "MAP", meaning: "A diagram of an area of land" },
-            { word: "PAM", meaning: "A common Nigerian name" },
-        ]
+            { word: "MAMA", meaning: "Mother" },
+            { word: "PAPA", meaning: "Father or grandfather" },
+            { word: "BABA", meaning: "Father (Yoruba)" },
+            { word: "BAM", meaning: "To strike with great force" },
+        ],
     },
     3: {
+        title: "Money Matters",
+        difficulty: "easy",
+        words: [
+            { word: "SAPA", meaning: "Being broke financially" },
+            { word: "PARA", meaning: "To get angry" },
+            { word: "DASH", meaning: "A gift or bribe" },
+            { word: "SABI", meaning: "To know or understand" },
+        ],
+    },
+    4: {
         title: "Vibes",
         difficulty: "easy",
         words: [
-            { word: "PLAN", meaning: "A detailed proposal for doing something" },
-            { word: "PLAY", meaning: "To engage in recreation or fun" },
-            { word: "PAN", meaning: "A flat container used for cooking" },
-            { word: "NAP", meaning: "A short sleep during the day" },
-        ]
-    },
-    4: {
-        title: "Street",
-        difficulty: "medium",
-        words: [
-            { word: "MOTOR", meaning: "A vehicle, especially a car (Nigerian)" },
-            { word: "ROOM", meaning: "A partitioned space in a building" },
-            { word: "ROOT", meaning: "The base part of a plant" },
-            { word: "ROT", meaning: "To decay or decompose" },
-        ]
+            { word: "FLEX", meaning: "To show off or chill" },
+            { word: "VIBE", meaning: "A feeling or atmosphere" },
+            { word: "FINE", meaning: "Beautiful or alright" },
+            { word: "LIFE", meaning: "Not at all; as in 'no life'" },
+        ],
     },
     5: {
-        title: "Market",
-        difficulty: "medium",
+        title: "Greetings",
+        difficulty: "easy",
         words: [
-            { word: "SHINE", meaning: "To emit or reflect light" },
-            { word: "SHE", meaning: "A female person" },
-            { word: "HEN", meaning: "A female chicken" },
-            { word: "HIS", meaning: "Belonging to a male person" },
-        ]
+            { word: "ABEG", meaning: "Please; I beg you" },
+            { word: "BABE", meaning: "Term of endearment between women" },
+            { word: "GELE", meaning: "Yoruba female head wrap" },
+            { word: "BALE", meaning: "To eat greedily" },
+        ],
     },
     6: {
-        title: "Fruit",
-        difficulty: "medium",
+        title: "Chow Time",
+        difficulty: "easy",
         words: [
-            { word: "MANGO", meaning: "A sweet tropical fruit" },
-            { word: "AMONG", meaning: "In the middle of; surrounded by" },
-            { word: "MOAN", meaning: "To groan or lament" },
-            { word: "MAN", meaning: "An adult male person" },
-            { word: "AGO", meaning: "In the past; before now" },
-        ]
+            { word: "JARA", meaning: "A bonus or extra" },
+            { word: "AKARA", meaning: "Fried bean cake" },
+            { word: "SUYA", meaning: "Grilled spiced meat" },
+            { word: "YARN", meaning: "To talk or tell stories" },
+        ],
     },
     7: {
-        title: "Symbol",
-        difficulty: "medium",
+        title: "Street Talk",
+        difficulty: "easy",
         words: [
-            { word: "EAGLE", meaning: "A large bird of prey" },
-            { word: "GLEE", meaning: "Great delight or joy" },
-            { word: "GALE", meaning: "A very strong wind" },
-            { word: "AGE", meaning: "The length of time lived" },
-            { word: "LEG", meaning: "A limb used for walking" },
-        ]
+            { word: "KOLO", meaning: "To go crazy" },
+            { word: "FORM", meaning: "To pretend or show off" },
+            { word: "COOL", meaning: "Calm or impressive" },
+            { word: "ROOM", meaning: "A space within a building" },
+        ],
     },
+
+    // ── Medium levels (8-14): 5 words, 3-7 letters ───────────────────
     8: {
-        title: "Nature",
+        title: "Motor Park",
         difficulty: "medium",
         words: [
-            { word: "WATER", meaning: "A clear liquid essential for life" },
-            { word: "RATE", meaning: "A measure or standard" },
-            { word: "TEAR", meaning: "To pull apart; or a drop from the eye" },
-            { word: "WEAR", meaning: "To have clothing on the body" },
-            { word: "EAR", meaning: "The organ used for hearing" },
-        ]
+            { word: "DANFO", meaning: "A yellow commercial bus (Lagos)" },
+            { word: "OKADA", meaning: "Motorcycle taxi" },
+            { word: "FADA", meaning: "Father" },
+            { word: "KANDA", meaning: "Peelings, hide, or skin" },
+            { word: "ODA", meaning: "Other" },
+        ],
     },
     9: {
-        title: "Together",
+        title: "Market Day",
         difficulty: "medium",
         words: [
-            { word: "UNITY", meaning: "The state of being united as one" },
-            { word: "TINY", meaning: "Very small in size" },
-            { word: "UNIT", meaning: "A single complete thing" },
-            { word: "NUT", meaning: "A hard-shelled fruit or seed" },
-            { word: "TIN", meaning: "A metal container" },
-        ]
+            { word: "WAHALA", meaning: "Trouble or problem" },
+            { word: "PALAVA", meaning: "Problem or trouble" },
+            { word: "WAKA", meaning: "To walk or travel" },
+            { word: "ALABA", meaning: "Famous Lagos electronics market" },
+            { word: "PARA", meaning: "To get angry" },
+        ],
     },
     10: {
-        title: "Energy",
+        title: "Owambe",
         difficulty: "medium",
         words: [
-            { word: "POWER", meaning: "The ability to do or act; strength" },
-            { word: "ROPE", meaning: "Thick cord made of twisted strands" },
-            { word: "PORE", meaning: "A tiny opening in skin or surface" },
-            { word: "ROW", meaning: "A line of things side by side" },
-            { word: "OWE", meaning: "To be indebted to someone" },
-        ]
+            { word: "AMALA", meaning: "Yam flour dough served with soup" },
+            { word: "AGBO", meaning: "Herbal medicine concoction" },
+            { word: "BOLE", meaning: "Roasted plantain" },
+            { word: "MANGO", meaning: "A sweet tropical fruit" },
+            { word: "LAMB", meaning: "The young of a sheep" },
+        ],
     },
     11: {
-        title: "Parents",
-        difficulty: "hard",
+        title: "Hustle",
+        difficulty: "medium",
         words: [
-            { word: "FATHER", meaning: "A male parent" },
-            { word: "AFTER", meaning: "Following in time or place" },
-            { word: "HEART", meaning: "The organ that pumps blood" },
-            { word: "FEAR", meaning: "An unpleasant emotion of danger" },
-            { word: "TEAR", meaning: "A drop from the eye when crying" },
-            { word: "HAT", meaning: "A head covering" },
-        ]
+            { word: "NAIJA", meaning: "Nigeria or Nigerian" },
+            { word: "NAIRA", meaning: "Nigerian currency" },
+            { word: "SHINE", meaning: "To look well or glamorous" },
+            { word: "RAIN", meaning: "Water falling from clouds" },
+            { word: "GAIN", meaning: "To obtain or increase" },
+        ],
     },
     12: {
-        title: "Expert",
-        difficulty: "hard",
+        title: "Gbedu",
+        difficulty: "medium",
         words: [
-            { word: "MASTER", meaning: "One who has control or expertise" },
-            { word: "STEAM", meaning: "Water vapour from boiling" },
-            { word: "SMART", meaning: "Intelligent or well-dressed" },
-            { word: "TEAM", meaning: "A group working together" },
-            { word: "STAR", meaning: "A luminous point in the sky" },
-            { word: "ART", meaning: "Creative expression or skill" },
-        ]
+            { word: "ARIYA", meaning: "A good time" },
+            { word: "FAAJI", meaning: "The pleasure of having a good time" },
+            { word: "JARA", meaning: "A bonus or extra" },
+            { word: "AFAR", meaning: "How are you?" },
+            { word: "FAIRY", meaning: "A chicken-hearted person; a fool" },
+        ],
     },
     13: {
-        title: "Road",
-        difficulty: "hard",
+        title: "Pepper Dem",
+        difficulty: "medium",
         words: [
-            { word: "STREET", meaning: "A public road in a city or town" },
-            { word: "TREES", meaning: "Tall woody plants with branches" },
-            { word: "TREE", meaning: "A tall woody plant" },
-            { word: "REST", meaning: "To cease work or relax" },
-            { word: "TEST", meaning: "An examination or trial" },
-            { word: "SET", meaning: "To put in a particular place" },
-        ]
+            { word: "PEPPER", meaning: "To show off or stunt" },
+            { word: "SHAKARA", meaning: "Showing off or forming" },
+            { word: "SPARK", meaning: "To lose one's temper" },
+            { word: "PRESS", meaning: "To dominate; or to iron clothes" },
+            { word: "PARSE", meaning: "To break down into parts" },
+        ],
     },
     14: {
-        title: "Quiet",
-        difficulty: "hard",
+        title: "Tori",
+        difficulty: "medium",
         words: [
-            { word: "SILENT", meaning: "Making no sound" },
-            { word: "LISTEN", meaning: "To pay attention to sound" },
-            { word: "INLET", meaning: "A narrow body of water" },
-            { word: "LENT", meaning: "Past tense of lend" },
-            { word: "NET", meaning: "A mesh material for catching" },
-            { word: "TEN", meaning: "The number after nine" },
-        ]
+            { word: "AMEBO", meaning: "A gossip or talebearer" },
+            { word: "MOTOR", meaning: "A vehicle or car" },
+            { word: "TORI", meaning: "An interesting or humorous story" },
+            { word: "TRIBE", meaning: "A family or ethnic group" },
+            { word: "ORBIT", meaning: "A circular path" },
+        ],
     },
+
+    // ── Hard levels (15-20): 5 words, 4-7 letters ────────────────────
     15: {
-        title: "Agriculture",
+        title: "Aso Rock",
         difficulty: "hard",
         words: [
-            { word: "FARMER", meaning: "One who works the land" },
-            { word: "FRAME", meaning: "A rigid structure that surrounds" },
-            { word: "RARE", meaning: "Not occurring very often" },
-            { word: "FEAR", meaning: "An unpleasant feeling of danger" },
-            { word: "ARM", meaning: "The upper limb of the body" },
-            { word: "FAR", meaning: "At a great distance" },
-        ]
+            { word: "AGBADA", meaning: "Large traditional garment worn by men" },
+            { word: "OYINBO", meaning: "A Caucasian person; big English words" },
+            { word: "BINGO", meaning: "Dog; or cooked dog meat" },
+            { word: "GRIND", meaning: "To reduce to powder by friction" },
+            { word: "DANDY", meaning: "One who dresses with flair" },
+        ],
     },
     16: {
-        title: "Dawn",
+        title: "Mama Put",
         difficulty: "hard",
         words: [
-            { word: "MORNING", meaning: "The early part of the day" },
-            { word: "NORMS", meaning: "Standards of proper behaviour" },
-            { word: "IRON", meaning: "A strong silvery metal" },
-            { word: "RING", meaning: "A circular band worn on the finger" },
-            { word: "GRIN", meaning: "A broad smile" },
-            { word: "INN", meaning: "A small hotel or pub" },
-        ]
+            { word: "AKARA", meaning: "Fried bean cake" },
+            { word: "GARRI", meaning: "Dried cassava flour" },
+            { word: "AGIDI", meaning: "Mashed rice cake" },
+            { word: "DRAG", meaning: "To pull along with effort" },
+            { word: "ARID", meaning: "Extremely dry" },
+        ],
     },
     17: {
-        title: "Transport",
+        title: "Japa Season",
         difficulty: "hard",
         words: [
-            { word: "STATION", meaning: "A place for trains or buses" },
-            { word: "SATIN", meaning: "A smooth glossy fabric" },
-            { word: "SAINT", meaning: "A holy or virtuous person" },
-            { word: "ANTS", meaning: "Small industrious insects" },
-            { word: "INTO", meaning: "Moving to the inside of" },
-            { word: "TON", meaning: "A unit of weight (1000 kg)" },
-        ]
+            { word: "AJEBOTA", meaning: "Rich spoilt kid; one used to butter" },
+            { word: "JOLLOF", meaning: "Popular West African rice dish" },
+            { word: "ABOKI", meaning: "A naive or clueless person" },
+            { word: "FABLE", meaning: "A tale meant to teach a lesson" },
+            { word: "BLOAT", meaning: "To swell up" },
+        ],
     },
     18: {
-        title: "Law",
+        title: "Campus Life",
         difficulty: "hard",
         words: [
-            { word: "JUSTICE", meaning: "Fairness in treatment and rights" },
-            { word: "JUICE", meaning: "Liquid extracted from fruit" },
-            { word: "SUITE", meaning: "A set of connected rooms" },
-            { word: "JUST", meaning: "Based on what is fair and right" },
-            { word: "CUT", meaning: "To divide with a sharp instrument" },
-            { word: "ICE", meaning: "Frozen water" },
-        ]
+            { word: "ACADA", meaning: "An intellectual or bookworm" },
+            { word: "MATRIC", meaning: "University matriculation" },
+            { word: "CREDIT", meaning: "Airtime voucher for a phone" },
+            { word: "ACATA", meaning: "USA/UK; or someone living abroad" },
+            { word: "CRAM", meaning: "To memorise intensely" },
+        ],
     },
     19: {
-        title: "Home",
+        title: "Big Man Ting",
         difficulty: "hard",
         words: [
-            { word: "VILLAGE", meaning: "A small settlement in a rural area" },
-            { word: "VILLA", meaning: "A large country house" },
-            { word: "LIVE", meaning: "To be alive; to reside" },
-            { word: "VILE", meaning: "Extremely unpleasant or bad" },
-            { word: "AGE", meaning: "The length of time lived" },
-            { word: "ALL", meaning: "Every one; the whole amount" },
-        ]
+            { word: "AGBERO", meaning: "Labourer who carries heavy goods" },
+            { word: "GINGER", meaning: "To be pumped up or motivated" },
+            { word: "ARISTO", meaning: "A sugar daddy" },
+            { word: "OGBENI", meaning: "Mister (Yoruba)" },
+            { word: "REIGN", meaning: "In vogue; trending" },
+        ],
     },
     20: {
-        title: "Liberty",
+        title: "Legend",
         difficulty: "hard",
         words: [
-            { word: "FREEDOM", meaning: "The state of being free" },
-            { word: "NORM", meaning: "A standard or pattern of behaviour" },
-            { word: "MODE", meaning: "A way or manner of doing" },
-            { word: "DOME", meaning: "A rounded vault forming a roof" },
-            { word: "FREE", meaning: "Not imprisoned or enslaved" },
-            { word: "RED", meaning: "A colour at the end of the spectrum" },
-        ]
-    }
+            { word: "CORRECT", meaning: "Very good; e.g. 'na correct guy'" },
+            { word: "COLLECT", meaning: "To get punished or scolded" },
+            { word: "TOKUNBO", meaning: "Second-hand goods; child born overseas" },
+            { word: "CONTROL", meaning: "To speak to or influence someone" },
+            { word: "CONTOUR", meaning: "The outline of a figure or shape" },
+        ],
+    },
 };
 
 export const TOTAL_LEVELS = Object.keys(LEVEL_CONFIGS).length;
