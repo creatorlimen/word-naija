@@ -165,8 +165,8 @@ export default function HomeScreen({
           <View style={styles.featureGrid}>
             <FeatureCard iconName="book" title="Bilingual" text="Learn Nigerian & English words" />
             <FeatureCard iconName="puzzle" title="Crosswords" text="Intersecting handcrafted puzzles" />
-            <FeatureCard iconName="coin" title="Earn Coins" text="Collect extras, spend on hints" />
-            <FeatureCard iconName="target" title="Daily Run" text="Short sessions, bonus rewards" />
+            <FeatureCard iconName="chart" title="Rank Up" text="Rise from Beginner to Legend" />
+            <FeatureCard iconName="star" title="Bonus Words" text="Find extra words to earn coins" />
           </View>
         )}
       </ScrollView>
