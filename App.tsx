@@ -42,14 +42,22 @@ type Screen = "home" | "game";
 function AppNavigator() {
   const [screen, setScreen] = useState<Screen>("home");
   const [ftueComplete, setFtueComplete] = useState(false);
+  const [startWithTutorial, setStartWithTutorial] = useState(false);
   const { state, isLoading, error } = useGameState();
 
   const handleStart = useCallback(() => {
+    setStartWithTutorial(false);
     setScreen("game");
   }, []);
 
   const handleGoHome = useCallback(() => {
+    setStartWithTutorial(false);
     setScreen("home");
+  }, []);
+
+  const handleHowToPlay = useCallback(() => {
+    setStartWithTutorial(true);
+    setScreen("game");
   }, []);
 
   const handleFTUEComplete = useCallback(() => {
@@ -105,9 +113,10 @@ function AppNavigator() {
           levelsCompleted={completedLevels}
           achievements={achievements}
           onStart={handleStart}
+          onHowToPlay={handleHowToPlay}
         />
       ) : (
-        <GameBoard onGoHome={handleGoHome} />
+        <GameBoard onGoHome={handleGoHome} startWithTutorial={startWithTutorial} />
       )}
     </>
   );

@@ -29,21 +29,6 @@ const slides: { iconName: IconName | null; logo?: boolean; title: string; body: 
     title: "Welcome to Word Naija!",
     body: "The Nigerian word puzzle game where you discover English and Pidgin words.",
   },
-  {
-    iconName: "send",
-    title: "Swipe to Connect",
-    body: "Swipe letters on the wheel to form words. Each word fits into the crossword grid.",
-  },
-  {
-    iconName: "hint",
-    title: "Need a Hint?",
-    body: "Spend 15 coins to reveal a letter on the grid. You earn coins by completing levels and finding bonus words.",
-  },
-  {
-    iconName: "target",
-    title: "Ready?",
-    body: "Find all the target words to complete each level. Discover extra words for bonus coins!",
-  },
 ];
 
 interface FTUEProps {
@@ -121,17 +106,7 @@ export default function FTUE({ onComplete, forceShow }: FTUEProps) {
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.body}>{slide.body}</Text>
 
-          {/* Dots */}
-          <View style={styles.dots}>
-            {slides.map((_, i) => (
-              <View
-                key={i}
-                style={[styles.dot, i === currentSlide && styles.dotActive]}
-              />
-            ))}
-          </View>
-
-          {/* Buttons */}
+          {/* Single CTA button */}
           <Pressable
             onPress={handleNext}
             style={({ pressed }) => [
@@ -139,16 +114,8 @@ export default function FTUE({ onComplete, forceShow }: FTUEProps) {
               pressed && styles.buttonPressed,
             ]}
           >
-            <Text style={styles.nextButtonText}>
-              {isLast ? "Let's Go!" : "Next"}
-            </Text>
+            <Text style={styles.nextButtonText}>Let's Go!</Text>
           </Pressable>
-
-          {!isLast && (
-            <Pressable onPress={handleSkip} style={styles.skipButton}>
-              <Text style={styles.skipText}>Skip</Text>
-            </Pressable>
-          )}
         </View>
       </View>
     </Modal>

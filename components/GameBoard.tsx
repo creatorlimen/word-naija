@@ -22,9 +22,12 @@ import LevelComplete from "./LevelComplete";
 import ExtraWordsModal from "./ExtraWordsModal";
 import SettingsModal from "./SettingsModal";
 import FTUE from "./FTUE";
+import CoachMarks from "./CoachMarks";
+import type { CoachTarget } from "./CoachMarks";
 import { useGameState, useGameActions } from "../lib/game/context";
 import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { playCompleteSound } from "../lib/game/soundManager";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Sparkle from "./Sparkle";
 import DecoBackground from "./DecoBackground";
 import Icon from "./Icon";
@@ -32,14 +35,54 @@ import { colors, fontSize, spacing, borderRadius, shadows, gradients, fontFamily
 
 interface GameBoardProps {
   onGoHome: () => void;
+  startWithTutorial?: boolean;
 }
 
-export default function GameBoard({ onGoHome }: GameBoardProps) {
+export default function GameBoard({ onGoHome, startWithTutorial }: GameBoardProps) {
   const { state, toastMessage, isComplete, isLoading, error } = useGameState();
   const actions = useGameActions();
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showCoachMarks, setShowCoachMarks] = useState(false);
+  const [coachTargets, setCoachTargets] = useState<CoachTarget[]>([]);
+
+  // Refs for measuring element positions (coach marks)
+  const gridRef = useRef<View>(null);
+  const wheelRef = useRef<View>(null);
+  const toolbarRef = useRef<View>(null);
+
+  const COACH_KEY = "@word_naija_coach_complete";
+
+  // Auto-show coach marks on first game entry OR when triggered from HomeScreen
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    if (startWithTutorial) {
+      // Explicitly requested from HomeScreen "How to Play"
+      timer = setTimeout(() => {
+        if (!cancelled) measureAndShowCoach();
+      }, 700);
+    } else {
+      // First-time auto-show
+      AsyncStorage.getItem(COACH_KEY).then((done) => {
+        if (!done && !cancelled) {
+          timer = setTimeout(() => {
+            if (!cancelled) measureAndShowCoach();
+          }, 700);
+        }
+      }).catch(() => {});
+    }
+
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+  }, [startWithTutorial]);
+
+  // Mark coach marks as seen when completed
+  const handleCoachComplete = useCallback(() => {
+    setShowCoachMarks(false);
+    AsyncStorage.setItem(COACH_KEY, "1").catch(() => {});
+  }, []);
 
   // Flash animation: track which cells belong to a newly solved word
   const [flashCoords, setFlashCoords] = useState<Set<string>>(new Set());
@@ -111,6 +154,67 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
     if (!state?.currentLevel) return 0;
     return getCoinsEarned(state);
   }, [state]);
+
+  // Measure game elements and show coach marks overlay
+  const measureAndShowCoach = useCallback(() => {
+    const targets: CoachTarget[] = [];
+    let pending = 3;
+
+    const tryFinish = () => {
+      pending--;
+      if (pending === 0 && targets.length > 0) {
+        // Sort by the order we want: grid → wheel → toolbar
+        targets.sort((a, b) => a.cy - b.cy);
+        setCoachTargets(targets);
+        setShowCoachMarks(true);
+      }
+    };
+
+    // Measure grid
+    gridRef.current?.measureInWindow((x, y, w, h) => {
+      if (w > 0 && h > 0) {
+        targets.push({
+          cx: x + w / 2,
+          cy: y + h / 2,
+          radius: Math.min(w, h) / 2.2,
+          title: "Fill the Crossword",
+          body: "Find words to complete the puzzle grid. Letters lock in as you solve them.",
+          tooltipPosition: "below",
+        });
+      }
+      tryFinish();
+    });
+
+    // Measure letter wheel
+    wheelRef.current?.measureInWindow((x, y, w, h) => {
+      if (w > 0 && h > 0) {
+        targets.push({
+          cx: x + w / 2,
+          cy: y + h / 2,
+          radius: Math.min(w, h) / 2.5,
+          title: "Swipe Letters to Connect Words",
+          body: "Drag across letters on the wheel to form words. Release to submit.",
+          tooltipPosition: "above",
+        });
+      }
+      tryFinish();
+    });
+
+    // Measure toolbar
+    toolbarRef.current?.measureInWindow((x, y, w, h) => {
+      if (w > 0 && h > 0) {
+        targets.push({
+          cx: x + w / 2,
+          cy: y + h / 2,
+          radius: Math.min(w, h * 1.5) / 2,
+          title: "Your Toolkit",
+          body: "Shuffle letters, use hints, or find extra bonus words for coins.",
+          tooltipPosition: "above",
+        });
+      }
+      tryFinish();
+    });
+  }, []);
 
   // Loading
   if (isLoading) {
@@ -185,7 +289,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
         </View>
 
         {/* ── Grid area ── */}
-        <View style={{ flex: 1, zIndex: 1, paddingTop: spacing.xs }}>
+        <View ref={gridRef} style={{ flex: 1, zIndex: 1, paddingTop: spacing.xs }}>
             <Grid 
                 gridState={state.gridState} 
                 selectedPath={state.selectedPath}
@@ -213,7 +317,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
         {/* ── Wheel & Toolbar ── */}
         <View style={{ flexGrow: 0, paddingBottom: 4 }}>
-            <View style={{ height: 340, alignItems: "center", justifyContent: "center" }}>
+            <View ref={wheelRef} style={{ height: 340, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
                     selectedIndices={state.selectedPath?.letterIndices || []}
@@ -224,7 +328,7 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
                 />
             </View>
 
-            <View style={styles.toolbarContainer}>
+            <View ref={toolbarRef} style={styles.toolbarContainer}>
                 <Toolbar
                     coins={state.coins}
                     hintCost={HINT_COST}
@@ -243,12 +347,17 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
           soundEnabled={state.soundEnabled ?? true}
           onToggleSound={() => actions.toggleSound()}
           onClose={() => setShowSettings(false)}
-          onHowToPlay={() => { setShowSettings(false); setShowHowToPlay(true); }}
+          onHowToPlay={() => { setShowSettings(false); measureAndShowCoach(); }}
           onQuit={() => { setShowSettings(false); onGoHome(); }}
         />
 
-        {/* -- How to Play (relaunched FTUE) -- */}
+        {/* -- How to Play (relaunched FTUE) — welcome card only -- */}
         <FTUE forceShow={showHowToPlay} onComplete={() => setShowHowToPlay(false)} />
+
+        {/* -- Coach Marks (interactive spotlight overlay) -- */}
+        {showCoachMarks && coachTargets.length > 0 && (
+          <CoachMarks targets={coachTargets} onComplete={handleCoachComplete} />
+        )}
 
         {/* -- Extra Words Modal -- */}
         <ExtraWordsModal
