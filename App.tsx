@@ -3,13 +3,14 @@
  * Wraps GameProvider, loads Poppins fonts, switches between HomeScreen and GameBoard
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
   Text,
   Image,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
@@ -40,6 +41,52 @@ import { LinearGradient } from "expo-linear-gradient";
 import DecoBackground from "./components/DecoBackground";
 
 type Screen = "home" | "game";
+
+/* ── Pulsing grid-tile letters for the loading screen ── */
+const LOADING_LETTERS = ["L", "O", "A", "D", "I", "N", "G"];
+
+function LoadingTiles() {
+  // One animated value per letter, staggered
+  const anims = useRef(LOADING_LETTERS.map(() => new Animated.Value(0.35))).current;
+
+  useEffect(() => {
+    const animations = anims.map((anim, i) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(i * 120),
+          Animated.timing(anim, { toValue: 1, duration: 500, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0.35, duration: 500, useNativeDriver: true }),
+        ])
+      )
+    );
+    Animated.parallel(animations).start();
+    return () => animations.forEach((a) => a.stop());
+  }, []);
+
+  return (
+    <View style={styles.loadingTilesRow}>
+      {LOADING_LETTERS.map((letter, i) => (
+        <Animated.View
+          key={i}
+          style={[
+            styles.loadingTile,
+            {
+              opacity: anims[i],
+              transform: [{
+                scale: anims[i].interpolate({
+                  inputRange: [0.35, 1],
+                  outputRange: [0.92, 1],
+                }),
+              }],
+            },
+          ]}
+        >
+          <Text style={styles.loadingTileText}>{letter}</Text>
+        </Animated.View>
+      ))}
+    </View>
+  );
+}
 
 function AppNavigator() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -82,7 +129,9 @@ function AppNavigator() {
         <Image source={require("./assets/logo.png")} style={styles.splashLogo} resizeMode="contain" />
         <Text style={styles.splashTitle}>Word Naija</Text>
         <Text style={styles.splashTagline}>The Nigerian Word Puzzle</Text>
-        <ActivityIndicator size="large" color={colors.gold} style={{ marginTop: spacing.xxl }} />
+        <View style={{ marginTop: spacing.xxl }}>
+          <LoadingTiles />
+        </View>
         <StatusBar style="light" />
       </View>
     );
@@ -178,8 +227,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   splashLogo: {
-    width: 120,
-    height: 120,
+    width: 160,
+    height: 160,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.lg,
     ...shadows.glow,
@@ -196,6 +245,31 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontFamily: fontFamily.bodyMedium,
     letterSpacing: 0.5,
+  },
+  loadingTilesRow: {
+    flexDirection: "row",
+    gap: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingTile: {
+    width: 36,
+    height: 42,
+    backgroundColor: "#F5E3B8",
+    borderRadius: borderRadius.sm + 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(166,134,50,0.25)",
+    borderBottomWidth: 3,
+    borderBottomColor: "rgba(140,110,30,0.35)",
+    ...shadows.tile,
+  },
+  loadingTileText: {
+    fontFamily: fontFamily.black,
+    fontSize: fontSize.lg,
+    color: "#4A3520",
+    marginTop: -1,
   },
   loadingText: {
     color: colors.gold,
