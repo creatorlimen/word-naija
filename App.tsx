@@ -227,8 +227,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   splashLogo: {
-    width: 160,
-    height: 160,
+    width: 200,
+    height: 200,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.lg,
     ...shadows.glow,

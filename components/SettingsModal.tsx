@@ -14,6 +14,7 @@ import {
   Share,
   Linking,
   Alert,
+  BackHandler,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
@@ -73,11 +74,11 @@ export default function SettingsModal({
   }, []);
 
   const handleQuit = useCallback(() => {
-    Alert.alert("Quit Game", "Return to the home screen?", [
+    Alert.alert("Exit App", "Are you sure you want to exit Word Naija?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Yes", style: "destructive", onPress: onQuit },
+      { text: "Yes", style: "destructive", onPress: () => BackHandler.exitApp() },
     ]);
-  }, [onQuit]);
+  }, []);
 
   const handleResetAll = useCallback(() => {
     Alert.alert(
@@ -136,8 +137,8 @@ export default function SettingsModal({
 
           <View style={styles.rowDivider} />
 
-          {/* --- Notifications --- */}
-          <View style={styles.row}>
+          {/* --- Notifications (commented out — will use later) --- */}
+          {/* <View style={styles.row}>
             <Text style={styles.rowLabel}>Notifications</Text>
             <Switch
               value={notificationsOn}
@@ -147,7 +148,7 @@ export default function SettingsModal({
             />
           </View>
 
-          <View style={styles.rowDivider} />
+          <View style={styles.rowDivider} /> */}
 
           {/* --- How to Play --- */}
           <Pressable style={styles.row} onPress={onHowToPlay}>
@@ -157,14 +158,14 @@ export default function SettingsModal({
 
           <View style={styles.rowDivider} />
 
-          {/* --- Dev: Reset (testing only) --- */}
-          <Pressable style={styles.row} onPress={handleResetAll}>
+          {/* --- Reset All Data (commented out — will use later) --- */}
+          {/* <Pressable style={styles.row} onPress={handleResetAll}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <Icon name="alert" size={14} color="#E05A5A" />
               <Text style={styles.resetLabel}>Reset All Data</Text>
             </View>
             <Icon name="chevron" size={18} color={colors.textMuted} />
-          </Pressable>
+          </Pressable> */}
 
           <View style={styles.divider} />
 
