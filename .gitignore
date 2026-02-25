@@ -38,9 +38,11 @@ parse_scraped.js
 analyze_english_dict.js
 add_english_words.js
 dict_summary.js
+debug_positions.js
 english_words_preview.txt
 english_words_to_add.json
 test_*.ts
+tools/audit_pidgin_ratio*.ts
 
 # Project Specific - Source dictionaries (too large)
 dictionary.csv

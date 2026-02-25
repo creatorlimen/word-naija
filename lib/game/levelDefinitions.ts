@@ -35,8 +35,8 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "MAMA", meaning: "Mother" },
             { word: "PAPA", meaning: "Father or grandfather" },
-            { word: "BABA", meaning: "Father (Yoruba)" },
-            { word: "BAM", meaning: "To strike with great force" },
+            { word: "HOME", meaning: "The place where one lives" },
+            { word: "SON", meaning: "A male child" },
         ],
     },
     3: {
@@ -44,9 +44,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "easy",
         words: [
             { word: "SAPA", meaning: "Being broke financially" },
-            { word: "PARA", meaning: "To get angry" },
             { word: "DASH", meaning: "A gift or bribe" },
-            { word: "SABI", meaning: "To know or understand" },
+            { word: "NOTE", meaning: "A piece of paper money" },
+            { word: "BUY", meaning: "To acquire by paying money" },
         ],
     },
     4: {
@@ -55,8 +55,8 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "FLEX", meaning: "To show off or chill" },
             { word: "VIBE", meaning: "A feeling or atmosphere" },
-            { word: "FINE", meaning: "Beautiful or alright" },
-            { word: "LIFE", meaning: "Not at all; as in 'no life'" },
+            { word: "LIFE", meaning: "The condition of being alive" },
+            { word: "GLOW", meaning: "A warm, steady light" },
         ],
     },
     5: {
@@ -64,19 +64,19 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "easy",
         words: [
             { word: "ABEG", meaning: "Please; I beg you" },
-            { word: "BABE", meaning: "Term of endearment between women" },
             { word: "GELE", meaning: "Yoruba female head wrap" },
-            { word: "BALE", meaning: "To eat greedily" },
+            { word: "WAVE", meaning: "To move the hand in greeting" },
+            { word: "HUG", meaning: "To hold someone closely" },
         ],
     },
     6: {
         title: "Chow Time",
         difficulty: "easy",
         words: [
-            { word: "JARA", meaning: "A bonus or extra" },
             { word: "AKARA", meaning: "Fried bean cake" },
             { word: "SUYA", meaning: "Grilled spiced meat" },
-            { word: "YARN", meaning: "To talk or tell stories" },
+            { word: "FOOD", meaning: "Nourishment that is eaten" },
+            { word: "SPICE", meaning: "An aromatic flavoring substance" },
         ],
     },
     7: {
@@ -85,8 +85,8 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "KOLO", meaning: "To go crazy" },
             { word: "FORM", meaning: "To pretend or show off" },
-            { word: "COOL", meaning: "Calm or impressive" },
             { word: "ROOM", meaning: "A space within a building" },
+            { word: "TALK", meaning: "To speak or converse" },
         ],
     },
 
@@ -95,11 +95,11 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Motor Park",
         difficulty: "medium",
         words: [
-            { word: "DANFO", meaning: "A yellow commercial bus (Lagos)" },
+            { word: "DANFO", meaning: "A yellow commercial bus" },
             { word: "OKADA", meaning: "Motorcycle taxi" },
-            { word: "FADA", meaning: "Father" },
             { word: "KANDA", meaning: "Peelings, hide, or skin" },
-            { word: "ODA", meaning: "Other" },
+            { word: "SPEED", meaning: "The rate of movement" },
+            { word: "FUEL", meaning: "Material used to produce energy" },
         ],
     },
     9: {
@@ -108,9 +108,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "WAHALA", meaning: "Trouble or problem" },
             { word: "PALAVA", meaning: "Problem or trouble" },
-            { word: "WAKA", meaning: "To walk or travel" },
-            { word: "ALABA", meaning: "Famous Lagos electronics market" },
-            { word: "PARA", meaning: "To get angry" },
+            { word: "TRADE", meaning: "The exchange of goods" },
+            { word: "STALL", meaning: "A stand for selling goods" },
+            { word: "SELL", meaning: "To exchange goods for money" },
         ],
     },
     10: {
@@ -139,11 +139,11 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Gbedu",
         difficulty: "medium",
         words: [
-            { word: "ARIYA", meaning: "A good time" },
             { word: "FAAJI", meaning: "The pleasure of having a good time" },
-            { word: "JARA", meaning: "A bonus or extra" },
-            { word: "AFAR", meaning: "How are you?" },
             { word: "FAIRY", meaning: "A chicken-hearted person; a fool" },
+            { word: "SONG", meaning: "A piece of music with words" },
+            { word: "DRUM", meaning: "A percussion instrument" },
+            { word: "BEAT", meaning: "A rhythmic sound or pulse" },
         ],
     },
     13: {
@@ -152,9 +152,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "PEPPER", meaning: "To show off or stunt" },
             { word: "SHAKARA", meaning: "Showing off or forming" },
-            { word: "SPARK", meaning: "To lose one's temper" },
-            { word: "PRESS", meaning: "To dominate; or to iron clothes" },
-            { word: "PARSE", meaning: "To break down into parts" },
+            { word: "BOLD", meaning: "Showing courage or daring" },
+            { word: "GLOW", meaning: "A warm, steady radiance" },
+            { word: "STUDY", meaning: "To learn or examine closely" },
         ],
     },
     14: {
@@ -198,31 +198,31 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "AJEBOTA", meaning: "Rich spoilt kid; one used to butter" },
             { word: "JOLLOF", meaning: "Popular West African rice dish" },
-            { word: "ABOKI", meaning: "A naive or clueless person" },
             { word: "FABLE", meaning: "A tale meant to teach a lesson" },
-            { word: "BLOAT", meaning: "To swell up" },
+            { word: "BLOAT", meaning: "To swell up or become inflated" },
+            { word: "DREAM", meaning: "A series of images during sleep" },
         ],
     },
     18: {
         title: "Campus Life",
         difficulty: "hard",
         words: [
-            { word: "ACADA", meaning: "An intellectual or bookworm" },
             { word: "MATRIC", meaning: "University matriculation" },
-            { word: "CREDIT", meaning: "Airtime voucher for a phone" },
             { word: "ACATA", meaning: "USA/UK; or someone living abroad" },
-            { word: "CRAM", meaning: "To memorise intensely" },
+            { word: "CREDIT", meaning: "Airtime voucher for a phone" },
+            { word: "LEARN", meaning: "To gain knowledge or skill" },
+            { word: "CLASS", meaning: "A group of students learning together" },
         ],
     },
     19: {
         title: "Big Man Ting",
         difficulty: "hard",
         words: [
-            { word: "AGBERO", meaning: "Labourer who carries heavy goods" },
-            { word: "GINGER", meaning: "To be pumped up or motivated" },
             { word: "ARISTO", meaning: "A sugar daddy" },
             { word: "OGBENI", meaning: "Mister (Yoruba)" },
-            { word: "REIGN", meaning: "In vogue; trending" },
+            { word: "WORK", meaning: "Activity involving effort" },
+            { word: "RULE", meaning: "A regulation or principle" },
+            { word: "HELP", meaning: "To assist or aid someone" },
         ],
     },
     20: {
@@ -281,7 +281,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Talking Drum",
         difficulty: "easy",
         words: [
-            { word: "HEAVY", meaning: "Very, very much, serious, a lot of," },
+            { word: "GAZZO", meaning: "To eat" },
             { word: "KPERE", meaning: "Adverb:Used to emphasize how small the quantity or a..." },
             { word: "SPEKE", meaning: "To speak" },
             { word: "SPUTE", meaning: "To dispute; to discuss" },
@@ -302,9 +302,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "easy",
         words: [
             { word: "CHEI", meaning: "Wow!" },
-            { word: "MAALE", meaning: "A mother.Mymaaleno dÃ©y house.My mother is not at hom..." },
-            { word: "CELLI", meaning: "Of Cello" },
-            { word: "UNCIA", meaning: "A twelfth part, as of the Roman as; an ounce" },
+            { word: "MAALE", meaning: "A mother" },
+            { word: "UNCIA", meaning: "A twelfth part; an ounce" },
+            { word: "BOLD", meaning: "Showing courage and confidence" },
         ],
     },
     28: {
@@ -481,20 +481,20 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Water Deep",
         difficulty: "easy",
         words: [
-            { word: "SOJI", meaning: "A soldier (usually used in southern nigeria)" },
-            { word: "OBJ", meaning: "OBJ-Olusengu Obasanjo, Nigerian Army general and for..." },
-            { word: "SMOKY", meaning: "Emitting smoke, esp" },
-            { word: "BODGE", meaning: "A botch; a patch" },
+            { word: "SOJI", meaning: "A soldier" },
+            { word: "SHOKI", meaning: "A Nigerian dance style" },
+            { word: "BODGE", meaning: "A botch; a clumsy repair" },
+            { word: "ACE", meaning: "A person who excels at something" },
         ],
     },
     46: {
         title: "Olumo Rock",
         difficulty: "easy",
         words: [
-            { word: "PALE", meaning: "The male parent that gave birth to you" },
-            { word: "LETTE", meaning: "Noun; food, verb; to eat food" },
-            { word: "UNKED", meaning: "Odd; strange; ugly; old; uncouth" },
-            { word: "TARE", meaning: "Tore" },
+            { word: "PALE", meaning: "The male parent" },
+            { word: "FAYA", meaning: "Fire" },
+            { word: "UNKED", meaning: "Odd; strange; uncouth" },
+            { word: "LANE", meaning: "A narrow road or path" },
         ],
     },
     47: {
@@ -532,9 +532,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "easy",
         words: [
             { word: "ODE", meaning: "Fool" },
-            { word: "WER", meaning: "Adverb:Used to ask questions about a place someone o..." },
-            { word: "TWEAG", meaning: "To tweak" },
-            { word: "WAFER", meaning: "A thin cake made of flour and other ingredients" },
+            { word: "WER", meaning: "Where" },
+            { word: "WAFER", meaning: "A thin crispy cake" },
+            { word: "WAVE", meaning: "A moving ridge of water" },
         ],
     },
     51: {
@@ -591,10 +591,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Christmas",
         difficulty: "easy",
         words: [
-            { word: "BONZ", meaning: "To be fresh, beautiful" },
             { word: "BOLE", meaning: "Roasted plantain" },
-            { word: "FLOW", meaning: "Imp" },
-            { word: "WHEEN", meaning: "A quantity; a goodly number" },
+            { word: "STAR", meaning: "A celestial body visible at night" },
+            { word: "GIFT", meaning: "Anything given; a present" },
+            { word: "FISH", meaning: "An aquatic animal" },
         ],
     },
     57: {
@@ -611,10 +611,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Aso Ebi",
         difficulty: "easy",
         words: [
-            { word: "MAJA", meaning: "To harass, intimidate, cow someone down or put fear ..." },
-            { word: "JAKI", meaning: "Very hard worker" },
-            { word: "QUADE", meaning: "Evil; bad; baffling; as, a quade wind" },
-            { word: "PLAYA", meaning: "A beach; a strand; in the plains and deserts of Texa..." },
+            { word: "MAJA", meaning: "To harass or intimidate" },
+            { word: "BALE", meaning: "To eat greedily" },
+            { word: "PLAY", meaning: "Engaging in activity for fun" },
+            { word: "HOPE", meaning: "A feeling of expectation" },
         ],
     },
     59: {
@@ -752,9 +752,9 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "easy",
         words: [
             { word: "TIFF", meaning: "Thief" },
-            { word: "WHINE", meaning: "To tease, flatter or deceive someone.Abeg talk true" },
+            { word: "LEVEL", meaning: "To eat and finish a meal" },
             { word: "NGINA", meaning: "The gorilla" },
-            { word: "EATH", meaning: "Easy or easily" },
+            { word: "WINE", meaning: "An alcoholic drink from grapes" },
         ],
     },
     73: {
@@ -847,7 +847,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "TIGHT", meaning: "To be good at something" },
-            { word: "ARIYA", meaning: "Good time" },
+            { word: "THOSE", meaning: "The plural of that. See That." },
             { word: "GBANJO", meaning: "Cheap market sale" },
             { word: "HORNS", meaning: "Slender legs, a large dewlap, and a large," },
             { word: "OTARY", meaning: "Any eared seal" },
@@ -869,10 +869,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "JETTE", meaning: "A prison yard" },
-            { word: "PKOTI", meaning: "Worthless, bumlike character" },
-            { word: "PERSON", meaning: "Pronoun: Used to refer to an unknown or unspecified ..." },
-            { word: "DEPEND", meaning: "To hang down; to be sustained by being fastened or" },
-            { word: "FIVES", meaning: "A kind of play with a ball against a wall, resembling" },
+            { word: "PKOTI", meaning: "A worthless character" },
+            { word: "PERSON", meaning: "A human being" },
+            { word: "DEPEND", meaning: "To rely on; to be contingent on" },
+            { word: "REST", meaning: "To cease activity and relax" },
         ],
     },
     84: {
@@ -1057,7 +1057,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "JEJELI", meaning: "Adverb of Jeje meaning Gently" },
             { word: "LEGZ", meaning: "Shoe" },
-            { word: "TUMBLE", meaning: "Somersault, roll over" },
+            { word: "BEBETO", meaning: "Referring to the famous Brazilian football player José Roberto Gama de Oliveira also known as Bebeto on the pitch. In Nigerian slang it means to pass the soccer ball forward with precision" },
             { word: "LOCA", meaning: "Of Locus" },
             { word: "CREESE", meaning: "A dagger or short sword used by the Malays, commonly..." },
         ],
@@ -1133,10 +1133,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "GIST", meaning: "To discuss or tell stories" },
-            { word: "WHINE", meaning: "To tease, flatter or deceive someone.Abeg talk true" },
-            { word: "MENT", meaning: "To be crazy.If dem born yu well, no do wetin I talk" },
-            { word: "NAPKIN", meaning: "A little towel, or small cloth, esp" },
-            { word: "STREEK", meaning: "To stretch; also, to lay out, as a dead body" },
+            { word: "MENT", meaning: "To be crazy" },
+            { word: "NAPKIN", meaning: "A cloth for wiping hands" },
+            { word: "HAND", meaning: "The end part of the arm" },
+            { word: "CARE", meaning: "To feel concern or interest" },
         ],
     },
     108: {
@@ -1341,11 +1341,11 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "WiFi Down",
         difficulty: "medium",
         words: [
-            { word: "ABJ", meaning: "Abbreviation for Abuja the capital city of nigeria" },
-            { word: "KAITA", meaning: "KAITA(Noun/Verb): A man" },
-            { word: "NAW", meaning: "Adding emphasis to a statement" },
-            { word: "AMBRY", meaning: "In churches, a kind of closet, niche, cupboard, or l..." },
-            { word: "SABIAN", meaning: "Of or pertaining to Saba in Arabia, celebrated for" },
+            { word: "KAITA", meaning: "A man" },
+            { word: "NAW", meaning: "Adding emphasis" },
+            { word: "CALL", meaning: "To shout or summon someone" },
+            { word: "ROAD", meaning: "A wide path for vehicles" },
+            { word: "TOWN", meaning: "A populated settlement" },
         ],
     },
     127: {
@@ -1353,7 +1353,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "YAKATA", meaning: "Heavily e.g" },
-            { word: "AFAR", meaning: "Afar means how are you?" },
+            { word: "TUNA", meaning: "The Opuntia Tuna. See Prickly pear, under Prickly." },
             { word: "PALE", meaning: "The male parent that gave birth to you" },
             { word: "SALVE", meaning: "Hail!" },
             { word: "FLOYTE", meaning: "A variant of Flute" },
@@ -1739,7 +1739,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "BODI", meaning: "Body" },
             { word: "WHINCH", meaning: "A bad person" },
-            { word: "WHINE", meaning: "To tease, flatter or deceive someone.Abeg talk true" },
+            { word: "LEVEL", meaning: "Eat and finish a substantial amount of food. E.g. See as e level di eba." },
             { word: "ENTAIL", meaning: "That which is entailed" },
             { word: "MARINE", meaning: "Hydrozoa, and Ctenophora" },
         ],
@@ -1827,7 +1827,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "DUNDI", meaning: "Fool" },
             { word: "DABARU", meaning: "Spoil" },
-            { word: "ARIYA", meaning: "Good time" },
+            { word: "THOSE", meaning: "The plural of that. See That." },
             { word: "PINNAS", meaning: "Of Pinna" },
             { word: "FAITH", meaning: "Belief; the assent of the mind to the truth of what is" },
         ],
@@ -1860,7 +1860,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "MOFTY", meaning: "Casual wear" },
             { word: "GARMS", meaning: "Means 'clothes' and it is a shortened form of 'garme..." },
-            { word: "SUYA", meaning: "Grilled spiced meat" },
+            { word: "LYNE", meaning: "Linen." },
             { word: "SPITED", meaning: "Of Spite" },
             { word: "SPARTH", meaning: "An Anglo-Saxon battle-ax, or halberd" },
         ],
@@ -1915,7 +1915,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "COMMOT", meaning: "Come out 2 Get away! E.g" },
             { word: "OWANBE", meaning: "A big, lively party or celebration characterized by ..." },
-            { word: "TUMBLE", meaning: "Somersault, roll over" },
+            { word: "BEBETO", meaning: "Referring to the famous Brazilian football player José Roberto Gama de Oliveira also known as Bebeto on the pitch. In Nigerian slang it means to pass the soccer ball forward with precision" },
             { word: "UNCINI", meaning: "Of Uncinus" },
             { word: "SOMNE", meaning: "To summon" },
         ],
@@ -1958,7 +1958,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "BANTA", meaning: "Fierce fight between two people or groups" },
-            { word: "REIGN", meaning: "In vogue e.g Na dat trousa dey reign now o" },
+            { word: "VITAL", meaning: "Belonging or relating to life, either animal or vegetable;" },
             { word: "RAKE", meaning: "Empty boasting" },
             { word: "OBOE", meaning: "One of the higher wind instruments in the modern orc..." },
             { word: "BRILL", meaning: "A fish allied to the turbot (Rhombus levis), much es..." },
@@ -2057,7 +2057,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "medium",
         words: [
             { word: "OWU", meaning: "A state in which you are Flat broke" },
-            { word: "DANFO", meaning: "A yellow commercial bus" },
+            { word: "LECHE", meaning: "See water buck, under 3d Buck." },
             { word: "WEAR", meaning: "Board a bus e.g I go wear bus reach Tinubu" },
             { word: "ARROSE", meaning: "To drench; to besprinkle; to moisten" },
             { word: "CARROW", meaning: "A strolling gamester" },
@@ -2091,7 +2091,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         words: [
             { word: "KALUBA", meaning: "A word for money" },
             { word: "KPAKAM", meaning: "A slang used to lay emphasis" },
-            { word: "JAKI", meaning: "Very hard worker" },
+            { word: "ZOPE", meaning: "A European fresh-water bream (Abramis ballerus)." },
             { word: "LABRI", meaning: "Of Labrus" },
             { word: "GOMMAL", meaning: "Made or consisting of interlocked ring/ or links; as," },
         ],
@@ -2342,11 +2342,11 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Block Wall",
         difficulty: "hard",
         words: [
-            { word: "BUGA", meaning: "To brag, to be excessively proud and boastful of one..." },
             { word: "WALAHI", meaning: "I swear" },
-            { word: "TUMBLE", meaning: "Somersault, roll over" },
-            { word: "ABDEST", meaning: "Purification by washing the hands before prayer; -- a" },
+            { word: "BUGA", meaning: "To brag or show off excessively" },
+            { word: "ABDEST", meaning: "Purification by washing before prayer" },
             { word: "LAGGARD", meaning: "Slow; sluggish; backward" },
+            { word: "HOPE", meaning: "A feeling of expectation and desire" },
         ],
     },
     218: {
@@ -2419,11 +2419,11 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Main Hustle",
         difficulty: "hard",
         words: [
-            { word: "KUKUMA", meaning: "As well, at once, already" },
             { word: "GBANJO", meaning: "Cheap market sale" },
-            { word: "SUYA", meaning: "Grilled spiced meat" },
-            { word: "SKIDDAW", meaning: "The black guillemot" },
-            { word: "APORT", meaning: "On or towards the port or left side; -- said of the ..." },
+            { word: "KUKUMA", meaning: "As well; at once; already" },
+            { word: "APORT", meaning: "On the port or left side" },
+            { word: "AGED", meaning: "Having lived for many years" },
+            { word: "BOLD", meaning: "Showing courage and daring" },
         ],
     },
     225: {
@@ -2596,7 +2596,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "hard",
         words: [
             { word: "SALOT", meaning: "Salute" },
-            { word: "SUYA", meaning: "Grilled spiced meat" },
+            { word: "LYNE", meaning: "Linen." },
             { word: "TAFFIA", meaning: "Gossip" },
             { word: "ALEWIFE", meaning: "A woman who keeps an alehouse" },
             { word: "KROOMAN", meaning: "One of a negro tribe of Liberia and the adjacent coast," },
@@ -2805,7 +2805,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "hard",
         words: [
             { word: "POPORI", meaning: "When someone looks fresh or well kept" },
-            { word: "CRAM", meaning: "To memorise or read" },
+            { word: "WONG", meaning: "A field." },
             { word: "KOROR", meaning: "Corner or tight position" },
             { word: "RIBBON", meaning: "A fillet or narrow woven fabric, commonly of silk, u..." },
             { word: "CARCASS", meaning: "A dead body, whether of man or beast; a corpse; now" },
@@ -2871,7 +2871,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         difficulty: "hard",
         words: [
             { word: "FORTATE", meaning: "To be scared" },
-            { word: "ACADA", meaning: "Intellectual" },
+            { word: "SIDES", meaning: "the foot of some gastropods, etc." },
             { word: "AJEPAKO", meaning: "Literally means -one used to eating wood i.e" },
             { word: "APOZEM", meaning: "A decoction or infusion" },
             { word: "BAJOCCO", meaning: "A small copper coin formerly current in the Roman St..." },
