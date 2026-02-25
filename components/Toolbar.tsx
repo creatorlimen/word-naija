@@ -178,8 +178,9 @@ const styles = StyleSheet.create({
     fontSize: 7,
     fontFamily: fontFamily.bold,
     color: "rgba(255,255,255,0.8)",
-    letterSpacing: 0.8,
+    letterSpacing: 0.4,
     marginTop: 2,
+    textAlign: "center",
   },
   badge: {
     position: "absolute",

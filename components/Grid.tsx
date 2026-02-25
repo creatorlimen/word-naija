@@ -153,7 +153,7 @@ export default function Grid({ gridState, selectedPath, flashCoords }: GridProps
 
   // Pick the smallest so tiles are square and fit both dimensions
   const cellSize = Math.min(maxCellWidth, maxCellHeight, MAX_CELL_SIZE) - CELL_GAP;
-  const textSize = cellSize * 0.65;
+  const textSize = cellSize * 0.50;
 
   const gridContentWidth = cols * (cellSize + CELL_GAP) - CELL_GAP;
   const gridContentHeight = rows * (cellSize + CELL_GAP) - CELL_GAP;
@@ -220,10 +220,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   cellEmpty: {
-    backgroundColor: colors.tile.empty,
+    backgroundColor: "rgba(255,255,255,0.10)",
     borderRadius: borderRadius.sm, 
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
+    borderColor: "rgba(255,255,255,0.14)",
   },
   cellTile: {
     backgroundColor: colors.tile.background,

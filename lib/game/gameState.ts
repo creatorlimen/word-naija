@@ -239,7 +239,11 @@ export function submitWord(state: GameStateData): GameStateData {
   let canonical = targetWord ? targetWord.word.toUpperCase() : null;
 
   // 2. If not a target word, check the dictionary
+  //    Require at least 2 letters for non-target words to prevent single-vowel bonus cheats
   if (!canonical) {
+    if (word.length < 2) {
+      return clearSelection(state);
+    }
     canonical = validateWord(word);
   }
 

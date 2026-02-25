@@ -109,6 +109,41 @@ export function generateLevelFromWords(
     );
   }
 
+  // Detect island placements — all cells must be reachable from the first cell
+  const allCoords = new Set<string>();
+  for (const p of placements) {
+    for (let i = 0; i < p.word.length; i++) {
+      const r = p.direction === "horizontal" ? p.row : p.row + i;
+      const c = p.direction === "horizontal" ? p.col + i : p.col;
+      allCoords.add(`${r},${c}`);
+    }
+  }
+  const coordArr = [...allCoords];
+  const visited = new Set<string>([coordArr[0]]);
+  const queue = [coordArr[0]];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    const [cr, cc] = cur.split(",").map(Number);
+    for (const [dr, dc] of [[0,1],[0,-1],[1,0],[-1,0]]) {
+      const nk = `${cr + dr},${cc + dc}`;
+      if (allCoords.has(nk) && !visited.has(nk)) {
+        visited.add(nk);
+        queue.push(nk);
+      }
+    }
+  }
+  if (visited.size !== allCoords.size) {
+    const islandWords = placements.filter(p => {
+      const r = p.row;
+      const c = p.col;
+      return !visited.has(`${r},${c}`);
+    }).map(p => p.word);
+    throw new Error(
+      `Level ${levelId}: grid has disconnected islands. Word(s) not connected to main grid: ${islandWords.join(", ")}. ` +
+      `Choose words with more shared letters so they can intersect.`
+    );
+  }
+
   // 3. Determine bounding box and normalize
   const bounds = getBounds(placements);
   const rows = bounds.maxRow - bounds.minRow + 1;

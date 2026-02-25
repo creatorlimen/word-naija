@@ -40,10 +40,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
         title: "Vibes",
         difficulty: "easy",
         words: [
+            { word: "PLAN", meaning: "A detailed proposal for doing something" },
             { word: "PLAY", meaning: "To engage in recreation or fun" },
-            { word: "PAY", meaning: "To give money in exchange" },
-            { word: "LAP", meaning: "One circuit of a track" },
-            { word: "PAL", meaning: "A close friend" },
+            { word: "PAN", meaning: "A flat container used for cooking" },
+            { word: "NAP", meaning: "A short sleep during the day" },
         ]
     },
     4: {
@@ -166,7 +166,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
             { word: "INLET", meaning: "A narrow body of water" },
             { word: "LENT", meaning: "Past tense of lend" },
             { word: "NET", meaning: "A mesh material for catching" },
-            { word: "SIT", meaning: "To rest in a seated position" },
+            { word: "TEN", meaning: "The number after nine" },
         ]
     },
     15: {

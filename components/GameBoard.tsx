@@ -209,9 +209,6 @@ export default function GameBoard({ onGoHome }: GameBoardProps) {
 
         {/* ── Wheel & Toolbar ── */}
         <View style={{ flexGrow: 0, paddingBottom: 4 }}>
-            <View style={styles.wheelLabel}>
-              <Text style={styles.wheelLabelText}>Swipe to Connect</Text>
-            </View>
             <View style={{ height: 340, alignItems: "center", justifyContent: "center" }}>
                 <LetterCircle
                     letters={state.letterWheel}
@@ -404,18 +401,6 @@ const styles = StyleSheet.create({
     color: colors.textGold,
     fontSize: fontSize.sm,
     fontFamily: fontFamily.bold,
-  },
-
-  /* ── WHEEL LABEL ── */
-  wheelLabel: {
-    alignItems: "center",
-    paddingVertical: 2,
-  },
-  wheelLabelText: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.medium,
-    letterSpacing: 0.8,
   },
 
   /* ── PREVIEW / TOAST ── */
