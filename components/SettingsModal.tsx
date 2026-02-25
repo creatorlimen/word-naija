@@ -124,6 +124,14 @@ export default function SettingsModal({
           {/* Divider */}
           <View style={styles.divider} />
 
+          {/* --- How to Play --- */}
+          <Pressable style={styles.row} onPress={onHowToPlay}>
+            <Text style={styles.rowLabel}>How to Play</Text>
+            <Icon name="chevron" size={18} color={colors.textMuted} />
+          </Pressable>
+
+          <View style={styles.rowDivider} />
+
           {/* --- Sound --- */}
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Sound</Text>
@@ -137,23 +145,10 @@ export default function SettingsModal({
 
           <View style={styles.rowDivider} />
 
-          {/* --- Notifications (commented out — will use later) --- */}
-          {/* <View style={styles.row}>
-            <Text style={styles.rowLabel}>Notifications</Text>
-            <Switch
-              value={notificationsOn}
-              onValueChange={toggleNotifications}
-              trackColor={{ false: "#555", true: colors.success }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
-          <View style={styles.rowDivider} /> */}
-
-          {/* --- How to Play --- */}
-          <Pressable style={styles.row} onPress={onHowToPlay}>
-            <Text style={styles.rowLabel}>How to Play</Text>
-            <Icon name="chevron" size={18} color={colors.textMuted} />
+          {/* --- Exit Game --- */}
+          <Pressable style={styles.row} onPress={handleQuit}>
+            <Text style={styles.rowLabel}>Exit Game</Text>
+            <Icon name="power" size={18} color={colors.textMuted} />
           </Pressable>
 
           <View style={styles.rowDivider} />
@@ -171,11 +166,6 @@ export default function SettingsModal({
 
           {/* --- Bottom Actions --- */}
           <View style={styles.bottomRow}>
-            {/* Power / Quit */}
-            <Pressable style={styles.powerButton} onPress={handleQuit}>
-              <Icon name="power" size={20} color={colors.textPrimary} />
-            </Pressable>
-
             {/* Contact Us */}
             <Pressable style={styles.contactButton} onPress={handleContactUs}>
               <Text style={styles.contactText}>Contact Us</Text>
