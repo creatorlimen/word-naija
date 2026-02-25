@@ -223,8 +223,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: -14,
-    right: -14,
+    top: -12,
+    right: -12,
     width: 34,
     height: 34,
     borderRadius: borderRadius.full,
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.outline,
-    zIndex: 10,
+    zIndex: 20,
+    elevation: 10,
   },
   closeText: {
     color: colors.textPrimary,
