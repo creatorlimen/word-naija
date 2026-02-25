@@ -108,7 +108,21 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
 
   return (
     <View style={styles.container}>
-      {/* 1. Extra */}
+      {/* 1. Hint — cost shown as top badge, label centered */}
+      <CircleButton
+        iconName="hint"
+        sublabel="HINT"
+        onPress={onHint}
+        topBadge={hintCost}
+        color={colors.button.primary}
+        topBadgeOffset={-8}
+        topBadgeTop={-4}
+      />
+
+      {/* 2. Shuffle */}
+      <CircleButton iconName="shuffle" sublabel="SHUFFLE" onPress={onShuffle} />
+
+      {/* 3. Extra */}
       <CircleButton
         iconName="package"
         sublabel="EXTRA"
@@ -118,20 +132,6 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         glowColor={isGlowing ? "#C9A227" : undefined}
         sparkleTrigger={extraBurstKey}
         topBadgeOffset={-20}
-        topBadgeTop={-4}
-      />
-
-      {/* 2. Shuffle */}
-      <CircleButton iconName="shuffle" sublabel="SHUFFLE" onPress={onShuffle} />
-
-      {/* 3. Hint — cost shown as top badge, label centered */}
-      <CircleButton
-        iconName="hint"
-        sublabel="HINT"
-        onPress={onHint}
-        topBadge={hintCost}
-        color={colors.button.primary}
-        topBadgeOffset={-8}
         topBadgeTop={-4}
       />
     </View>
