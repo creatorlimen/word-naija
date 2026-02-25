@@ -27,6 +27,7 @@ import {
   fontFamily,
 } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
+import { getNextAchievementTarget } from "../lib/game/stats";
 import { useGameState, useGameActions } from "../lib/game/context";
 import DecoBackground from "./DecoBackground";
 import Icon from "./Icon";
@@ -49,10 +50,39 @@ export default function HomeScreen({
   achievements = [],
   onStart,
 }: HomeScreenProps) {
-  const progressPercent = Math.round((levelsCompleted / TOTAL_LEVELS) * 100);
   const [showSettings, setShowSettings] = useState(false);
   const { state } = useGameState();
   const actions = useGameActions();
+
+  // ── Rank system (Option C) — 20 levels per title ──
+  const RANKS: { min: number; title: string }[] = [
+    { min: 0, title: "Beginner" },
+    { min: 20, title: "Explorer" },
+    { min: 40, title: "Word Hunter" },
+    { min: 60, title: "Naija Scholar" },
+    { min: 80, title: "Word Chief" },
+    { min: 100, title: "Oga of Words" },
+    { min: 120, title: "Grand Master" },
+    { min: 140, title: "Wordsmith" },
+    { min: 160, title: "Naija Legend" },
+    { min: 180, title: "Word Naija" },
+  ];
+  const tierIndex = RANKS.reduce((idx, r, i) => (levelsCompleted >= r.min ? i : idx), 0);
+  const rank = RANKS[tierIndex].title;
+
+  // ── Words mastered (Option D) ──
+  const wordsThisLevel = state?.solvedWords.size ?? 0;
+  const extrasThisLevel = state?.extraWordsFound.size ?? 0;
+  // Estimate ~5 words per completed level + current level progress
+  const wordsMastered = levelsCompleted * 5 + wordsThisLevel + extrasThisLevel;
+
+  // ── Next milestone (Option B) ──
+  const nextTarget = state ? getNextAchievementTarget(state) : null;
+  const milestoneText = nextTarget
+    ? nextTarget.type === "levels"
+      ? `${nextTarget.target - nextTarget.current} more level${nextTarget.target - nextTarget.current !== 1 ? "s" : ""} to next badge`
+      : `${nextTarget.target - nextTarget.current} more coins to next badge`
+    : "All milestones reached!";
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -95,10 +125,10 @@ export default function HomeScreen({
           <View style={styles.statsInner}>
             {/* Left column — text stats */}
             <View style={styles.statsLeft}>
-              <Text style={styles.statsCardTitle}>Game Stats</Text>
+              <Text style={styles.statsCardTitle}>{rank}</Text>
               <View style={styles.statRow}>
-                <Text style={styles.statRowLabel}>Daily Progress:</Text>
-                <Text style={styles.statRowValue}>{progressPercent}%</Text>
+                <Text style={styles.statRowLabel}>Words Mastered:</Text>
+                <Text style={styles.statRowValue}>{wordsMastered}</Text>
               </View>
               <View style={styles.statRow}>
                 <Text style={styles.statRowLabel}>Coins:</Text>
@@ -107,7 +137,7 @@ export default function HomeScreen({
             </View>
             {/* Right column — medal hero */}
             <View style={styles.statsRight}>
-              <MedalBadge size={100} />
+              <MedalBadge size={100} tier={tierIndex} />
             </View>
           </View>
         </View>
@@ -117,16 +147,16 @@ export default function HomeScreen({
 
         <View style={styles.achievementList}>
           <AchievementRow
-            iconName="star"
+            iconName="target"
             iconBg="#1C7C57"
-            title="Earns"
-            subtitle={`Daily Progress: ${progressPercent}%`}
+            title="Next Goal"
+            subtitle={milestoneText}
           />
           <AchievementRow
             iconName="trophy"
             iconBg="#A68632"
-            title="Achievement"
-            subtitle={`Achievement: ${Math.min(progressPercent + 10, 100)}%`}
+            title="Badges"
+            subtitle={`${achievements.length} of 10 badges earned`}
           />
         </View>
 
