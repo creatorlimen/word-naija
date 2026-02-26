@@ -43,6 +43,7 @@ english_words_preview.txt
 english_words_to_add.json
 test_*.ts
 tools/audit_pidgin_ratio*.ts
+tools/audit_islands.ts
 
 # Project Specific - Source dictionaries (too large)
 dictionary.csv
