@@ -15,7 +15,7 @@ import { loadLevel } from "./levelLoader";
 import { validateWord } from "./dictionaryLoader";
 
 // Game constants
-export const HINT_COST = 15;
+export const HINT_COST = 5;
 export const EXTRA_WORDS_TARGET = 10;
 export const EXTRA_WORDS_REWARD = 15;
 
