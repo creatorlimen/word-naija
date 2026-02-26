@@ -27,7 +27,7 @@
       "favicon": "./assets/favicon.png"
     },
     "updates": {
-      "enabled": false
+      "enabled": true
     },
     "plugins": [
       "expo-asset",
