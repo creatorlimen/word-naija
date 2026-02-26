@@ -56,18 +56,18 @@ export default function HomeScreen({
   const { state } = useGameState();
   const actions = useGameActions();
 
-  // ── Rank system (Option C) — 20 levels per title ──
+  // ── Rank system — alternating pidgin / english titles ──
   const RANKS: { min: number; title: string }[] = [
-    { min: 0, title: "Beginner" },
-    { min: 20, title: "Explorer" },
-    { min: 40, title: "Word Hunter" },
-    { min: 60, title: "Naija Scholar" },
-    { min: 80, title: "Word Chief" },
-    { min: 100, title: "Oga of Words" },
-    { min: 120, title: "Grand Master" },
-    { min: 140, title: "Wordsmith" },
-    { min: 160, title: "Naija Legend" },
-    { min: 180, title: "Word Naija" },
+    { min: 0,   title: "Jambite" },        // pidgin: Nigerian slang for a total newcomer
+    { min: 20,  title: "Explorer" },        // english
+    { min: 40,  title: "Word Seeka" },      // pidgin: word seeker
+    { min: 60,  title: "Naija Scholar" },   // english
+    { min: 80,  title: "Odogwu" },          // pidgin: champion / great one
+    { min: 100, title: "Word Chief" },        // english
+    { min: 120, title: "Ogbonge" },           // pidgin: the real deal / certified
+    { min: 140, title: "Wordsmith" },       // english
+    { min: 160, title: "Naija Gbam" },      // pidgin: confirmed Naija legend
+    { min: 180, title: "Word Naija" },      // final tier — stays
   ];
   const tierIndex = RANKS.reduce((idx, r, i) => (levelsCompleted >= r.min ? i : idx), 0);
   const rank = RANKS[tierIndex].title;
