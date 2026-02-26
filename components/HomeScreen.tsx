@@ -86,6 +86,13 @@ export default function HomeScreen({
       : `${nextTarget.target - nextTarget.current} more coins to next badge`
     : "All milestones reached!";
 
+  const nextLevel = Math.min(levelsCompleted + 1, TOTAL_LEVELS);
+  const primaryCtaText = levelsCompleted === 0
+    ? "Start Playing"
+    : levelsCompleted >= TOTAL_LEVELS
+      ? "Play Again"
+      : `Continue • Level ${nextLevel}`;
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar style="light" />
@@ -143,6 +150,26 @@ export default function HomeScreen({
             </View>
           </View>
         </View>
+
+        {/* ── Primary CTA ── */}
+        <Pressable
+          onPress={onStart}
+          style={({ pressed }) => [
+            styles.primaryCta,
+            pressed && { opacity: 0.92, transform: [{ scale: 0.99 }] },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={primaryCtaText}
+        >
+          <LinearGradient
+            colors={gradients.ctaGold}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0.5 }}
+          />
+          <Icon name="play" size={18} color="#3A2F2A" />
+          <Text style={styles.primaryCtaText}>{primaryCtaText}</Text>
+        </Pressable>
 
         {/* ── Achievement section ── */}
         <Text style={styles.achievementHeading}>Achievement</Text>
@@ -252,21 +279,24 @@ function BottomTabBar({
       </Pressable>
 
       {/* Play tab (center CTA) */}
-      <Pressable
-        onPress={onPlay}
-        style={({ pressed }) => [
-          styles.tabPlayButton,
-          pressed && { opacity: 0.9, transform: [{ scale: 0.96 }] },
-        ]}
-      >
-        <LinearGradient
-          colors={gradients.ctaGold}
-          style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0.5 }}
-        />
-        <Icon name="play" size={24} color="#3A2F2A" />
-      </Pressable>
+      <View style={styles.tabPlayWrap}>
+        <Pressable
+          onPress={onPlay}
+          style={({ pressed }) => [
+            styles.tabPlayButton,
+            pressed && { opacity: 0.9, transform: [{ scale: 0.96 }] },
+          ]}
+        >
+          <LinearGradient
+            colors={gradients.ctaGold}
+            style={[StyleSheet.absoluteFill, { borderRadius: borderRadius.full }]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0.5 }}
+          />
+          <Icon name="play" size={24} color="#3A2F2A" />
+        </Pressable>
+        <Text style={styles.tabPlayLabel}>Play</Text>
+      </View>
 
       {/* Settings tab */}
       <Pressable style={styles.tabItem} onPress={onSettings}>
@@ -321,6 +351,23 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.extraBold,
     color: colors.textPrimary,
     letterSpacing: 0.3,
+  },
+  primaryCta: {
+    minHeight: 56,
+    borderRadius: borderRadius.lg,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    overflow: "hidden",
+    ...shadows.glow,
+  },
+  primaryCtaText: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.extraBold,
+    color: "#3A2F2A",
+    letterSpacing: 0.2,
   },
 
   /* ── Stats card (two-column) ── */
@@ -454,7 +501,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     borderTopWidth: 1,
     borderTopColor: colors.outline,
-    overflow: "hidden",
+    overflow: "visible",
   },
   tabItem: {
     alignItems: "center",
@@ -480,5 +527,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
     ...shadows.glow,
+  },
+  tabPlayWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -6,
+    gap: 1,
+  },
+  tabPlayLabel: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.bodyMedium,
+    color: colors.textMuted,
+    marginTop: -2,
   },
 });
