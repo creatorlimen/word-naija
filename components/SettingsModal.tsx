@@ -153,7 +153,7 @@ export default function SettingsModal({
 
           <View style={styles.rowDivider} />
 
-          {/* --- Reset All Data --- */}
+          {/* --- Reset All Data ---
           <Pressable style={styles.row} onPress={handleResetAll}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <Icon name="alert" size={14} color="#E05A5A" />
@@ -161,6 +161,7 @@ export default function SettingsModal({
             </View>
             <Icon name="chevron" size={18} color={colors.textMuted} />
           </Pressable>
+          */}
 
           <View style={styles.divider} />
 
