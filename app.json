@@ -21,7 +21,11 @@
         "backgroundColor": "#8B2D2D"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.wordnaija.app"
+      "package": "com.wordnaija.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,6 +37,12 @@
       "expo-asset",
       "expo-audio",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "49db7cc3-96a0-4c70-a2b0-03679e49a385"
+      }
+    },
+    "owner": "limen"
   }
 }
