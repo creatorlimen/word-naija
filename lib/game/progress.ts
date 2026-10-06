@@ -8,6 +8,7 @@ import type {
   SavedProgress,
 } from "./types";
 import { LEGACY_LEVEL_WORDS, LEVEL_CONFIGS, TOTAL_LEVELS } from "./levelDefinitions";
+import { validateWord } from "./dictionaryLoader";
 
 function object(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -210,9 +211,12 @@ export function restoreProgress(base: GameStateData, saved: SavedProgress): Game
   };
   const snapshot = saved.currentLevelSnapshot;
   const targets = new Map(base.currentLevel.targetWords.map((target) => [target.word.toUpperCase(), target]));
+  // Retired words retain their earned credit in history but must not reappear
+  // in the active bonus list after the dictionary has been cleaned.
+  const isCurrentExtra = (word: string) => word.length >= 2 && !targets.has(word) && validateWord(word) !== null;
   if (!snapshot || snapshot.levelId !== id) {
     const extras = new Set((state.extraWordsFoundByLevel[id] ?? []).filter(
-      (word) => word.length >= 2 && !targets.has(word)
+      isCurrentExtra
     ));
     return { ...state, solvedWords: new Set(extras), extraWordsFound: extras };
   }
@@ -220,7 +224,7 @@ export function restoreProgress(base: GameStateData, saved: SavedProgress): Game
   const solvedWords = new Set(snapshot.solvedWords.filter((word) => targets.has(word)));
   const historicalExtras = new Set(state.extraWordsFoundByLevel[id] ?? []);
   const extraWordsFound = new Set(snapshot.extraWordsFound.filter(
-    (word) => word.length >= 2 && !targets.has(word) && historicalExtras.has(word)
+    (word) => isCurrentExtra(word) && historicalExtras.has(word)
   ));
   const cells = base.gridState.cells.map((row) => row.map((cell) => ({ ...cell })));
   for (const word of solvedWords) {

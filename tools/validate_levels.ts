@@ -11,6 +11,20 @@ import type { Level } from "../lib/game/types";
 
 const MAX_WHEEL_LETTERS = 8;
 const EXPECTED_LEVELS = 300;
+const CSV_COLUMNS = ["word", "variants", "meaning", "language_tag", "difficulty", "notes"];
+const LANGUAGE_TAGS = new Set(["english", "pidgin", "ng_en"]);
+const DIFFICULTIES = new Set(["easy", "medium", "hard"]);
+// Exact entries excluded in the content review. Substring matching would also
+// reject harmless words such as CANAL, SPARSE, GRAPE and BOOBY.
+const EXCLUDED_WORDS = new Set(`
+  ACATA ACATAY AKATA AGARACHA AGRO BANZA CHINCO CHINKO CONJI COPULATE CUCKOLD
+  DOUCHE EKULEKU ERECTILE FAG FAP FRAKPAS FUCKONSO GIMP HUSSY HYMEN IKEBAY
+  INKEBE IWERE JACKASS KEZAYA KGB LINGAM MALO NYARSH OKPEKE OKPO ORGIES
+  OXLADE SHEGE SHITTOR SPLARO SQUAW TEAGUE TEWE UKPA UKWU WENCH WILLY YAMIRI YASH YASHMAN
+  ASSHOLE BASTARD BITCH BITCHES BOLLOCKS COCK CUNT CUNTS DICK DILDO FAGGOT
+  FUCK FUCKED FUCKER FUCKERS FUCKING PISS PISSED PRICK PUSSY SHIT SHITS
+  SHITTY SLUT SLUTS TITS TWAT WANK WANKER WHORE WHORES
+`.trim().split(/\s+/));
 const errors: string[] = [];
 const seenSets = new Map<string, number>();
 let targetCount = 0;
@@ -35,25 +49,71 @@ function parseCsvLine(line: string): string[] {
       value += char;
     }
   }
+  if (quoted) throw new Error("unterminated quoted field");
   fields.push(value);
   return fields;
 }
 
 const dictionary = new Map<string, string>();
+const lookupOwners = new Map<string, string>();
+let dictionaryEntries = 0;
 const dictionaryPath = path.join(__dirname, "..", "assets", "data", "dictionary.csv");
 const csvLines = fs.readFileSync(dictionaryPath, "utf8").split(/\r?\n/);
-for (const line of csvLines.slice(1)) {
-  if (!line.trim()) continue;
-  const [word, , meaning] = parseCsvLine(line);
+const wordNetLicense = fs.readFileSync(path.join(path.dirname(dictionaryPath), "WordNet-LICENSE.txt"), "utf8");
+const wordNetNoticeStart = wordNetLicense.indexOf("This software");
+const wordNetNotice = wordNetLicense.slice(wordNetNoticeStart).replace(/\s+/g, " ").trim();
+let hasWordNetNotice = false;
+let usesWordNet = false;
+if (wordNetNoticeStart < 0) errors.push("WordNet license is missing its full notice.");
+if (csvLines[0]?.replace(/^\uFEFF/, "") !== CSV_COLUMNS.join(",")) {
+  errors.push("Dictionary header does not match the six expected columns.");
+}
+for (const [index, line] of csvLines.entries()) {
+  if (index === 0 || (index === csvLines.length - 1 && !line)) continue;
+  const location = `Dictionary row ${index + 1}`;
+  let fields: string[];
+  try {
+    fields = parseCsvLine(line);
+  } catch (error) {
+    errors.push(`${location}: ${error instanceof Error ? error.message : String(error)}.`);
+    continue;
+  }
+  if (fields.length !== CSV_COLUMNS.length) {
+    errors.push(`${location}: expected six columns, found ${fields.length}.`);
+    continue;
+  }
+  const [word, variants, meaning, languageTag, difficulty, notes] = fields;
+  if (notes.includes("Definition adapted from WordNet 3.1")) usesWordNet = true;
+  if (notes.includes(wordNetNotice)) hasWordNetNotice = true;
+  dictionaryEntries++;
+  if (fields.some(value => value !== value.trim())) errors.push(`${location}: leading or trailing whitespace.`);
+  if (!/^[A-Z]{2,8}$/.test(word)) errors.push(`${location}: invalid word ${word}.`);
+  if (!LANGUAGE_TAGS.has(languageTag)) errors.push(`${location}: invalid language tag ${languageTag}.`);
+  if (!DIFFICULTIES.has(difficulty)) errors.push(`${location}: invalid difficulty ${difficulty}.`);
+  if (isPlaceholder(word, meaning)) errors.push(`${location}: ${word} has a placeholder or damaged meaning.`);
   if (dictionary.has(word)) errors.push(`Dictionary contains duplicate word ${word}.`);
+  const aliases = variants ? variants.split("|") : [];
+  if (new Set(aliases).size !== aliases.length) errors.push(`${location}: repeated variants for ${word}.`);
+  for (const spelling of new Set([word, ...aliases])) {
+    if (!/^[A-Z]{2,8}$/.test(spelling)) errors.push(`${location}: invalid spelling ${spelling}.`);
+    if (EXCLUDED_WORDS.has(spelling)) errors.push(`${location}: excluded word ${spelling}.`);
+    const owner = lookupOwners.get(spelling);
+    if (owner && owner !== word) errors.push(`${location}: ${spelling} also belongs to ${owner}.`);
+    lookupOwners.set(spelling, word);
+  }
   dictionary.set(word, meaning);
 }
+// Match the runtime lookup, including aliases, after checking all collisions.
+for (const [spelling, owner] of lookupOwners) dictionary.set(spelling, dictionary.get(owner)!);
+if (usesWordNet && !hasWordNetNotice) errors.push("Adapted WordNet definitions must retain the full notice in the CSV notes.");
 
 function isPlaceholder(word: string, meaning: string): boolean {
   const text = meaning.trim();
   return text.length < 4 ||
     text.toUpperCase() === word ||
-    /(?:\.{3}|\uFFFD|\b(?:TODO|TBD|PLACEHOLDER|UNKNOWN|N\/A)\b)/i.test(text);
+    /(?:\.{3}|\u2026|\uFFFD|\\["']|^-\s*(?:noun|verb|adjective|adverb)\s*:|\b(?:TODO|TBD|PLACEHOLDER)\b)/i.test(text) ||
+    /^(?:UNKNOWN|N\/A)[.!]?$/i.test(text) || text.includes("--") ||
+    (text.match(/\(/g)?.length ?? 0) !== (text.match(/\)/g)?.length ?? 0);
 }
 
 function wheelLetters(words: string[]): string[] {
@@ -196,4 +256,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${levelIds.length} playable levels, ${seenSets.size} unique word sets, ${targetCount} target entries, ${dictionary.size} dictionary entries, and ${Object.keys(LEGACY_LEVEL_WORDS).length} legacy word maps.`);
+console.log(`Validated ${levelIds.length} playable levels, ${seenSets.size} unique word sets, ${targetCount} target entries, ${dictionaryEntries} dictionary entries, and ${Object.keys(LEGACY_LEVEL_WORDS).length} legacy word maps.`);

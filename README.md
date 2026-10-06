@@ -63,9 +63,9 @@ npx expo start -c
 - `npm run android`: Launch Android target via Expo
 - `npm run ios`: Launch iOS target via Expo
 - `npm run web`: Launch web target via Expo
-- `npm test`: Run game-rule, save/resume, reward, and completion-screen regression checks
+- `npm test`: Run dictionary, game-rule, save/resume, reward, and completion-screen regression checks
 - `npm run typecheck`: Check TypeScript without emitting files
-- `npm run validate:levels`: Generate/validate all configured levels using `tools/validate_levels.ts`
+- `npm run validate:levels`: Validate the dictionary and generate/check all configured levels using `tools/validate_levels.ts`
 
 ## Project Structure
 
@@ -164,6 +164,9 @@ Notes:
 - Validation/lookup is case-insensitive.
 - Variants map to canonical word entries.
 - Dictionary is static at runtime.
+- Run `npm run validate:levels` after content edits. It checks CSV structure, word and variant collisions, excluded offensive entries, damaged meanings, and agreement with level clues.
+
+Selected English definitions are adapted from [Princeton WordNet 3.1](https://wordnet.princeton.edu/). The full notice is in [assets/data/WordNet-LICENSE.txt](assets/data/WordNet-LICENSE.txt) and the CSV notes, so it accompanies the bundled dictionary. Retain it when redistributing this data. See [the cleanup record](docs/dictionary-cleanup.md) for the reviewed removals and level replacements.
 
 ## Persistence
 
@@ -182,6 +185,8 @@ Save format version 2 uses AsyncStorage key `wordnaija_progress` in `lib/game/pe
 Legacy saves migrate automatically, retaining balances, completed levels, settings, and recorded bonus history. Invalid negative balances from the old hint bug become zero. Missing historical bonus discoveries and spent bonus earnings cannot be recovered; lifetime earnings begin at the larger of the saved balance and known completion rewards. Already completed levels retain their original target history when content is corrected.
 
 Snapshots validate the puzzle layout and hint letters before restoration. If level content changes, still-valid solved words are retained and incompatible hint coordinates are discarded.
+
+Bonus words removed from the dictionary are excluded from resumed puzzle lists. Their existing history and earned credit are retained.
 
 ## UI and Theming
 
@@ -209,4 +214,4 @@ The visual system is centralized in `constants/theme.ts`:
 
 ## License
 
-No license file is currently defined in this repository.
+No overall project license is currently defined. The adapted WordNet definitions carry the notice in [assets/data/WordNet-LICENSE.txt](assets/data/WordNet-LICENSE.txt).

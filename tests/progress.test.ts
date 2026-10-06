@@ -134,6 +134,30 @@ test("legacy active extras are restored and cannot be credited again", async () 
   assert.equal(enter(state, "NOR").extraWordsCollected, 1);
 });
 
+test("retired extras stay out of resumed puzzles without losing historical credit", async () => {
+  const state = enter(await initializeGameState(1, 100), "NOR");
+  const saved = createSavedProgress(state);
+  saved.extraWordsFoundByLevel[1].push("RETIRED");
+  saved.wordsFoundByLevel[1].push("RETIRED");
+  saved.extraWordsCollected++;
+  saved.currentLevelSnapshot!.extraWordsFound.push("RETIRED");
+  saved.currentLevelSnapshot!.solvedWords.push("RETIRED");
+  for (const withSnapshot of [true, false]) {
+    const restored = restoreProgress(await initializeGameState(1), {
+      ...saved, currentLevelSnapshot: withSnapshot ? saved.currentLevelSnapshot : null,
+    });
+    assert.deepEqual([...restored.extraWordsFound], ["NOR"]);
+    assert.ok(restored.solvedWords.has("NOR"));
+    assert.ok(!restored.solvedWords.has("RETIRED"));
+    assert.deepEqual(restored.extraWordsFoundByLevel, saved.extraWordsFoundByLevel);
+    assert.deepEqual(restored.wordsFoundByLevel, saved.wordsFoundByLevel);
+    assert.equal(restored.extraWordsCollected, 2);
+    assert.equal(restored.coins, saved.coins);
+    assert.equal(restored.totalCoinsEarned, saved.totalCoinsEarned);
+    assert.equal(enter(restored, "NOR").extraWordsCollected, 2);
+  }
+});
+
 test("migration repairs negative balances left by the old hint bug", () => {
   const saved = normalizeProgress({ coins: -5, completedLevels: [] });
   assert.ok(saved);
