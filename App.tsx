@@ -30,6 +30,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 import { GameProvider, useGameState, useGameActions } from "./lib/game/context";
 import { getAchievements } from "./lib/game/stats";
+import { TOTAL_LEVELS } from "./lib/game/levelLoader";
 import HomeScreen from "./components/HomeScreen";
 import GameBoard from "./components/GameBoard";
 import FTUE from "./components/FTUE";
@@ -92,12 +93,16 @@ function AppNavigator() {
   const [screen, setScreen] = useState<Screen>("home");
   const [ftueComplete, setFtueComplete] = useState(false);
   const [startWithTutorial, setStartWithTutorial] = useState(false);
-  const { state, isLoading, error } = useGameState();
+  const { state, isComplete, isLoading, error } = useGameState();
+  const { resetLevel } = useGameActions();
 
   const handleStart = useCallback(() => {
+    if (isComplete && state.currentLevel?.levelId === TOTAL_LEVELS) {
+      resetLevel();
+    }
     setStartWithTutorial(false);
     setScreen("game");
-  }, []);
+  }, [isComplete, state.currentLevel?.levelId, resetLevel]);
 
   const handleGoHome = useCallback(() => {
     setStartWithTutorial(false);

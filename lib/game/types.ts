@@ -90,7 +90,11 @@ export interface GameStateData {
   completedLevels: Set<number>;
   solvedWords: Set<string>; // Canonical words solved THIS level
   extraWordsFound: Set<string>; // Extra words solved THIS level
+  wordsFoundByLevel: Record<number, string[]>; // Canonical discoveries over all attempts
+  extraWordsFoundByLevel: Record<number, string[]>; // Extras already credited on each level
   extraWordsCollected: number; // Running count toward next 10-word reward box
+  totalCoinsEarned: number; // Lifetime awarded coins, independent of hint spending
+  completionReward: number; // Award from this completion attempt; zero on replays
   soundEnabled: boolean;
 }
 
@@ -98,13 +102,34 @@ export interface GameStateData {
 // Persistence Types
 // ============================================================================
 
+export interface SavedHintCell {
+  row: number;
+  col: number;
+  letter: string;
+}
+
+export interface SavedLevelSnapshot {
+  levelId: number;
+  layoutSignature: string;
+  solvedWords: string[];
+  extraWordsFound: string[];
+  hintedCells: SavedHintCell[];
+  letterOrder: string[];
+  completionReward: number;
+}
+
 export interface SavedProgress {
+  version: 2;
   coins: number;
   completedLevels: number[];
   soundEnabled: boolean;
   lastPlayed: number; // Timestamp
+  currentLevelId: number;
+  currentLevelSnapshot: SavedLevelSnapshot | null;
+  wordsFoundByLevel: Record<number, string[]>;
   extraWordsFoundByLevel: Record<number, string[]>; // levelId -> words
   extraWordsCollected: number; // Running count toward next 10-word reward box
+  totalCoinsEarned: number;
 }
 
 // ============================================================================

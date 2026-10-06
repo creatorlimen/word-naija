@@ -3,7 +3,7 @@
  * Main game screen with glass header, refined grid, gold accents.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -25,7 +25,7 @@ import FTUE from "./FTUE";
 import CoachMarks from "./CoachMarks";
 import type { CoachTarget } from "./CoachMarks";
 import { useGameState, useGameActions } from "../lib/game/context";
-import { getCoinsEarned, HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
+import { HINT_COST, EXTRA_WORDS_TARGET } from "../lib/game/gameState";
 import { playCompleteSound } from "../lib/game/soundManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Sparkle from "./Sparkle";
@@ -149,11 +149,6 @@ export default function GameBoard({ onGoHome, startWithTutorial }: GameBoardProp
   const handlePlayAgain = useCallback(() => {
     actions.resetLevel();
   }, [actions]);
-
-  const coinsEarned = useMemo(() => {
-    if (!state?.currentLevel) return 0;
-    return getCoinsEarned(state);
-  }, [state]);
 
   // Measure game elements and show coach marks overlay
   const measureAndShowCoach = useCallback(() => {
@@ -374,9 +369,10 @@ export default function GameBoard({ onGoHome, startWithTutorial }: GameBoardProp
           level={state.currentLevel}
           solvedWords={state.solvedWords}
           extraWords={state.extraWordsFound}
-          coinsEarned={coinsEarned}
+          coinsEarned={state.completionReward}
           onNextLevel={handleNextLevel}
           onPlayAgain={handlePlayAgain}
+          onGoHome={onGoHome}
         />
       </SafeAreaView>
     </View>

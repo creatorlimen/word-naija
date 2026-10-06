@@ -15,6 +15,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import type { Level } from "../lib/game/types";
+import { TOTAL_LEVELS } from "../lib/game/levelLoader";
 import { colors, borderRadius, fontSize, spacing, shadows, fontFamily, gradients } from "../constants/theme";
 import Icon from "./Icon";
 
@@ -26,6 +27,7 @@ interface LevelCompleteProps {
   coinsEarned: number;
   onNextLevel: () => void;
   onPlayAgain: () => void;
+  onGoHome: () => void;
 }
 
 export default function LevelComplete({
@@ -36,26 +38,33 @@ export default function LevelComplete({
   coinsEarned,
   onNextLevel,
   onPlayAgain,
+  onGoHome,
 }: LevelCompleteProps) {
+  const isFinalLevel = level.levelId === TOTAL_LEVELS;
+  const targetsSolved = level.targetWords.filter((target) =>
+    solvedWords.has(target.word.toUpperCase())
+  ).length;
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="slide"
       statusBarTranslucent
+      onRequestClose={onGoHome}
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
           <Icon name="celebrate" size={40} color={colors.gold} />
-          <Text style={styles.title}>Level Complete!</Text>
+          <Text style={styles.title}>{isFinalLevel ? "All Levels Complete!" : "Level Complete!"}</Text>
           <Text style={styles.subtitle}>{level.title}</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Words</Text>
               <Icon name="edit" size={16} color={colors.textMuted} />
-              <Text style={styles.statValue}>{solvedWords.size}</Text>
+              <Text style={styles.statValue}>{targetsSolved}</Text>
             </View>
             <View style={styles.statChip}>
               <Text style={styles.statLabel}>Bonus</Text>
@@ -86,13 +95,13 @@ export default function LevelComplete({
 
           {/* Action buttons */}
           <Pressable
-            onPress={onNextLevel}
+            onPress={isFinalLevel ? onGoHome : onNextLevel}
             style={({ pressed }) => [
               styles.primaryButton,
               pressed && styles.buttonPressed,
             ]}
           >
-            <Text style={styles.primaryButtonText}>Next Level →</Text>
+            <Text style={styles.primaryButtonText}>{isFinalLevel ? "Back to Dashboard" : "Next Level →"}</Text>
           </Pressable>
 
           <Pressable

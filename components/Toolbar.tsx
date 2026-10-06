@@ -19,6 +19,7 @@ function CircleButton({
   iconName, 
   sublabel,
   onPress, 
+  disabled = false,
   color = colors.button.function,
   badge,
   topBadge,
@@ -31,6 +32,7 @@ function CircleButton({
   iconName: IconName; 
   sublabel: string;
   onPress: () => void; 
+  disabled?: boolean;
   color?: string;
   badge?: string | number;
   topBadge?: string | number;
@@ -44,9 +46,13 @@ function CircleButton({
     <View style={styles.btnWrapper}>
       <Pressable
         onPress={onPress}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
         style={({ pressed }) => [
           styles.circleBtn,
           { backgroundColor: glowColor ?? color },
+          disabled && styles.disabled,
           pressed && styles.pressed,
         ]}
       >
@@ -113,6 +119,7 @@ export default function Toolbar({ coins, hintCost, extraWordsCollected, extraWor
         iconName="hint"
         sublabel="HINT"
         onPress={onHint}
+        disabled={coins < hintCost}
         topBadge={hintCost}
         color={colors.button.primary}
         topBadgeOffset={-8}
@@ -170,6 +177,9 @@ const styles = StyleSheet.create({
   pressed: {
     transform: [{ translateY: 2 }],
     borderBottomWidth: 2,
+  },
+  disabled: {
+    opacity: 0.4,
   },
   btnIcon: {
     fontSize: 14,

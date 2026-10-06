@@ -47,6 +47,10 @@ export async function initializeGameState(
     solvedWords: new Set(),
     extraWordsFound: new Set(),
     extraWordsCollected: 0,
+    wordsFoundByLevel: {},
+    extraWordsFoundByLevel: {},
+    totalCoinsEarned: 0,
+    completionReward: 0,
     soundEnabled: true,
   };
 }
@@ -257,7 +261,7 @@ export function submitWord(state: GameStateData): GameStateData {
     return clearSelection(state);
   }
 
-  let isTargetWord = !!targetWord;
+  const isTargetWord = !!targetWord;
 
   if (!isTargetWord) {
     if (state.currentLevel.extraWordsAllowed) {
@@ -272,17 +276,34 @@ export function submitWord(state: GameStateData): GameStateData {
   const newSolvedWords = new Set(state.solvedWords);
   newSolvedWords.add(canonical);
 
+  const levelId = state.currentLevel.levelId;
+  const wordsForLevel = state.wordsFoundByLevel[levelId] ?? [];
+  const wordsFoundByLevel = wordsForLevel.includes(canonical)
+    ? state.wordsFoundByLevel
+    : {
+        ...state.wordsFoundByLevel,
+        [levelId]: [...wordsForLevel, canonical],
+      };
+
   const newExtraWords = new Set(state.extraWordsFound);
+  let extraWordsFoundByLevel = state.extraWordsFoundByLevel;
   let newExtraWordsCollected = state.extraWordsCollected;
   let coinsEarned = 0;
   if (!isTargetWord) {
     newExtraWords.add(canonical);
-    newExtraWordsCollected += 1;
+    const creditedExtras = state.extraWordsFoundByLevel[levelId] ?? [];
+    if (!creditedExtras.includes(canonical)) {
+      extraWordsFoundByLevel = {
+        ...state.extraWordsFoundByLevel,
+        [levelId]: [...creditedExtras, canonical],
+      };
+      newExtraWordsCollected += 1;
 
-    // Auto-claim reward when box is full
-    if (newExtraWordsCollected >= EXTRA_WORDS_TARGET) {
-      coinsEarned += EXTRA_WORDS_REWARD;
-      newExtraWordsCollected = 0; // Reset the box
+      // Auto-claim reward when the box is full
+      if (newExtraWordsCollected >= EXTRA_WORDS_TARGET) {
+        coinsEarned = EXTRA_WORDS_REWARD;
+        newExtraWordsCollected = 0;
+      }
     }
   }
 
@@ -310,6 +331,9 @@ export function submitWord(state: GameStateData): GameStateData {
     solvedWords: newSolvedWords,
     extraWordsFound: newExtraWords,
     extraWordsCollected: newExtraWordsCollected,
+    wordsFoundByLevel,
+    extraWordsFoundByLevel,
+    totalCoinsEarned: state.totalCoinsEarned + coinsEarned,
     letterWheel: newLetterWheel,
     gridState: newGridState,
     coins: newCoins,
@@ -377,6 +401,10 @@ export function shuffleLetters(state: GameStateData): GameStateData {
  * Reveal a hint - show one empty cell from unsolved target words
  */
 export function revealHint(state: GameStateData): GameStateData {
+  if (state.coins < HINT_COST) {
+    return state;
+  }
+
   // Find first unsolved target word
   const unsolvedWords = state.currentLevel.targetWords.filter(
     (tw) => !state.solvedWords.has(tw.word.toUpperCase())
@@ -423,6 +451,12 @@ export function revealHint(state: GameStateData): GameStateData {
     }
   }
 
+  const levelId = state.currentLevel.levelId;
+  const previouslyFound = state.wordsFoundByLevel[levelId] ?? [];
+  const newlySolved = [...newSolvedWords].filter(
+    (word) => !state.solvedWords.has(word) && !previouslyFound.includes(word)
+  );
+
   return {
     ...state,
     gridState: {
@@ -430,6 +464,12 @@ export function revealHint(state: GameStateData): GameStateData {
       cells: newCells,
     },
     solvedWords: newSolvedWords,
+    wordsFoundByLevel: newlySolved.length
+      ? {
+          ...state.wordsFoundByLevel,
+          [levelId]: [...previouslyFound, ...newlySolved],
+        }
+      : state.wordsFoundByLevel,
     coins: state.coins - HINT_COST,
   };
 }
@@ -445,6 +485,7 @@ export function resetLevel(state: GameStateData): GameStateData {
     selectedPath: null,
     solvedWords: new Set(),
     extraWordsFound: new Set(),
+    completionReward: 0,
   };
 }
 
@@ -476,8 +517,10 @@ export function getLevelProgress(state: GameStateData): {
   percentage: number;
 } {
   const totalWords = state.currentLevel.targetWords.length;
-  const solvedWords = state.solvedWords.size;
-  const percentage = Math.round((solvedWords / totalWords) * 100);
+  const solvedWords = state.currentLevel.targetWords.filter((target) =>
+    state.solvedWords.has(target.word.toUpperCase())
+  ).length;
+  const percentage = totalWords ? Math.round((solvedWords / totalWords) * 100) : 0;
 
   return { totalWords, solvedWords, percentage };
 }

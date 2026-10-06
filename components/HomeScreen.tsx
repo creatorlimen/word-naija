@@ -27,7 +27,7 @@ import {
   fontFamily,
 } from "../constants/theme";
 import { TOTAL_LEVELS } from "../lib/game/levelLoader";
-import { getNextAchievementTarget } from "../lib/game/stats";
+import { getNextAchievementTarget, getTotalWordsFound } from "../lib/game/stats";
 import { useGameState, useGameActions } from "../lib/game/context";
 import DecoBackground from "./DecoBackground";
 import Icon from "./Icon";
@@ -72,21 +72,22 @@ export default function HomeScreen({
   const tierIndex = RANKS.reduce((idx, r, i) => (levelsCompleted >= r.min ? i : idx), 0);
   const rank = RANKS[tierIndex].title;
 
-  // ── Words mastered (Option D) ──
-  const wordsThisLevel = state?.solvedWords.size ?? 0;
-  const extrasThisLevel = state?.extraWordsFound.size ?? 0;
-  // Estimate ~5 words per completed level + current level progress
-  const wordsMastered = levelsCompleted * 5 + wordsThisLevel + extrasThisLevel;
+  // Count each word found once per level, including bonus words.
+  const wordsMastered = state?.wordsFoundByLevel
+    ? getTotalWordsFound(state)
+    : 0;
 
   // ── Next milestone (Option B) ──
-  const nextTarget = state ? getNextAchievementTarget(state) : null;
+  const nextTarget = state?.currentLevel ? getNextAchievementTarget(state) : null;
   const milestoneText = nextTarget
     ? nextTarget.type === "levels"
       ? `${nextTarget.target - nextTarget.current} more level${nextTarget.target - nextTarget.current !== 1 ? "s" : ""} to next badge`
-      : `${nextTarget.target - nextTarget.current} more coins to next badge`
+      : nextTarget.type === "coins"
+        ? `${nextTarget.target - nextTarget.current} more coins to next badge`
+        : `${nextTarget.target - nextTarget.current} more bonus word${nextTarget.target - nextTarget.current !== 1 ? "s" : ""} to next badge`
     : "All milestones reached!";
 
-  const nextLevel = Math.min(levelsCompleted + 1, TOTAL_LEVELS);
+  const nextLevel = state?.currentLevel?.levelId ?? Math.min(levelsCompleted + 1, TOTAL_LEVELS);
   const primaryCtaText = levelsCompleted === 0
     ? "Start Playing"
     : levelsCompleted >= TOTAL_LEVELS

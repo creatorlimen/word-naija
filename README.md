@@ -63,6 +63,8 @@ npx expo start -c
 - `npm run android`: Launch Android target via Expo
 - `npm run ios`: Launch iOS target via Expo
 - `npm run web`: Launch web target via Expo
+- `npm test`: Run game-rule, save/resume, reward, and completion-screen regression checks
+- `npm run typecheck`: Check TypeScript without emitting files
 - `npm run validate:levels`: Generate/validate all configured levels using `tools/validate_levels.ts`
 
 ## Project Structure
@@ -88,6 +90,7 @@ npx expo start -c
 |  |- levelLoader.ts           # Runtime level creation + validation
 |  |- dictionaryLoader.ts      # CSV parser + dictionary index/lookup
 |  |- persistence.ts           # AsyncStorage persistence
+|  |- progress.ts              # Save migration, puzzle restoration, one-time completion rewards
 |  |- soundManager.ts          # Runtime sound synthesis/playback
 |  |- stats.ts                 # Derived stats + achievement logic
 |- assets/data/dictionary.csv  # Dictionary corpus used at runtime
@@ -108,16 +111,17 @@ npx expo start -c
    - Action `Toolbar` (hint, shuffle, extra words)
 4. On swipe release, `commitSelection` submits via `submitWord` in `lib/game/gameState.ts`.
 5. Correct target words fill grid cells; extra words count toward reward milestones.
-6. When all target words are solved, level-complete modal is shown and next level can load.
-7. Progress (coins, completed levels, settings, extra-word counters) is auto-saved.
+6. Solving the last target immediately records completion and awards coins once. The final level returns to the dashboard; completed puzzles can be replayed.
+7. Meaningful actions save progress immediately, including the current puzzle and purchased hints. Storage writes stay in order, with an additional save when the app moves to the background.
 
 ## Core Game Rules (Current Implementation)
 
 - Target words are accepted even if missing from dictionary (level design is authoritative).
 - Non-target words must be valid dictionary entries and at least 2 letters.
 - Extra words are allowed when `extraWordsAllowed` is true for the level.
-- Every 10 extra words grants a coin reward (`EXTRA_WORDS_REWARD`).
-- Hint usage reveals one unresolved cell and auto-completes any now-fully-filled target word.
+- Every 10 newly credited extra words grants a coin reward (`EXTRA_WORDS_REWARD`). Each bonus word earns credit once per level, including across restarts and replays.
+- A hint costs 5 coins, requires sufficient balance, reveals one unresolved cell, and auto-completes any now-fully-filled target word.
+- Badges use lifetime earnings and recorded discoveries. Words Mastered counts each word once per level, with bonuses counted once.
 
 ## Levels
 
@@ -163,14 +167,21 @@ Notes:
 
 ## Persistence
 
-Saved with AsyncStorage key `wordnaija_progress` in `lib/game/persistence.ts`:
+Save format version 2 uses AsyncStorage key `wordnaija_progress` in `lib/game/persistence.ts`:
 
 - `coins`
 - `completedLevels`
 - `soundEnabled`
 - `lastPlayed`
+- `currentLevelId` and `currentLevelSnapshot` (solved words, bonus words, hints, wheel order, and completion reward)
+- `wordsFoundByLevel`
 - `extraWordsFoundByLevel`
 - `extraWordsCollected`
+- `totalCoinsEarned`
+
+Legacy saves migrate automatically, retaining balances, completed levels, settings, and recorded bonus history. Invalid negative balances from the old hint bug become zero. Missing historical bonus discoveries and spent bonus earnings cannot be recovered; lifetime earnings begin at the larger of the saved balance and known completion rewards. Already completed levels retain their original target history when content is corrected.
+
+Snapshots validate the puzzle layout and hint letters before restoration. If level content changes, still-valid solved words are retained and incompatible hint coordinates are discarded.
 
 ## UI and Theming
 

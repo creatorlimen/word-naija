@@ -11,6 +11,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
+import { AppState } from "react-native";
 import type { GameStateData } from "./types";
 
 import {
@@ -27,6 +28,7 @@ import {
 } from "./gameState";
 import { loadDictionary } from "./dictionaryLoader";
 import { loadProgress, saveProgress, getDefaultProgress } from "./persistence";
+import { completeLevel, createSavedProgress, restoreProgress } from "./progress";
 import { TOTAL_LEVELS } from "./levelLoader";
 import {
   initializeSounds,
@@ -98,21 +100,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const savedProgress = await loadProgress();
         const progress = savedProgress || getDefaultProgress();
 
-        // Determine current level
-        const currentLevelId = savedProgress
-          ? Math.max(...(savedProgress.completedLevels || []), 0) + 1
-          : 1;
-
-        const initialState = await initializeGameState(
-          Math.min(currentLevelId, TOTAL_LEVELS),
-          progress.coins
-        );
-
-        initialState.soundEnabled = progress.soundEnabled;
-        initialState.completedLevels = new Set(progress.completedLevels || []);
-        initialState.extraWordsCollected = progress.extraWordsCollected ?? 0;
-
+        const initialState = completeLevel(restoreProgress(
+          await initializeGameState(progress.currentLevelId, progress.coins),
+          progress
+        ));
+        stateRef.current = initialState;
         setState(initialState);
+        void saveProgress(createSavedProgress(initialState));
         setIsLoading(false);
       } catch (err) {
         setError(
@@ -125,41 +119,23 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     initializeGame();
   }, []);
 
-  // Auto-save progress on meaningful state changes (debounced)
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Save as soon as a meaningful action changes state. Keep a lifecycle flush
+  // for a platform that suspends the app immediately after a background event.
+  const commitState = useCallback((next: GameStateData, persist = true) => {
+    if (next === stateRef.current) return;
+    stateRef.current = next;
+    setState(next);
+    if (persist) void saveProgress(createSavedProgress(next));
+  }, []);
+
   useEffect(() => {
-    if (!isLoading && state) {
-      // Debounce saves — wait 1s after last state change
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
+    const subscription = AppState.addEventListener("change", (status) => {
+      if (status !== "active" && stateRef.current) {
+        void saveProgress(createSavedProgress(stateRef.current));
       }
-      saveTimerRef.current = setTimeout(() => {
-        const completedLevels = Array.from(state.completedLevels || []);
-        const extraWordsFoundByLevel: Record<number, string[]> = {};
-
-        if (state.currentLevel) {
-          extraWordsFoundByLevel[state.currentLevel.levelId] = Array.from(
-            state.extraWordsFound || []
-          );
-        }
-
-        saveProgress({
-          coins: state.coins,
-          completedLevels,
-          soundEnabled: state.soundEnabled,
-          lastPlayed: Date.now(),
-          extraWordsFoundByLevel,
-          extraWordsCollected: state.extraWordsCollected ?? 0,
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    };
-  }, [state, isLoading]);
+    });
+    return () => subscription.remove();
+  }, []);
 
   // Action handlers — use setState callback to avoid stale closures
   const actions = {
@@ -172,15 +148,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       if (nextLen > prevLen) {
         playTapSound(prev.soundEnabled);
       }
-      setState(next);
+      commitState(next, false);
     }, []),
 
     undoSelection: useCallback(() => {
-      setState((prev) => (prev ? undoSelection(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(undoSelection(prev), false);
     }, []),
 
     clearSelection: useCallback(() => {
-      setState((prev) => (prev ? clearSelection(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(clearSelection(prev), false);
     }, []),
 
     commitSelection: useCallback(() => {
@@ -195,12 +173,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const beforeSolvedSize = prev.solvedWords.size;
       const beforeExtraSize  = prev.extraWordsFound.size;
 
-      const next = submitWord(prev);
+      const next = completeLevel(submitWord(prev));
 
       const afterSolvedSize = next.solvedWords.size;
       const afterExtraSize  = next.extraWordsFound.size;
 
-      setState(next);
+      commitState(next);
 
       if (afterSolvedSize > beforeSolvedSize) {
         if (afterExtraSize > beforeExtraSize) {
@@ -220,45 +198,51 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, []),
 
     submitWord: useCallback(() => {
-      setState((prev) => (prev ? submitWord(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(completeLevel(submitWord(prev)));
     }, []),
 
     shuffleLetters: useCallback(() => {
-      setState((prev) => (prev ? shuffleLetters(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(shuffleLetters(prev));
     }, []),
 
     revealHint: useCallback(() => {
-      setState((prev) => (prev ? revealHint(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(completeLevel(revealHint(prev)));
     }, []),
 
     resetLevel: useCallback(() => {
-      setState((prev) => (prev ? resetLevel(prev) : prev));
+      const prev = stateRef.current;
+      if (prev) commitState(resetLevel(prev));
     }, []),
 
     nextLevel: useCallback(async () => {
-      // Use ref to get current state (avoids stale closure)
       const currentState = stateRef.current;
       if (!currentState) return;
-
-      // Award level-completion coins before transitioning
-      const completionBonus = 15 + currentState.currentLevel.levelId * 5;
-      const coinsAfterBonus = currentState.coins + completionBonus;
-
+      if (!isLevelComplete(currentState)
+        || !currentState.completedLevels.has(currentState.currentLevel.levelId)) return;
       const nextLevelId = currentState.currentLevel.levelId + 1;
       if (nextLevelId <= TOTAL_LEVELS) {
         try {
-          const newCompletedLevels = new Set(currentState.completedLevels);
-          newCompletedLevels.add(currentState.currentLevel.levelId);
-
           const newState = await initializeGameState(
             nextLevelId,
-            coinsAfterBonus
+            currentState.coins
           );
-          newState.completedLevels = newCompletedLevels;
-          newState.soundEnabled = currentState.soundEnabled;
-          newState.extraWordsCollected = currentState.extraWordsCollected;
-
-          setState(newState);
+          const latest = stateRef.current;
+          if (!latest || latest.currentLevel.levelId !== currentState.currentLevel.levelId
+            || !isLevelComplete(latest)
+            || !latest.completedLevels.has(latest.currentLevel.levelId)) return;
+          commitState({
+            ...newState,
+            coins: latest.coins,
+            completedLevels: new Set(latest.completedLevels),
+            soundEnabled: latest.soundEnabled,
+            extraWordsCollected: latest.extraWordsCollected,
+            wordsFoundByLevel: latest.wordsFoundByLevel,
+            extraWordsFoundByLevel: latest.extraWordsFoundByLevel,
+            totalCoinsEarned: latest.totalCoinsEarned,
+          });
         } catch (err) {
           setError(
             err instanceof Error
@@ -270,9 +254,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, []),
 
     toggleSound: useCallback(() => {
-      setState((prev) =>
-        prev ? { ...prev, soundEnabled: !prev.soundEnabled } : prev
-      );
+      const prev = stateRef.current;
+      if (prev) commitState({ ...prev, soundEnabled: !prev.soundEnabled });
     }, []),
   };
 

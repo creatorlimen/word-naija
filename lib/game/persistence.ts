@@ -5,19 +5,23 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { SavedProgress } from "./types";
+import { normalizeProgress } from "./progress";
+
+export { getDefaultProgress } from "./progress";
 
 const STORAGE_KEY = "wordnaija_progress";
+let pendingWrite: Promise<void> = Promise.resolve();
 
 /**
  * Save game progress
  */
 export async function saveProgress(progress: SavedProgress): Promise<void> {
-  try {
-    const json = JSON.stringify(progress);
-    await AsyncStorage.setItem(STORAGE_KEY, json);
-  } catch {
-    // Silently fail
-  }
+  const json = JSON.stringify(progress);
+  // Keep writes in action order. A slower old write must never overwrite a
+  // newly completed level or a freshly purchased hint.
+  pendingWrite = pendingWrite.then(() => AsyncStorage.setItem(STORAGE_KEY, json))
+    .catch((error) => { console.warn("⚠️ Progress save failed", error); });
+  await pendingWrite;
 }
 
 /**
@@ -25,13 +29,16 @@ export async function saveProgress(progress: SavedProgress): Promise<void> {
  */
 export async function loadProgress(): Promise<SavedProgress | null> {
   try {
+    await pendingWrite;
     const json = await AsyncStorage.getItem(STORAGE_KEY);
     if (json) {
-      return JSON.parse(json) as SavedProgress;
+      return normalizeProgress(JSON.parse(json));
     }
     return null;
-  } catch {
-    return null;
+  } catch (error) {
+    console.warn("⚠️ Progress load failed", error);
+    // Do not replace an unreadable save with fresh progress on startup.
+    throw new Error("Could not load saved progress. Please reopen the game to try again.");
   }
 }
 
@@ -39,23 +46,7 @@ export async function loadProgress(): Promise<SavedProgress | null> {
  * Clear all game progress (reset game)
  */
 export async function clearProgress(): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Silently fail
-  }
-}
-
-/**
- * Get default progress object
- */
-export function getDefaultProgress(): SavedProgress {
-  return {
-    coins: 0,
-    completedLevels: [],
-    soundEnabled: true,
-    lastPlayed: Date.now(),
-    extraWordsFoundByLevel: {},
-    extraWordsCollected: 0,
-  };
+  pendingWrite = pendingWrite.then(() => AsyncStorage.removeItem(STORAGE_KEY))
+    .catch((error) => { console.warn("⚠️ Progress clear failed", error); });
+  await pendingWrite;
 }

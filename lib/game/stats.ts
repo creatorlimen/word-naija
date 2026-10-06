@@ -6,16 +6,38 @@
 import type { GameStateData, GameStatistics } from "./types";
 import { TOTAL_LEVELS } from "./levelLoader";
 
+const LEVEL_BADGE_TARGETS = [5, 10, 25, 50];
+const COIN_BADGE_TARGETS = [100, 500, 1000];
+const EXTRA_BADGE_TARGETS = [10, 50, 100];
+
+function uniqueWordCount(words: string[] | undefined): number {
+  return new Set(words ?? []).size;
+}
+
+export function getTotalWordsFound(state: GameStateData): number {
+  return Object.values(state.wordsFoundByLevel).reduce(
+    (total, words) => total + uniqueWordCount(words),
+    0
+  );
+}
+
 /**
  * Calculate game statistics from state
  */
 export function calculateGameStats(state: GameStateData): GameStatistics {
   const totalLevelsSolved = state.completedLevels.size;
-  const totalCoinsEarned = state.coins;
-  const totalExtraWordsFound = state.extraWordsFound.size;
+  const totalCoinsEarned = state.totalCoinsEarned;
+  const totalExtraWordsFound = Object.values(state.extraWordsFoundByLevel).reduce(
+    (total, words) => total + uniqueWordCount(words),
+    0
+  );
   const averageWordsPerLevel =
     totalLevelsSolved > 0
-      ? (state.solvedWords.size + totalExtraWordsFound) / totalLevelsSolved
+      ? [...state.completedLevels].reduce(
+          (total, levelId) =>
+            total + uniqueWordCount(state.wordsFoundByLevel[levelId]),
+          0
+        ) / totalLevelsSolved
       : 0;
 
   return {
@@ -54,20 +76,19 @@ export function getAchievements(state: GameStateData): string[] {
   const stats = calculateGameStats(state);
 
   // Level-based achievements
-  if (stats.totalLevelsSolved >= 5) achievements.push("level-5");
-  if (stats.totalLevelsSolved >= 10) achievements.push("level-10");
-  if (stats.totalLevelsSolved >= 25) achievements.push("level-25");
-  if (stats.totalLevelsSolved >= 50) achievements.push("level-50");
+  for (const target of LEVEL_BADGE_TARGETS) {
+    if (stats.totalLevelsSolved >= target) achievements.push(`level-${target}`);
+  }
 
   // Coin-based achievements
-  if (stats.totalCoinsEarned >= 100) achievements.push("coins-100");
-  if (stats.totalCoinsEarned >= 500) achievements.push("coins-500");
-  if (stats.totalCoinsEarned >= 1000) achievements.push("coins-1000");
+  for (const target of COIN_BADGE_TARGETS) {
+    if (stats.totalCoinsEarned >= target) achievements.push(`coins-${target}`);
+  }
 
   // Extra word achievements
-  if (stats.totalExtraWordsFound >= 10) achievements.push("extra-10");
-  if (stats.totalExtraWordsFound >= 50) achievements.push("extra-50");
-  if (stats.totalExtraWordsFound >= 100) achievements.push("extra-100");
+  for (const target of EXTRA_BADGE_TARGETS) {
+    if (stats.totalExtraWordsFound >= target) achievements.push(`extra-${target}`);
+  }
 
   return achievements;
 }
@@ -76,7 +97,7 @@ export function getAchievements(state: GameStateData): string[] {
  * Get next achievement target
  */
 export function getNextAchievementTarget(state: GameStateData): {
-  type: string;
+  type: "levels" | "coins" | "extras";
   target: number;
   current: number;
   progress: number;
@@ -84,8 +105,7 @@ export function getNextAchievementTarget(state: GameStateData): {
   const stats = calculateGameStats(state);
 
   // Check levels
-  const levelTargets = [5, 10, 25, 50, 120];
-  for (const target of levelTargets) {
+  for (const target of LEVEL_BADGE_TARGETS) {
     if (stats.totalLevelsSolved < target) {
       return {
         type: "levels",
@@ -97,14 +117,24 @@ export function getNextAchievementTarget(state: GameStateData): {
   }
 
   // Check coins
-  const coinTargets = [100, 500, 1000, 5000];
-  for (const target of coinTargets) {
+  for (const target of COIN_BADGE_TARGETS) {
     if (stats.totalCoinsEarned < target) {
       return {
         type: "coins",
         target,
         current: stats.totalCoinsEarned,
         progress: Math.round((stats.totalCoinsEarned / target) * 100),
+      };
+    }
+  }
+
+  for (const target of EXTRA_BADGE_TARGETS) {
+    if (stats.totalExtraWordsFound < target) {
+      return {
+        type: "extras",
+        target,
+        current: stats.totalExtraWordsFound,
+        progress: Math.round((stats.totalExtraWordsFound / target) * 100),
       };
     }
   }
